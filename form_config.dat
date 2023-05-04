@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "config" form for the game system.
+      The "config" form represents the form where the user customizes the basic
+      configuration details of the character. This form is automatically shown when
+      the user first creates a new character and can again be shown via the menu
+      option to "Configure" the character.
+
+      This form is shown as a standalone form, so the form must specify its own
+      dimensions. No sizing information is externally provided.
+
+      In general, the "config" form should contain fundamental details of the
+      character that will be configured once at character creation and thereafter
+      left unchanged. Customization of source and setting selections should
+      also typically be performed through this form. However, there are no hard
+      requirements for what is actually placed in the "config" form.
+
+      All public visual elements used with this form start with the prefix "cnf"
+      to associate them with the form.
+
+      NOTE! The unique id of the "config" form is specially recognized by Hero Lab
+      as the form to be used for character configuration. A form with the id
+      "config" is required within your data files.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- cnfTitle portal
+        Displays a title at the top of the form, along with some extra vertical
+        spacing above the title text.
+  -->
+  <portal
+    id="cnfTitle"
+    style="lblTitle">
+    <label_title
+      text="{vert 6}Configure Your Character">
+      </label_title>
+    </portal>
+
+
+  <!-- cnfSummary portal
+        Displays a special table-based summary of the currently selected sources
+        and settings for the character.
+  -->
+  <portal
+    id="cnfSummary"
+    style="special">
+    <setting_summary>
+      </setting_summary>
+    </portal>
+
+
+  <!-- cnfAlly portal
+        Displays a menu that allows the user to select whether this hero is an
+        ally or enemy.
+  -->
+  <portal
+    id="cnfAlly"
+    style="special">
+    <alliance>
+      </alliance>
+    </portal>
+
+
+  <!-- cnfName template
+        This template is used to display and edit the name of the actor and player.
+  -->
+  <template
+    id="cnfName"
+    name="Name Configuration"
+    compset="useredit">
+
+    <portal
+      id="edit"
+      style="editNormal">
+      <edit
+        field="useredit">
+        </edit>
+      </portal>
+
+    <portal
+      id="label"
+      style="lblSmTitle">
+      <label_field
+        field="name">
+        </label_field>
+      </portal>
+
+    <position><![CDATA[
+      ~set the width of the edit portal to something we like
+      portal[edit].width = 215
+
+      ~position the label just beneath the edit portal
+      portal[label].top = portal[edit].bottom + 4
+
+      ~set the dimensions of the template based on the extent of the portals
+      height = portal[label].bottom
+      width = portal[edit].right
+      ]]></position>
+
+    </template>
+
+
+  <!-- cnfStart template
+        This template displays the starting characteristics of the character, such
+        as the initial character points, special ability slots, etc. If the game
+        system allows the creation of "advanced" characters, then starting XP could
+        be controlled here, as could any other facet of the character that a player
+        can establish at creation and that has effects on how the character is then
+        constructed.
+
+        The starting character points is controlled through a literal menu with a
+        few hard-wired options, wherein the selected value is saved in a field for
+        subsequent use. This could just as easily be handled as an edit portal where
+        the user types in the starting points or with an incrementer that gives the
+        user a wide range of initial values to choose from.
+
+        The starting number of special abilities is similarly controlled through a
+        literal menu. As above, you can use a variety of approaches here that are
+        all equally effective. Choose the method that is more appropriate to the
+        needs of the game system.
+
+        The starting cash possessed by the character is presented as an edit portal,
+        allowing any arbitrary amount to be specified.
+  -->
+  <template
+    id="cnfStart"
+    name="Starting Resources"
+    compset="Actor">
+
+    <portal
+      id="menutype"
+      style="menuNormal">
+      <menu_things
+        component="CharType"
+        field="acType">
+        </menu_things>
+      </portal>
+
+    <portal
+      id="label"
+      style="lblNormal">
+      <label_title
+        text="Starting Resources:">
+        </label_title>
+      </portal>
+
+    <portal
+      id="menucp"
+      style="menuNormal">
+      <menu_literal
+        field="acStartCP">
+        <choice value="225" display="Character Points: 225 Points"/>
+        <choice value="250" display="Character Points: 250 Points"/>
+        <choice value="275" display="Character Points: 275 Points"/>
+        </menu_literal>
+      </portal>
+
+    <portal
+      id="menuabil"
+      style="menuNormal">
+      <menu_literal
+        field="acStartAbi">
+        <choice value="1" display="Abilities: 1 Slots"/>
+        <choice value="2" display="Abilities: 2 Slots"/>
+        <choice value="3" display="Abilities: 3 Slots"/>
+        </menu_literal>
+      </portal>
+
+    <portal
+      id="lblcash"
+      style="lblNormal">
+      <label_literal
+        text="Starting Cash ($):">
+        </label_literal>
+      </portal>
+
+    <portal
+      id="cash"
+      style="editCenter">
+      <edit
+        field="acCashCfg"
+        maxlength="6"
+        format="integer">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~set the width of the template to something we like
+      width = 185
+
+      ~position the type menu at the top
+      portal[menutype].width = width
+
+      ~position the resources title just under it
+      perform portal[label].centerhorz
+      perform portal[label].alignrel[ttob,menutype,10]
+
+      ~position the character points menu beneath the title
+      portal[menucp].width = width
+      perform portal[menucp].alignrel[ttob,label,10]
+
+      ~position the ability menu beneath the character points
+      portal[menuabil].width = width
+      perform portal[menuabil].alignrel[ttob,menucp,15]
+
+      ~position the starting cash beneath the ability slots
+      perform portal[cash].alignrel[ttob,menuabil,15]
+      perform portal[lblcash].centeron[vert,cash]
+      portal[cash].width = 50
+      portal[lblcash].left = (width - portal[lblcash].width - portal[cash].width - 10) / 2
+      perform portal[cash].alignrel[ltor,lblcash,10]
+
+      ~set the height of the template based on the extent of the portals
+      ~Note: Include a little extra space at the bottom for borders and such.
+      height = portal[cash].bottom + 3
+      ]]></position>
+    </template>
+
+
+  <!-- configure layout
+        This layout contains all of the facets of initial character configuration.
+        The general positioning of the visual elements in this form is relatively
+        consistent across all data files, making it easy for users to move between
+        game systems. Consequently, you are encouraged to retain the general
+        scheme with your own data files. However, there is no hard requirement
+        that you do so.
+  -->
+  <layout
+    id="configure">
+    <portalref portal="cnfTitle"/>
+    <portalref portal="cnfAlly" taborder="80"/>
+    <portalref portal="cnfSummary" taborder="95"/>
+    <templateref reference="heroname" template="cnfName" thing="heroname" taborder="10"/>
+    <templateref reference="playername" template="cnfName" thing="playername" taborder="20"/>
+    <templateref template="cnfStart" thing="actor" taborder="30"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~render all templates to generate the appropriate dimensions for each
+      perform template[heroname].render
+      perform template[playername].render
+      perform template[cnfStart].render
+
+      ~setup a horizontal margin to use
+      var horz as number
+      horz = 20
+
+      ~the title is positioned at the top
+
+      ~pad the height of the title with some extra space for more visual weight
+      portal[cnfTitle].height += 8
+
+      ~position the character name beneath the title on the left
+      template[heroname].left = horz
+      template[heroname].top = portal[cnfTitle].bottom + 25
+
+      ~position the player name beneath the hero name
+      template[playername].left = template[heroname].left
+      template[playername].top = template[heroname].bottom + 10
+
+      ~the settings summary fills the right hand side of the form
+      portal[cnfSummary].top = template[heroname].top
+      portal[cnfSummary].left = template[heroname].right + 20
+      portal[cnfSummary].width = 300
+
+      ~the total width of the layout (i.e. form) is the right edge of the
+      ~rules summary portal plus our margin
+      width = portal[cnfSummary].right + horz
+
+      ~the title needs to extend across the full width of the layout
+      portal[cnfTitle].width = width
+
+      ~position the starting values template beneath the title on the left
+      template[cnfStart].left = (portal[cnfSummary].left - template[cnfStart].width) / 2
+      template[cnfStart].top = template[playername].bottom + 15
+
+      ~position the alliance portal beneath the starting values template
+      portal[cnfAlly].left = template[cnfStart].left
+      portal[cnfAlly].width = template[cnfStart].width
+      portal[cnfAlly].top = template[cnfStart].bottom + 10
+
+      ~our height must encompass the alliance portal and be at least 300 pixels high
+      ~Note: Using a minimum height ensures that the displayed list of user-selected
+      ~settings has some reasonable vertical space to show them to the user.
+      height = maximum(300,portal[cnfAlly].bottom)
+
+      ~the summary extends the full height of the layout/form
+      portal[cnfSummary].height = height - portal[cnfSummary].top
+
+      ~move the alliance portal downwards on the left, leaving a gap if available
+      if (portal[cnfSummary].bottom > portal[cnfAlly].bottom) then
+        perform portal[cnfAlly].alignrel[btob,cnfSummary,0]
+        endif
+      ]]></position>
+
+    </layout>
+
+
+  <!-- config form
+        This is the "config" form shown to configure a new character within Hero
+        Lab.
+
+        NOTE! The unique id of this form is specially recognized by Hero Lab as
+        the form to be used for character configuration. A form with this id is
+        required within your data files.
+  -->
+  <form
+    id="config"
+    name="Configure">
+    <layoutref layout="configure"/>
+
+    <position><![CDATA[
+      ~render the layout to generate its dimensions
+      perform layout[configure].render
+
+      ~set the width and height of the form to the dimensions of the layout
+      width = layout[configure].width
+      height = layout[configure].height
+      ]]></position>
+
+    </form>
+
+
+  </document>

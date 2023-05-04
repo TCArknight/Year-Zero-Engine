@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains all specifications pertaining to the operational control of
+      the data files. This includes usage pools, sources, sortsets, and other related
+      mechanisms.
+-->
+
+<document signature="Hero Lab Structure">
+
+  <!-- The "usagepool" elements allow the definition of usage pools that Hero Lab
+        will create and manage appropriately. Each usage pool can be tracked and
+        maintained uniquely for each actor, or can be associated with individual picks.
+  -->
+
+  <!-- Track up to 30 slots of damage adjustments applied
+        NOTE! We use the adjustments to enable undoing of each level -->
+  <usagepool
+    id="DmgAdjust"
+    name="Damage Adjustment"
+    abbrev="Dmg"
+    ishero="yes"
+    maximum="30"
+    persist="yes"/>
+
+  <!-- Track up to 30 slots of net damage sustained after each adjustment -->
+  <usagepool
+    id="DmgNet"
+    name="Net Damage Sustained"
+    abbrev="Dmg"
+    ishero="yes"
+    maximum="30"
+    persist="yes"/>
+
+  <!-- Track the total XP progression of the actor -->
+  <usagepool
+    id="TotalXP"
+    name="Total XP"
+    abbrev="XP"
+    ishero="yes"
+    persist="yes"/>
+
+  <!-- Track the total cash progression of the actor -->
+  <usagepool
+    id="TotalCash"
+    name="Total Cash"
+    abbrev="Cash"
+    ishero="yes"
+    persist="yes"/>
+
+  <!-- Track the XP adjustment associated with each entry in the journal -->
+  <usagepool
+    id="JrnlXP"
+    name="Journal Experience Points"
+    abbrev="XP"
+    ishero="no"
+    persist="no"/>
+
+  <!-- Track the cash adjustment associated with each entry in the journal -->
+  <usagepool
+    id="JrnlCash"
+    name="Journal Cash"
+    abbrev="Cash"
+    ishero="no"
+    persist="no"/>
+
+
+  <!-- The "source" elements define the assortment of user-configurable options for
+        each actor and their relative hierarchical structure. Each selectable source
+        automatically defines a "source" tag when enabled by the user, allowing the
+        data files to tailor behavior based on the presence (or not) of that tag.
+  -->
+
+  <source
+    id="Optional"
+    name="Optional Rules"
+    selectable="no"
+    sortorder="1"
+    description="Collection of optional rules that can be turned on and off">
+    </source>
+
+  <source
+    id="Output"
+    name="Output Options"
+    selectable="no"
+    description="Assortment of options governing how character sheet output is generated">
+    </source>
+
+  <source
+    id="Validation"
+    name="Include Validation Report on Sheet"
+    abbrev="Show Validation Report"
+    parent="Output"
+    default="yes"
+    reportable="no"
+    sortorder="1"
+    description="Controls whether the validation report is included at the bottom of the standard character sheet">
+    </source>
+
+  <source
+    id="ShowImage"
+    name="Include Character Portrait on Sheet"
+    abbrev="Show Character Portrait"
+    parent="Output"
+    default="yes"
+    reportable="no"
+    sortorder="2"
+    description="If a character portrait is assigned, include it in the top right region of the character sheet">
+    </source>
+
+  <source
+    id="ShowDetail"
+    name="Include Personal Details on Sheet"
+    abbrev="Show Personal Details"
+    parent="Output"
+    default="yes"
+    reportable="no"
+    sortorder="3"
+    description="Controls whether the character's personal details (history) are included on the character sheet">
+    </source>
+
+  <source
+    id="ShowTrackR"
+    name="Include Tracked Resources on Statblock"
+    abbrev="Show Tracked Resources"
+    parent="Output"
+    reportable="no"
+    sortorder="4"
+    description="Controls whether any tracked resources for the character are included in the text statblock">
+    </source>
+
+
+  <!-- The "sortset" elements specify the various sort sequences to be used when
+        displaying or otherwise operating on lists of picks and/or things.
+  -->
+
+  <!-- Define the sortset used when displaying stuff on the "Special" tab. -->
+  <sortset
+    id="SpecialTab"
+    name="Special Tab">
+    <sortkey isfield="no" id="Promote"/>
+    <sortkey isfield="no" id="SpecialTab"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define the sortset used when outputting "special" picks without regard for "promote" behavior. -->
+  <sortset
+    id="SpecInfo"
+    name="Special Info">
+    <sortkey isfield="no" id="SpecialTab"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define a sortset for generalized handling of "promote" logic without involving the "Special" tab. -->
+  <sortset
+    id="Promote"
+    name="Promote to Top">
+    <sortkey isfield="no" id="Promote"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define a sortset for showing all weapons and armor appropriately, with equipped items appearing first. -->
+  <sortset
+    id="Armory"
+    name="Weapons and Armor">
+    <sortkey isfield="no" id="Equipped"/>
+    <sortkey isfield="no" id="Armory"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define a sortset that lists are equipped pieces of gear first. -->
+  <sortset
+    id="Equipped"
+    name="Equipped Items First">
+    <sortkey isfield="no" id="Equipped"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define a sortset that lists activated abilities, then temporary in-play adjustments. -->
+  <sortset
+    id="TacConSumm"
+    name="Activated abilities before temp adjustments">
+    <sortkey isfield="no" id="InPlay" isascend="no"/>
+    <sortkey isfield="yes" id="adjIndex" isascend="no"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+
+  <!-- Define a sortset for showing all weapons and armor appropriately, with equipped items appearing first. -->
+  <sortset
+    id="SkillByAttribute"
+    name="Skill By Attribute">
+    <sortkey isfield="no" id="KeyAttribute"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+
+  <!-- Define the sortset used when displaying stuff on the "Special" tab. -->
+  <sortset
+    id="SettingSkill"
+    name="Skill by Setting name">
+    <sortkey isfield="no" id="explicit"/>
+    <sortkey isfield="no" id="KeyAttribute"/>
+    <sortkey isfield="yes" id="sklSettingName"/>
+    </sortset>
+	
+  <sortset
+    id="SpecCategory"
+    name="Specialty By Category">
+    <sortkey isfield="no" id="SpecCat"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+	
+  <sortset
+    id="SpellType"
+    name="Spell By Type">
+    <sortkey isfield="no" id="Magic"/>
+    <sortkey isfield="no" id="MagicRank"/>
+    <sortkey isfield="no" id="_Name_"/>
+    </sortset>
+  </document>

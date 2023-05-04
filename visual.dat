@@ -1,0 +1,1068 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file defines assorted portals and templates that can be used throughout the
+      data files. These are simple, generic mechanisms that can be used in many
+      situations. They work great as a placeholder during initial development and can
+      be readily replaced with more sophisticated mechanisms later on.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Horizontal portal
+        Displays a horizontally oriented separator bar that can be placed between
+        tables or other templates to create a visual separation between them.
+  -->
+  <portal
+    id="Horizontal"
+    style="sepHorz">
+    <separator
+      isvertical="no">
+      </separator>
+    </portal>
+
+
+  <!-- Vertical portal
+        Displays a vertically oriented separator bar that can be placed between
+        tables or other templates to create a visual separation between them.
+  -->
+  <portal
+    id="Vertical"
+    style="sepVert">
+    <separator
+      isvertical="yes">
+      </separator>
+    </portal>
+
+
+  <!-- SimpleItem template
+        Displays the name of the pick/thing and an info button with the basic
+        description text. A delete button is also displayed for picks. This template
+        is ideal for use as a temporary placeholder or for simple selection lists.
+
+        The "SimpleItem" template is designed to be generic. As such, it needs to be
+        able to be adapted by an author in reasonable ways. One such way is the width
+        within choose templates. The width is usually dictated by the table, but
+        choose templates have a default width that is only modifiable by the template
+        itself. To support this, any thing with a "SimpleItem.width?" tag will have
+        the value of that tag used as a custom width when showing things.
+  -->
+  <template
+    id="SimpleItem"
+    name="Simple Item"
+    compset="Simple"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~if we're showing a thing, the info and delete buttons are irrelevant, since
+      ~we should be showing within a chooser, in which case there's nothing to
+      ~delete and we have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        portal[delete].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+
+      ~center the name if requested or this is a show-only thing
+      if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
+        perform portal[name].centerhorz
+        endif
+
+      ~if this is an auto-added pick, change its font to indicate that fact
+      if (ispick + !candelete >= 2) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- CustomItem template
+        Similar to SimpleItem, except that items with the "Helper.CustomItem"
+        tag display an edit control, allowing the user to edit the name of the
+        item.
+
+        This template uses the same customization logic via tags as "SimpleItem".
+  -->
+  <template
+    id="CustomItem"
+    name="Custom Item"
+    compset="Custom"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="username"
+      style="editNormal">
+      <edit
+        field="UserName"
+        maxlength="100">
+        </edit>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[username].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~if we're showing a thing, the info and delete buttons are irrelevant, since
+      ~we should be showing within a chooser, in which case there's nothing to
+      ~delete and we have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        portal[delete].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+
+      ~if this is a "custom" item pick, show an edit portal instead of the name
+      if (ispick <> 0) then
+        if (tagis[Helper.CustomItem] <> 0) then
+          portal[name].visible = 0
+          portal[username].left = portal[name].left
+          var limit as number
+          limit = portal[info].left - portal[username].left - 5
+          portal[username].width = minimum(200,limit)
+          endif
+      else
+        portal[username].visible = 0
+        endif
+
+      ~center the name if requested or this is a show-only thing
+      if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
+        perform portal[name].centerhorz
+        perform portal[username].centerhorz
+        endif
+
+      ~if this is an auto-added pick, change its font to indicate that fact
+      if (ispick + !candelete >= 2) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- LargeItem template
+        Similar to SimpleItem, except that items are displayed in a very large font
+        and no delete button is provided. This template is ideal for use with choosers
+        when selecting from a relatively short list of options.
+
+        This template uses the same customization logic via tags as "SimpleItem".
+  -->
+  <template
+    id="LargeItem"
+    name="Large Item"
+    compset="Simple"
+    marginhorz="3"
+    marginvert="5">
+
+    <portal
+      id="name"
+      style="lblXLarge"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~if we're showing a thing, the info button is irrelevant, since we ought to
+      ~be showing within a chooser and have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+
+      ~center the name if requested
+      if (tagis[SimpleItem.CenterName] <> 0) then
+        perform portal[name].centerhorz
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- UserSelect template
+        Similar to SimpleItem, except that this template is only suitable for
+        showing picks and the items can employ various mechanisms for customizing
+        the contents of the pick in some way. This template can be used or readily
+        adapted when you integrate the "UserSelect" component into a component set
+        and want to let the user customize the pick contents. For more details,
+        please refer to the "UserSelect" component.
+  -->
+  <template
+    id="UserSelect"
+    name="User Selection"
+    compset="UserSelect"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="thingname">
+        </label>
+      </portal>
+
+    <portal
+      id="lblmenu1"
+      style="lblSecond">
+      <label
+        field="usrLabel1">
+        </label>
+      </portal>
+
+    <portal
+      id="lblmenu2"
+      style="lblSecond">
+      <label
+        field="usrLabel2">
+        </label>
+      </portal>
+
+    <portal
+      id="menu1"
+      style="menuNormal">
+      <menu_things
+        field="usrChosen1"
+        component="none"
+        maxvisible="10"
+        usepicksfield="usrSource1"
+        candidatefield="usrCandid1">
+        </menu_things>
+      </portal>
+
+    <portal
+      id="menu2"
+      style="menuNormal">
+      <menu_things
+        field="usrChosen2"
+        component="none"
+        maxvisible="10"
+        usepicksfield="usrSource2"
+        candidatefield="usrCandid2">
+        </menu_things>
+      </portal>
+
+    <portal
+      id="lblmenuar"
+      style="lblSecond">
+      <label
+        field="usrLabelAr">
+        </label>
+      </portal>
+
+    <portal
+      id="menuarray"
+      style="menuNormal">
+      <menu_array
+        field="usrSelect"
+        array="usrArray"
+        maxvisible="10">
+        </menu_array>
+      </portal>
+
+    <portal
+      id="checkbox"
+      style="chkNormal">
+      <checkbox
+        field="usrIsCheck"
+        dynamicfield="usrChkText">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+      perform portal[lblmenu1].centervert
+      perform portal[menu1].centervert
+      perform portal[lblmenu2].centervert
+      perform portal[menu2].centervert
+      perform portal[lblmenuar].centervert
+      perform portal[menuarray].centervert
+      perform portal[checkbox].centervert
+
+      ~determine whether our portals are visible; we only show them if requested
+      ~Note: Remember that a non-empty tagexpr field indicates menu selection is used.
+      if (field[usrCandid1].isempty <> 0) then
+        portal[lblmenu1].visible = 0
+        portal[menu1].visible = 0
+      elseif (field[usrLabel1].isempty <> 0) then
+        portal[lblmenu1].visible = 0
+        endif
+      if (field[usrCandid2].isempty <> 0) then
+        portal[lblmenu2].visible = 0
+        portal[menu2].visible = 0
+      elseif (field[usrLabel2].isempty <> 0) then
+        portal[lblmenu2].visible = 0
+        endif
+      if (empty(field[usrArray].arraytext[0]) <> 0) then
+        portal[lblmenuar].visible = 0
+        portal[menuarray].visible = 0
+      elseif (field[usrLabelAr].isempty <> 0) then
+        portal[lblmenuar].visible = 0
+        endif
+      if (field[usrChkText].isempty <> 0) then
+        portal[checkbox].visible = 0
+        endif
+
+      ~position the delete portal on the far right and the info portal next to it
+      perform portal[delete].alignedge[right,0]
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~determine our effective right edge, allowing for the buttons above
+      var edge as number
+      edge = portal[info].left - 10
+
+      ~setup the default portal width and gap to be used between and around portals
+      var defwidth as number
+      var gap as number
+      defwidth = 100
+      gap = 10
+
+      ~determine the minimum amount of space we need to reserve for our portals
+      var reserve as number
+      if (portal[checkbox].visible <> 0) then
+        reserve = defwidth
+      elseif (portal[menuarray].visible <> 0) then
+        reserve = portal[lblmenuar].width * portal[lblmenuar].visible
+        reserve += defwidth + gap
+      elseif (portal[menu1].visible <> 0) then
+        reserve = portal[lblmenu1].width * portal[lblmenu1].visible
+        reserve += defwidth + gap
+        reserve += portal[lblmenu2].width * portal[menu2].visible
+        reserve += (defwidth + gap) * portal[menu2].visible
+        endif
+
+      ~position the name on the left, reserving our minimum space for any portals
+      var x as number
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge - portal[name].left - reserve)
+      x = portal[name].right + gap
+
+      ~setup the maximum width for our some portals, regardless of space available
+      var maxwidth as number
+      maxwidth = 150
+
+      ~if we have a checkbox, size and position it appropriately
+      if (portal[checkbox].visible <> 0) then
+        portal[checkbox].left = x
+
+      ~if we have an array-based menu, size and position it appropriately
+      elseif (portal[menuarray].visible <> 0) then
+        if (portal[lblmenuar].visible <> 0) then
+          portal[lblmenuar].left = x
+          x = portal[lblmenuar].right + 4
+          endif
+        portal[menuarray].left = x
+        portal[menuarray].width = maxwidth
+
+      ~if we have one thing-based menu, size and position it appropriately
+      elseif (portal[menu1].visible + portal[menu2].visible = 1) then
+        if (portal[lblmenu1].visible <> 0) then
+          portal[lblmenu1].left = x
+          x = portal[lblmenu1].right + 4
+          endif
+        portal[menu1].left = x
+        portal[menu1].width = minimum(edge - portal[menu1].left,maxwidth)
+
+      ~if we have two thing-based menus, size and position them appropriately
+      elseif (portal[menu1].visible <> 0) then
+        if (portal[lblmenu1].visible <> 0) then
+          portal[lblmenu1].left = x
+          x = portal[lblmenu1].right + 4
+          endif
+        portal[menu1].left = x
+        var extra as number
+        extra = (portal[lblmenu2].width + 4) * portal[lblmenu2].visible
+        var actual as number
+        actual = (edge - portal[menu1].left - extra - gap) / 2
+        portal[menu1].width = minimum(actual,maxwidth)
+        portal[menu2].width = portal[menu1].width
+        x = portal[menu1].right + gap
+        if (portal[lblmenu2].visible <> 0) then
+          portal[lblmenu2].left = x
+          x = portal[lblmenu2].right + 4
+          endif
+        portal[menu2].left = x
+        endif
+
+      ~if a menu is visible, make sure it has a selection
+      if (portal[menu1].visible <> 0) then
+        if (field[usrChosen1].ischosen = 0) then
+          perform portal[menu1].setstyle[menuError]
+          endif
+        endif
+      if (portal[menu2].visible <> 0) then
+        if (field[usrChosen2].ischosen = 0) then
+          perform portal[menu2].setstyle[menuError]
+          endif
+        endif
+      if (portal[menuarray].visible <> 0) then
+        if (field[usrSelect].isempty <> 0) then
+          perform portal[menuarray].setstyle[menuError]
+          endif
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- BuyQty template
+        Provides the ability to add multiples of a thing when used as a "buy"
+        template in a dynamic table. No cash is handled, so this is useful when
+        the items can be obtained in multiples but don't require actual purchase.
+
+        By designating the template as a "transaction" template, Hero Lab will know
+        to do everything properly to hook up the template for use. The template is
+        displayed in the lower right corner of the form shown to acquire the items.
+  -->
+  <template
+    id="BuyQty"
+    name="Buy - Quantity Only"
+    compset="Transact"
+    istransaction="yes">
+
+    <portal
+      id="lblqty"
+      style="lblNormal">
+      <label
+        text="Number to Add:">
+        </label>
+      </portal>
+
+    <portal
+      id="edtqty"
+      style="editCenter"
+      width="30">
+      <edit
+        field="xactQty"
+        maxlength="4"
+        format="integer">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~the height of the template is the height of the edit portal
+      height = portal[edtqty].height
+
+      ~center the two portals vertically
+      perform portal[lblqty].centervert
+      perform portal[edtqty].centervert
+
+      ~position the two portals horizontally
+      portal[lblqty].left = 0
+      perform portal[edtqty].alignrel[ltor,lblqty,10]
+
+      ~our width is the rightmost extent of the portals
+      width = portal[edtqty].right
+      ]]></position>
+
+    </template>
+
+
+  <!-- SellQty template
+        Provides the ability to sell multiples of a thing when used as a "sell"
+        template in a dynamic table.
+
+        By designating the template as a "transaction" template, Hero Lab will know
+        to do everything properly to hook up the template for use. The template is
+        displayed as part of the confirmation form when the item is deleted.
+  -->
+  <template
+    id="SellQty"
+    name="Sell - Quantity"
+    compset="Transact"
+    istransaction="yes">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          @text = "{vert 7}Are you sure you want to delete this item?"
+          if (field[xactHolder].value > 0) then
+            @text &= "{br}{br}NOTE: This container holds one or more items.{br}If deleted, those items will be moved to the hero."
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[xactName].text
+          if (field[xactLimit].value > 1) then
+            @text &= " (x" & field[xactLimit].text & ")"
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="lblqty"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = "Quantity to Sell (1-" & field[xactLimit].text & "):"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="qty"
+      style="incrSimple">
+      <incrementer
+        field="xactQty">
+        </incrementer>
+      </portal>
+
+    <position><![CDATA[
+      ~pick a reasonable starting width for the template
+      width = 300
+
+      ~set an indent margin for horizontal alignment of portals that aren't centered
+      var indent as number
+      indent = 60
+
+      ~increase the height of the title at the top by a few extra pixels
+      portal[title].height += 10
+
+      ~position the title at the top, spanning the entire width
+      portal[title].width = width
+      portal[title].top = 0
+
+      ~position the name beneath the title, also spanning the entire width
+      portal[name].width = width
+      perform portal[name].alignrel[ttob,title,20]
+
+      ~center the quantity portals vertically beneath the name
+      perform portal[qty].alignrel[ttob,name,20]
+      perform portal[lblqty].centeron[vert,qty]
+
+      ~position the quantity portals horizontally
+      portal[lblqty].left = indent
+      perform portal[qty].alignrel[ltor,lblqty,10]
+
+      ~if the limit is one, there is no need for the quantity portals
+      if (field[xactLimit].value <= 1) then
+        portal[lblqty].visible = 0
+        portal[qty].visible = 0
+        endif
+
+      ~our height is the bottommost extent of the portals
+      if (field[xactLimit].value <= 1) then
+        height = portal[name].bottom
+      else
+        height = portal[qty].bottom
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- BuyCash template
+        Provides the ability to purchase multiples of a thing when used as a "buy"
+        template in a dynamic table. The cash amount specified by the user is
+        deducted from the cash possessed by the character.
+
+        This template is an extension of the "BuyQty" template above, adding the
+        ability to specify the cash to be paid and associated other feedback relating
+        to the cash purchase.
+  -->
+  <template
+    id="BuyCash"
+    name="Buy - Quantity and Cash"
+    compset="Transact"
+    istransaction="yes">
+
+    <portal
+      id="lblqty"
+      style="lblNormal">
+      <label
+        text="Quantity to Buy:">
+        </label>
+      </portal>
+
+    <portal
+      id="edtqty"
+      style="editCenter">
+      <edit
+        field="xactQty"
+        maxlength="4"
+        format="integer">
+        </edit>
+      </portal>
+
+    <portal
+      id="each"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          var moneyvalue as number
+          var money as string
+          moneyvalue = field[xactEach].value
+          call Money
+          @text = "(@ " & money & " each)"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="lblpaid"
+      style="lblNormal">
+      <label
+        text="Amount to Pay: $">
+        </label>
+      </portal>
+
+    <portal
+      id="edtpaid"
+      style="editCenter">
+      <edit
+        field="xactCash"
+        maxlength="6"
+        format="integer">
+        </edit>
+      </portal>
+
+    <portal
+      id="zero"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          var moneyvalue as number
+          var money as string
+          moneyvalue = field[xactQty].value * field[xactEach].value
+          call Money
+          @text = "(" & money & " if zero)"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="free"
+      style="chkFree"
+      tiptext="Check this box to obtain the item for free (e.g. looted, stolen, found, etc.)">
+      <checkbox
+        field="xactIsFree"
+        message="Obtain for Free">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="funds"
+      style="lblDisable">
+      <label>
+        <labeltext><![CDATA[
+          var moneyvalue as number
+          var money as string
+          moneyvalue = herofield[acCashNet].value
+          call Money
+          @text = "{text clrgrey}(Funds: " & money & ")"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~center the quantity portals vertically at the top
+      portal[edtqty].top = 0
+      perform portal[lblqty].centeron[vert,edtqty]
+      perform portal[each].centeron[vert,edtqty]
+
+      ~position the amount paid portals beneath the quantity portals
+      perform portal[edtpaid].alignrel[ttob,edtqty,10]
+      perform portal[lblpaid].centeron[vert,edtpaid]
+      perform portal[zero].centeron[vert,edtpaid]
+
+      ~position the free checkbox and funds portal beneath the payment portals
+      perform portal[free].alignrel[ttob,edtpaid,10]
+      perform portal[funds].centeron[vert,free]
+
+      ~setup appropriate widths for our edit portals
+      portal[edtqty].width = 30
+      portal[edtpaid].width = 40
+
+      ~calculate the span for both sets of portals
+      var span_qty as number
+      span_qty = portal[lblqty].width + 10 + portal[edtqty].width + 10 + portal[each].width
+      var span_paid as number
+      span_paid = portal[lblpaid].width + 3 + portal[edtpaid].width + 10 + portal[zero].width
+
+      ~determine which span is wider
+      var span as number
+      span = maximum(span_qty,span_paid)
+
+      ~position the quantity portals horizontally, centered within the span
+      portal[lblqty].left = (span - span_qty) / 2
+      perform portal[edtqty].alignrel[ltor,lblqty,10]
+      perform portal[each].alignrel[ltor,edtqty,10]
+
+      ~position the paid portals horizontally, centered within the span
+      portal[lblpaid].left = (span - span_paid) / 2
+      perform portal[edtpaid].alignrel[ltor,lblpaid,3]
+      perform portal[zero].alignrel[ltor,edtpaid,10]
+
+      ~left- and right-align the free and funds portals within the span
+      portal[free].left = 0
+      portal[funds].left = span - portal[funds].width
+
+      ~our width is the rightmost extent of the portals
+      width = span
+
+      ~our height is the bottommost extent of the portals
+      height = portal[free].bottom
+      ]]></position>
+
+    </template>
+
+
+  <!-- SellCash template
+        Provides the ability to sell multiples of a thing when used as a "sell"
+        template in a dynamic table. The cash amount specified by the user is
+        added to the cash possessed by the character and the items deleted.
+
+        This template is an extension of the "SellQty" template above, adding the
+        ability to specify the cash to be gained through the sale.
+  -->
+  <template
+    id="SellCash"
+    name="Sell - Quantity and Cash"
+    compset="Transact"
+    istransaction="yes">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          @text = "{vert 7}Are you sure you want to dismiss this item?"
+          if (field[xactHolder].value > 0) then
+            @text &= "{br}{br}NOTE: This container holds one or more items.{br}If deleted, those items will be moved to the hero."
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[xactName].text
+          if (field[xactLimit].value > 1) then
+            @text &= " (x" & field[xactLimit].text & ")"
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="lblqty"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = "Quantity to Sell (1-" & field[xactLimit].text & "):"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="qty"
+      style="incrSimple">
+      <incrementer
+        field="xactQty">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="standard"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          var moneyvalue as number
+          var money as string
+          moneyvalue = field[xactQty].value * field[xactEach].value
+          call Money
+          @text = "Standard Value: " & money
+          moneyvalue = field[xactEach].value
+          call Money
+          @text &= "   {text clrgrey}(@ " & money & " each)"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="lblsold"
+      style="lblNormal">
+      <label
+        text="Sell Items For: $">
+        </label>
+      </portal>
+
+    <portal
+      id="edtsold"
+      style="editCenter">
+      <edit
+        field="xactCash"
+        maxlength="6"
+        format="integer">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~pick a reasonable starting width for the template
+      width = 300
+
+      ~set an indent margin for horizontal alignment of portals that aren't centered
+      var indent as number
+      indent = 30
+
+      ~increase the height of the title at the top by a few extra pixels
+      portal[title].height += 10
+
+      ~setup appropriate widths for our edit portals
+      portal[edtsold].width = 40
+
+      ~position the title at the top, spanning the entire width
+      portal[title].width = width
+      portal[title].top = 0
+
+      ~position the name beneath the title, also spanning the entire width
+      portal[name].width = width
+      perform portal[name].alignrel[ttob,title,20]
+
+      ~center the quantity portals vertically beneath the name
+      perform portal[qty].alignrel[ttob,name,20]
+      perform portal[lblqty].centeron[vert,qty]
+
+      ~position the quantity portals horizontally
+      portal[lblqty].left = indent
+      perform portal[qty].alignrel[ltor,lblqty,10]
+
+      ~if the limit is one, there is no need for the quantity portals
+      if (field[xactLimit].value <= 1) then
+        portal[lblqty].visible = 0
+        portal[qty].visible = 0
+        endif
+
+      ~position the standard cost portal beneath the quantity details
+      portal[standard].left = indent
+      if (portal[lblqty].visible <> 0) then
+        perform portal[standard].alignrel[ttob,qty,10]
+      else
+        portal[standard].top = portal[qty].top
+        endif
+
+      ~position the sell price portals beneath the standard cost
+      perform portal[edtsold].alignrel[ttob,standard,10]
+      perform portal[lblsold].centeron[vert,edtsold]
+      portal[lblsold].left = indent
+      perform portal[edtsold].alignrel[ltor,lblsold,10]
+
+      ~our height is the bottommost extent of the portals
+      height = portal[edtsold].bottom
+      ]]></position>
+
+    </template>
+
+
+  </document>

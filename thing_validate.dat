@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains an assortment of things used solely for validation reporting.
+      Each thing has one or more "evalrule" scripts that verify facets of each actor
+      and report appropriate error messages if not satisfied.
+
+     If you prefer, you could instead have a small number of things with numerous
+     "evalrule" scripts associated with each. The approach used below is to have lots
+     of things with scripts targeted at a narrow purpose, but there is no reason you
+     couldn't have a few things with lots of scripts targeted as a wide range of
+     purposes. By having lots of separate things, the name of each can be leveraged
+     for use within the validation error report, which can often improve the clarity
+     and usefulness of the validation messages.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Validate facets of the race -->
+  <thing
+    id="valArchetype"
+    name="Archetype"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we have a race selected -->
+    <evalrule index="1" phase="Validate" priority="8000" message="Must be selected"><![CDATA[
+      ~if we have a race selected, we're good
+      validif (hero.tagis[Archetype.?] <> 0)
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Character points thing for validation reporting -->
+  <thing
+    id="valCP"
+    name="Character Points"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we have all CPs spent -->
+    <evalrule index="1" phase="Validate" priority="8000" severity="warning" message="Unused CPs remain"><![CDATA[
+      ~we have a negative or zero quantity left, we're good
+      validif (#resleft[resCP] <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[basics] = 0
+      ]]></evalrule>
+
+    <!-- Make sure that we don't have too many CPs spent -->
+    <evalrule index="2" phase="Validate" priority="8000" message="Too many CPs spent"><![CDATA[
+      ~we have a positive or zero quantity left, we're good
+      validif (#resleft[resCP] >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[basics] = 0
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Abilities thing for validation reporting -->
+  <thing
+    id="valAbility"
+    name="Special Abilities"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we have all special abilities selected -->
+    <evalrule index="1" phase="Validate" priority="8000" severity="warning" message="Not enough selected"><![CDATA[
+      ~we have a negative or zero quantity left, we're good
+      validif (hero.child[resAbility].field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[abilities] = 0
+      ]]></evalrule>
+
+    <!-- Make sure that we don't have too many special abilities selected -->
+    <evalrule index="2" phase="Validate" priority="8000" message="Too many selected"><![CDATA[
+      ~we have a positive or zero quantity left, we're good
+      validif (hero.child[resAbility].field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[abilities] = 0
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Hands thing for validation reporting -->
+  <thing
+    id="valHands"
+    name="Hands"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we don't have too many hands worth of gear equipped -->
+    <evalrule index="1" phase="Validate" priority="8000" message="Equipped gear requires too many hands" name="Check Hands"><![CDATA[
+      ~if we have no more than two hands of gear equipped, we're good
+      validif (hero.tagcount[Hero.Hand] <= herofield[acHands].value)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[armory] = 0
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Armor thing for validation reporting -->
+  <thing
+    id="valArmor"
+    name="Armor"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we don't have multiple sets of armor equipped -->
+    <evalrule index="1" phase="Validate" priority="8000" message="Multiple suits of armor equipped"><![CDATA[
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagcount[Armor.?] <= 1)
+
+      ~mark associaated tabs as invalid
+      container.panelvalid[armory] = 0
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Shield thing for validation reporting -->
+  <thing
+    id="valShields"
+    name="Shields"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we don't have multiple shields equipped -->
+    <evalrule index="1" phase="Validate" priority="8000" message="Multiple shields equipped"><![CDATA[
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagcount[Shield.?] <= 1)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[armory] = 0
+      ]]></evalrule>
+
+    </thing>
+
+
+  <!-- Skill Values thing for validation reporting -->
+  <thing
+    id="valSkillValues"
+    name="Skill Values"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we don't have multiple shields equipped -->
+    <evalrule index="1" phase="Validate" priority="8000" message="1 Skill of Rank B required"><![CDATA[
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagis[SettingFlag.StepDice] = 0)
+      
+	  var countVal as number
+	  foreach pick in hero from Skill where "(fieldval:trtFinal = 5)"
+	    countVal += 1
+		nexteach
+		
+	  validif (countVal = 1)
+	  
+      ~mark associated tabs as invalid
+      container.panelvalid[basics] = 0
+      ]]></evalrule>
+    <evalrule index="2" phase="Validate" priority="8000" message="2 Skills of Rank C required"><![CDATA[
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagis[SettingFlag.StepDice] = 0)
+      
+	  var countVal as number
+	  foreach pick in hero from Skill where "(fieldval:trtFinal = 4)"
+	    countVal += 1
+		nexteach
+		
+	  validif (countVal = 2)
+	  
+      ~mark associated tabs as invalid
+      container.panelvalid[basics] = 0
+      ]]></evalrule>
+    <evalrule index="3" phase="Validate" priority="8000" message="3 Skills of Rank D required"><![CDATA[
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagis[SettingFlag.StepDice] = 0)
+      
+	  var countVal as number
+	  foreach pick in hero from Skill where "(fieldval:trtFinal = 3)"
+	    countVal += 1
+		nexteach
+		
+	  validif (countVal = 3)
+	  
+      ~mark associated tabs as invalid
+      container.panelvalid[basics] = 0
+      ]]></evalrule>
+
+    </thing>
+	
+    </document>

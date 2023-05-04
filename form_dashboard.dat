@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "dashboard" form for the game system.
+      The "dashboard" form is shown at the far right when there are multiple actors
+      within the current portfolio that the user may wish to switch between.
+
+      This form is shown as a form that automatically fills the full height of the
+      main window within Hero Lab. However, the form must specify its own width.
+      If no width is given, it defaults to 100 pixels, which is often too narrow.
+
+      All public visual elements used with this form use the unique id "dashboard"
+      to associate them with the form.
+
+      In general, you should be able to use the bulk of this form as-is, only
+      needing to change the "dashboard" template and nothing else. You'll need to
+      adapt the template to the particulars of your game system and display
+      everything as you prefer. In most cases, this will be a rather quick process,
+      since you'll often just be changing the display of a few traits (e.g. health)
+      and the procedures that synthesize the data being displayed.
+
+      NOTE! The unique id of the "dashboard" form is specially recognized by Hero
+      Lab as the form to be used for the dashboard. A form with the id "dashboard"
+      is required within your data files.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- dashboard portal
+        Displays the table of summary details for each actor.
+
+        The "userorder" attribute enables user-ordering of the actors via the
+        right-click menu. The "ordercomp" attribute specifies that the "dashboard"
+        component should be used to track user-ordering behavior, which designates
+        an appropriate field for the purpose automatically.
+  -->
+  <portal
+    id="dashboard"
+    style="tblInvisSm">
+    <table_fixed
+      component="Actor"
+      showtemplate="dashboard"
+      showpicks="actor"
+      allowuserorder="yes"
+      ordercomponent="dashboard">
+      </table_fixed>
+    </portal>
+
+
+  <!-- dashboard template
+        This template shows the summary details for an actor in the Dashboard. The
+        standard contents of the Dashboard are a few key pieces of information about
+        the actor (e.g. name, health, etc.), an assortment of mouse-over icons that
+        provide detailed info about the actor, and a couple of buttons to manage
+        gear across actors and go directly to a given actor. In the interest of
+        providing a consistent experience for users, we highly recommend you adopt
+        a similar structure for your own Dashboard design, but there are no hard
+        requirements for how everything is handled.
+
+        In general, this is the only element within this file that you'll need to
+        change, and adapting this should be relatively easy.
+  -->
+  <template
+    id="dashboard"
+    name="Dashboard Pick"
+    compset="Actor"
+    marginhorz="3"
+    marginvert="1">
+
+    <portal
+      id="name"
+      style="lblSmall">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~invoke the standard procedure to generate the proper name
+          call DshName
+          ~prepend the name with instructions to shrink the spacing between lines by
+          ~one pixel; this will only take effect if the name spans multiple lines,
+          ~in which case we need to squeeze the name a little bit tighter for a fit
+          @text = "{leading -1}" & @text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="load"
+      style="actLoad"
+      tiptext="Click here to make this the active character.">
+      <action
+        action="load">
+        </action>
+      </portal>
+
+    <portal
+      id="gear"
+      style="actGetGear">
+      <action
+        action="getgear">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshGear
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="health"
+      style="lblSmall">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[acHPSumm].text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="power"
+      style="lblSmall">
+      <label>
+        <labeltext><![CDATA[
+          @text = "{size 30}PP: {size 36}" & hero.child[trkPower].field[trkUser].text
+          ]]></labeltext>
+        </label>
+      <mouseinfo><![CDATA[
+        @text = "Power Points: " & hero.child[trkPower].field[trkUser].text & " / " & hero.child[trkPower].field[trkMax].text
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="special"
+      style="actInfoSpc">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshSpecial
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="rolls"
+      style="actInfoRol">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshRolls
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="combat"
+      style="actInfoCom">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshCombat
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="basics"
+      style="actInfoBas">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshBasics
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="active"
+      style="actInfoAct">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshActive
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="separator"
+      style="imgNormal">
+      <image_literal
+        image="dashboard_separator.bmp"
+        isbuiltin="yes"
+        istransparent="no">
+        </image_literal>
+      </portal>
+
+    <position><![CDATA[
+      ~put the "load" portal in the top right corner
+      perform portal[load].alignedge[right,0]
+
+      ~center the "gear" portal beneath the "load" portal
+      perform portal[gear].alignrel[ttob,load,3]
+      perform portal[gear].centeron[horz,load]
+
+      ~center the "active" portal beneath the "gear" portal
+      perform portal[active].alignrel[ttob,gear,2]
+      perform portal[active].centeron[horz,gear]
+
+      ~position the separator bar beneath the "active" portal
+      perform portal[separator].alignrel[ttob,active,3]
+      portal[separator].width = width
+
+      ~set up our height at this point; our width is pre-initialized for us
+      height = portal[separator].bottom + 1
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position the "special" portal at the left on same axis as the "active" portal;
+      ~we assume that all buttons portals at the bottom are the same dimensions
+      portal[special].left = 2
+      portal[special].top = portal[active].top
+
+      ~determine the gap to use between the remaining button portals at the bottom;
+      ~we divide by the total number of remaining portals (3) plus one to get equal
+      ~spacing between them and the edges; as above, we assume all the button portals
+      ~at the bottom are the same dimensions
+      var btngap as number
+      btngap = (portal[active].left - portal[special].right - portal[special].width * 3) / 4
+
+      ~position all the button portals vertically
+      portal[rolls].top = portal[special].top
+      portal[combat].top = portal[special].top
+      portal[basics].top = portal[special].top
+
+      ~position the buttons from left to right, using the calculated gap
+      perform portal[rolls].alignrel[ltor,special,btngap]
+      perform portal[combat].alignrel[ltor,rolls,btngap]
+      perform portal[basics].alignrel[ltor,combat,btngap]
+
+      ~position power details next to the "gear" portal
+      perform portal[power].centeron[vert,gear]
+      perform portal[power].alignrel[rtol,gear,-4]
+
+      ~position health details parallel to the "power" portal
+      perform portal[health].centeron[vert,power]
+      portal[health].width = portal[power].left - 3
+
+      ~position the name in the available space in the upper left
+      portal[name].width = portal[load].left - 3
+      perform portal[name].centeron[vert,load]
+
+      ~assume a single line of text for the name; if the name is too large to fit
+      ~on a single line with the default style, try progressively smaller styles
+      ~to see how we can best fit the text into the available space
+      portal[name].lineheight = 1
+      if (portal[name].textheight > portal[name].height) then
+
+        ~switch to a smaller style to see if we can fit using that instead
+        perform portal[name].setstyle[lblTinyTac]
+
+        ~if the name is still larger than will fit on one line, let it grow
+        if (portal[name].textheight > portal[name].height) then
+
+          ~all the text to grow to span at most two lines
+          portal[name].lineheight = 2
+
+          ~shift the name upwards slightly to improve the vertical fit
+          portal[name].top -= 3
+
+          ~shift the health and power portals down slightly to make more room
+          portal[health].top += 2
+          portal[power].top += 2
+          endif
+        endif
+
+      ~if there are NO activated abilities for the character, change the style of
+      ~the "active" portal to reflect that fact
+      if (hero.tagis[Activated.?] = 0) then
+        perform portal[active].setstyle[actInfoOff]
+        endif
+      ]]></position>
+    </template>
+
+
+  <!-- dashboard layout
+        This layout contains the table of actors as its only element. If few enough
+        actors are visible that we don't require the scroller to be shown, we
+        increase the width of the table by the scroller width to utilize that extra
+        horizontal space and have the dashboard appear to be less cramped.
+  -->
+  <layout
+    id="dashboard"
+    marginvert="4">
+    <portalref portal="dashboard" taborder="20"/>
+    <position><![CDATA[
+      ~position and size the table to span the full layout
+      perform portal[dashboard].autoplace
+
+      ~if all actors are visible (i.e. no scroller is needed), increase the width
+      ~of the layout to effectively hide the empty space that is normally reserved
+      ~for the scroller
+      if (portal[dashboard].itemsleft = 0) then
+        portal[dashboard].width += scrollbar
+        endif
+      ]]></position>
+    </layout>
+
+
+  <!-- dashboard form
+        This is the "dashboard" form shown on the far right when multiple actors
+        are loaded into the same portfolio within Hero Lab.
+
+        NOTE! The unique id of this form is specially recognized by Hero Lab as
+        the form to be used for the dashboard. A form with this id is required
+        within your data files.
+  -->
+  <form
+    id="dashboard"
+    name="Dashboard">
+    <layoutref layout="dashboard"/>
+    <position>
+      ~specify the width to be used for the dashboard; the default is 100, which
+      ~may not be enough, so choose a size that works for your game system
+      width = 135
+      </position>
+    </form>
+
+
+  </document>

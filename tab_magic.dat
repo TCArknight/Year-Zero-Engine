@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Special" tab panel. This tab is where
+      the user can view a summary of all the special aspects of the character.
+
+      All public visual elements used with this tab panel start with the prefix "sp"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+<!--
+	  
+	  -->
+  <portal
+    id="maSpells"
+    style="tblNormal">
+    <table_dynamic
+      component="Spell"
+      showtemplate="maSpellPick"
+      choosetemplate="SimpleItem"
+	  showsortset="SpellType"
+	  choosesortset="SpellType"
+	  candidatepick="MagicHelper"
+	  candidatefield="mhRankLimitExpr"
+      showfixedlast="yes">
+      <titlebar><![CDATA[
+        @text = "Add a Spell - "
+        ]]></titlebar>
+      <description/>
+      <headertitle><![CDATA[
+        @text = "Spells"
+		~ ": " & hero.child[resSpecialties].field[resSummary].text
+        ]]></headertitle>
+      <additem><![CDATA[
+        ~if we're in advancement mode, we've been frozen, so display accordingly
+        if (state.iscreate = 0) then
+          @text = "{text clrgrey}Add Spells Via Advances Tab"
+          done
+          endif
+
+        ~set the color based on whether the proper number of slots are allocated
+        ~if (field[resLeft].value = 0) then
+        ~  @text = "{text clrgrey}"
+        ~elseif (field[resLeft].value < 0) then
+        ~  @text = "{text clrwarning}"
+        ~  endif
+        @text &= "Add New Spell"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+	
+  <template
+    id="maSpellPick"
+    name="Spell Pick"
+    compset="Spell"
+    marginhorz="5"
+    marginvert="9">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+
+		  @text &= field[name].text
+		  ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="rank"
+      style="lblNormal"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+
+		  @text &= tagnames[MagicRank.?,"|"]
+		  
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[rank].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the incrementer to the left of the info portal (plus a gap)
+      perform portal[rank].alignrel[rtol,info,-5]
+	  
+      ~position the name on the left and make sure its width does not exceed the available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[rank].left - portal[name].left - 10)
+      ]]></position>
+
+    </template>	
+  <layout
+    id="magic">
+    <portalref portal="maSpells" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~position and size the table to span the full layout
+      perform portal[maSpells].autoplace
+      ]]></position>
+
+    </layout>
+  <!-- Magic panel -->
+  <panel
+    id="Magic"
+    name="Magic"
+    order="150"
+    marginhorz="5"
+    marginvert="5">
+    <layoutref layout="magic"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

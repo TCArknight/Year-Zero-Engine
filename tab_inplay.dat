@@ -1,0 +1,1099 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "In-Play" tab panel. This tab is where
+      the user controls in-play adjustments for the character.
+
+      All public visual elements used with this tab panel start with the prefix "ip"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <portal
+    id="ipAttrib"
+    style="tblInvis">
+    <table_fixed
+      component="Attribute"
+      showtemplate="ipAttrDmg"
+      showsortset="explicit"
+      scrollable="no"
+	  columns="2">
+      <list>!Hide.Attribute</list>
+      <headertitle><![CDATA[
+        @text = "Attribute Damage"
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+	
+  <!-- ipTracker portal
+        Presents a table of tracked resources for the character, where the user can
+        adjust the consumption of the resources during play. A two-column display
+        is used for space efficiency.
+
+        We use a "headertitle" script to place a suitable title above the table.
+  -->
+  <portal
+    id="ipTracker"
+    style="tblNormal">
+    <table_fixed
+      component="Tracker"
+      showtemplate="ipTracker"
+      columns="2">
+      <list>!Hide.Tracker</list>
+      <headertitle><![CDATA[
+        @text = "Tracked Resources"
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- ipActivate portal
+        Presents a table of abilitiies that can be activated for the character,
+        where the user can toggle the activation state on/off during play. A
+        two-column display is used for space efficiency.
+
+        We use a "headertitle" script to place a suitable title above the table.
+  -->
+  <portal
+    id="ipActivate"
+    style="tblNormal">
+    <table_fixed
+      component="Ability"
+      showtemplate="ipActivate"
+      columns="2">
+      <list>User.Activation</list>
+      <headertitle><![CDATA[
+        @text = "Activated Abilities"
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- ipAdjust portal
+        Presents a dynamic table where the user can add and control temporary
+        adjustments to the character during play.
+
+        We use the "LargeItem" template for selecting the adjustments, since all we
+        need is basic information. We use a custom template for showing the selected
+        adjustments.
+
+        Adjustments use the same template for both the contents and the header shown
+        across the top. See the template comments for more details on this.
+
+        The "userorder" attribute enables user-ordering of the adjustments via the
+        right-click menu. The "_CompSeq_" sortset makes it possible for user-ordering
+        to be properly tracked and displayed. The "Adjustment" component specifies
+        the "adjIndex" field for tracking user-order behavior, and "_CompSeq_" tells
+        HL to hook into the component-specified field for sorting.
+
+        The "candidate" tagexpr limits the adjustments that can be selected to only
+        include those that are user-adjustable and that can be treated as "temporary",
+        as indicated by the "InPlay.TempOK" tag.
+
+        Each adjustment that is added via this table is auto-assigned the tag
+        "InPlay.Temporary".
+
+        The "list" tagexpr limits the adjustments displayed to only include those
+        that are user-adjustable and that have been added via this table, as indicated
+        by the auto-assigned "InPlay.Temporary" tag.
+
+        We set a larger width for the description details when choosing an adjustment
+        via the "descwidth" attribute.
+
+        We use a "headertitle" script to place a suitable title above the table.
+
+        We use an "additem" script to simply prompt the user to add new adjustments,
+        along with a little bit of extra vertical spacing around it.
+  -->
+  <portal
+    id="ipAdjust"
+    style="tblNormal">
+    <table_dynamic
+      component="Adjustment"
+      showtemplate="ipAdjust"
+      headertemplate="ipAdjust"
+      choosetemplate="LargeItem"
+      showsortset="_CompSeq_"
+      allowuserorder="yes"
+      descwidth="325">
+      <list>Helper.UserAdjust &amp; InPlay.Temporary</list>
+      <candidate>Helper.UserAdjust &amp; InPlay.TempOK</candidate>
+      <autotag group="InPlay" tag="Temporary"/>
+      <titlebar><![CDATA[
+        @text = "Select a Temporary Adjustment from the List Below"
+        ]]></titlebar>
+      <additem><![CDATA[
+        @text = "Add Temporary Adjustments"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- ipTracker template
+        Presents the tracked resource for the user to manage the current consumption,
+        which is done via the incrementer shown.
+  -->
+  <template
+    id="ipTracker"
+    name="Tracker"
+    compset="Tracker"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="value"
+      style="incrBox"
+      tiptext="Specify the current value for the tracked resource">
+      <incrementer
+        field="trkUser">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="reset"
+      style="actReset"
+      tiptext="Click here to reset the value to its default.">
+      <action
+        action="trigger"
+        confirm="This will reset the value to its default, as appropriate to the resource. Proceed?">
+        <trigger><![CDATA[
+          if (tagis[Helper.ResetMax] <> 0) then
+            field[trkUser].value = field[trkMax].value
+          else
+            field[trkUser].value = field[trkMin].value
+            endif
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[value].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~center the portals vertically
+      perform portal[value].centervert
+      perform portal[name].centervert
+      perform portal[reset].centervert
+      perform portal[info].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the reset portal to the left of the info portal
+      perform portal[reset].alignrel[rtol,info,-5]
+
+      ~position the value portal on the left
+      portal[value].left = 0
+
+      ~position the name to the right of the value portal
+      perform portal[name].alignrel[ltor,value,6]
+      var limit as number
+      limit = portal[reset].left - portal[name].left - 15
+      portal[name].width = minimum(portal[name].width,limit)
+
+      ~hide the reset button if we've been designated as not supporting reset
+      if (tagis[Helper.NoReset] <> 0) then
+        portal[reset].visible = 0
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- ipActivate template
+        Present the ability that can be activated for the user to control whether
+        it is actually activated.
+  -->
+  <template
+    id="ipActivate"
+    name="Activated Abilities"
+    compset="Ability"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="activate"
+      style="chkNormal"
+      tiptext="Click to activate or deactivate this ability.">
+      <checkbox
+        field="abilActive"
+        dynamicfield="name">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on the tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~center the portals vertically
+      perform portal[info].centervert
+      perform portal[activate].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the activate portal on the left
+      portal[activate].left = 0
+
+      ~make sure the text on the activate portal doesn't overwrite the info
+      ~button
+      var limit as number
+      limit = portal[info].left - portal[activate].left
+      if (portal[activate].width > limit) then
+        portal[activate].width = limit
+        perform portal[activate].sizetofit[32]
+        perform portal[activate].autoheight
+        perform portal[activate].centervert
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- ipAdjust template
+        This template presents a temporary adjustment for the user to configure.
+        Each adjustment can be activated or deactivated via a checkbox. When needed,
+        a menu is shown where the user can select which trait is to be adjusted. The
+        user can also annotate the source and duration details.
+
+        The template is also used as a header for the table. As such, the template
+        includes additional portals that are only used as part of the header (i.e.
+        they are designated by the "isheader" attribute). All header portals are
+        positioned via the "header" script, which is invoked AFTER the normal "position"
+        script. Header portals can therefore be positioned relative to non-header
+        portals, making it easy to align the header portals based on the actual content
+        portals.
+
+        The "menu" portal displays a list of things that is dynamically controlled
+        at run-time. The portal specifies two fields which dictate (a) the tagexpr used
+        to determine which things are shown and (b) whether things or picks are shown
+        for the user to select from. These fields are defined on the adjustment pick
+        itself, allowing separate adjustments to allow the user to select a list of
+        attributes, or a list of skills, or something else entirely.
+
+        NOTE! We CANNOT use a non-zero "marginhorz" attribute for the template to
+        apply an indent on each side. The titlebar inherits the same margin restriction
+        as the contents area, so the title would not span the full width. Consequently,
+        we manually indent everything on either side within the "position" script.
+  -->
+  <template
+    id="ipAdjust"
+    name="Adjustment Pick"
+    compset="Adjustment">
+
+    <portal
+      id="activate"
+      style="chkNormal"
+      tiptext="Click to enable or disable this adjustment.">
+      <checkbox
+        field="adjEnabled">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="activename"
+      style="chkNormal"
+      tiptext="Click to enable or disable this adjustment.">
+      <checkbox
+        field="adjEnabled"
+        dynamicfield="name">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="menu"
+      style="menuNormal">
+      <menu_things
+        field="adjChosen"
+        component="none"
+        maxvisible="20"
+        usepicksfield="adjUsePick"
+        candidatefield="adjCandid">
+        </menu_things>
+      </portal>
+
+    <portal
+      id="adjust"
+      style="incrSimple">
+      <incrementer
+        field="adjUser">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="source"
+      style="editNormal">
+      <edit
+        field="adjSource">
+        </edit>
+      </portal>
+
+    <portal
+      id="length"
+      style="editNormal">
+      <edit
+        field="adjLasts">
+        </edit>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <!-- Portals used as the header -->
+    <portal
+      id="hdrtitle"
+      style="lblTitle"
+      isheader="yes">
+      <label
+        istitle="yes"
+        text="In-Play Adjustments">
+        </label>
+      </portal>
+
+    <portal
+      id="hdradjust"
+      style="lblHeader"
+      isheader="yes">
+      <label
+        text="Adjustment">
+        </label>
+      </portal>
+
+    <portal
+      id="hdrsource"
+      style="lblHeader"
+      isheader="yes">
+      <label
+        text="Source">
+        </label>
+      </portal>
+
+    <portal
+      id="hdrlength"
+      style="lblHeader"
+      isheader="yes">
+      <label
+        text="Duration">
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~we'll want to use a suitable margin around the edges, so choose something
+      var vert as number
+      var horz as number
+      vert = 3
+      horz = 3
+
+      ~set up our height based on our tallest portal
+      ~Note: we manage our own margins, so we must add those to our total height
+      height = portal[adjust].height + vert * 2
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~Note! This script is invoked for both items in the table AND the header.
+      ~When invoked for the header, the scrollbar is NOT present, so the width is
+      ~different. We have to recognize that fact and adjust by the scrollbar width
+      ~within the header so that our positioning calculations below are consistent.
+      ~If we don't do this, our header labels will not be positioned correctly. The
+      ~"inheader" target reference is one if we're in a header and zero if not.
+      var rightdelta as number
+      rightdelta = inheader * scrollbar
+
+      ~position our tallest portal at the effective "top" (allowing for the margin)
+      portal[adjust].top = vert
+
+      ~center the other portals on the tallest one
+      perform portal[activate].centeron[vert,adjust]
+      perform portal[activename].centeron[vert,adjust]
+      perform portal[menu].centeron[vert,adjust]
+      perform portal[delete].centeron[vert,adjust]
+      perform portal[source].centeron[vert,adjust]
+      perform portal[length].centeron[vert,adjust]
+
+      ~position the activation portal on the far left
+      portal[activate].left = horz
+
+      ~position the "checkbox with name" control in the same place
+      perform portal[activename].alignrel[ltol,activate,0]
+
+      ~make sure the checkbox text doesn't take too much space
+      var maxright as number
+      maxright = 160
+      if (portal[activename].right > maxright) then
+        portal[activename].width = maxright - portal[activename].left
+        perform portal[activename].sizetofit[32]
+        perform portal[activename].autosize
+        perform portal[activename].centervert
+        if (portal[activename].right > maxright) then
+          portal[activename].width = maxright - portal[activename].left
+          endif
+        endif
+
+      ~position the menu in the same location as the name
+      portal[menu].left = portal[activate].right + 1
+      portal[menu].width = maxright - portal[menu].left
+
+      ~position the adjust portal to the right of the name portal
+      portal[adjust].left = maxright + 8
+
+      ~position the delete portal on the far right
+      ~Note! Remeber to use our delta to differentiate the header from items.
+      perform portal[delete].alignedge[right,-horz - rightdelta]
+
+      ~determine the remaining gap and split it between the source and length portals
+      var gap as number
+      gap = portal[delete].left - portal[adjust].right - 7 * 2 - 6
+      perform portal[source].alignrel[ltor,adjust,7]
+      portal[source].width = gap / 2
+      perform portal[length].alignrel[ltor,source,6]
+      portal[length].width = gap - portal[source].width
+
+      ~hide the adjust portal if not required
+      if (tagis[AdjustShow.Increment] = 0) then
+        portal[adjust].visible = 0
+        endif
+
+      ~hide the name or menu, as appropriate
+      if (tagis[AdjustShow.Menu] = 0) then
+        portal[menu].visible = 0
+        portal[activate].visible = 0
+      else
+        portal[activename].visible = 0
+        endif
+
+      ~if a menu is visible and nothing is chosen yet, flag it in red
+      if (tagis[AdjustShow.Menu] <> 0) then
+        if (field[adjChosen].ischosen = 0) then
+          perform portal[menu].setstyle[menuError]
+          endif
+        endif
+      ]]></position>
+
+    <header><![CDATA[
+      ~our header height is the title plus a gap plus the header text
+      height = portal[hdrtitle].height + portal[hdradjust].height + 3
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~our title spans the full width of the template
+      portal[hdrtitle].width = width
+
+      ~each of our header labels has the same width as the corresponding data beneath
+      portal[hdradjust].width = portal[menu].width
+      portal[hdrsource].width = portal[source].width
+      portal[hdrlength].width = portal[length].width
+
+      ~center each header label on the corresponding data beneath
+      ~Note! This is why we have to make sure we get the positions of the item portals
+      ~correct within the position script when it's processed for the header.
+      perform portal[hdradjust].centeron[horz,menu]
+      perform portal[hdrsource].centeron[horz,source]
+      perform portal[hdrlength].centeron[horz,length]
+
+      ~align all header labels at the bottom of the header region
+      perform portal[hdradjust].alignedge[bottom,0]
+      perform portal[hdrsource].alignedge[bottom,0]
+      perform portal[hdrlength].alignedge[bottom,0]
+      ]]></header>
+
+    </template>
+
+
+  <!-- ipHealth template
+        This template presents the health of the character and allows the user to
+        apply damage and healing to the character.
+
+        Usage pools on the actor are used to track the various damage and healing
+        actions that are performed on the actor. This allows us to undo actions and
+        clear all damage. It also allows us to retrieve a detailed report of each
+        separate action and present it to the user. All of this is achieved via
+        trigger scripts associated with the various action buttons employed below.
+  -->
+  <template
+    id="ipHealth"
+    name="Health"
+    compset="Damage">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes"
+        text="Health">
+        </label>
+      </portal>
+
+    <portal
+      id="lblhealth"
+      style="lblNormal">
+      <label
+        text="Health:">
+        </label>
+      </portal>
+
+    <portal
+      id="health"
+      style="lblXLarge">
+      <label>
+        <labeltext><![CDATA[
+          ~show the current health; if the character is incurring any extra penalties
+          ~due to excessive damage, append them
+          @text = herofield[acHPNow].text & "{text clrgrey}{size 40} /" & herofield[acHPMax].text
+          if (herofield[acHPPenal].value < 0) then
+            @text &= " " & herofield[acHPPenal].text
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="lbldamage"
+      style="lblNormal">
+      <label
+        text="Damage:">
+        </label>
+      </portal>
+
+    <portal
+      id="damage"
+      style="incrSimple"
+      tiptext="Specify the damage or healing quantity to be applied.">
+      <incrementer
+        field="dmgDamage">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="sustain"
+      style="actDamage"
+      tiptext="Click here to sustain the quantity specified as damage.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          ~get the various values to operate upon
+          var sustain as number
+          var current as number
+          sustain = field[dmgDamage].value
+          current = hero.usagepool[DmgNet].value
+
+          ~save the adjustment requested by the user and the new net damage
+          perform hero.usagepool[DmgAdjust].adjust[sustain]
+          perform hero.usagepool[DmgNet].set[current + sustain]
+
+          ~reset the damage field to ensure that everything gets properly updated
+          perform field[dmgDamage].reset
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="heal"
+      style="actHeal"
+      tiptext="Click here to heal the quantity specified.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          ~get the various values to operate upon
+          var heal as number
+          var current as number
+          heal = field[dmgDamage].value
+          current = hero.usagepool[DmgNet].value
+
+          ~cap any adjustment so we can't go above our natural maximum health
+          var isover as number
+          if (heal > current) then
+            heal = current
+            isover = 1
+            endif
+
+          ~if we're already at our maximum health, there's nothing to do
+          doneif (heal = 0)
+
+          ~save the adjustment requested by the user and the new net damage
+          perform hero.usagepool[DmgAdjust].adjust[-heal]
+          perform hero.usagepool[DmgNet].adjust[-heal]
+
+          ~reset the damage field to ensure that everything gets properly updated
+          perform field[dmgDamage].reset
+
+          ~if the requested adjustment exceeds the actual damage level, report the error
+          if (isover > 0) then
+            notify "Requested healing adjustment exceeds current damage levels. Actual adjustment differs."
+            endif
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="undo"
+      style="actUndo"
+      tiptext="Click here to undo the last damage sustained or healed.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          ~if there is no history to undo, notify the user
+          if (hero.usagepool[DmgNet].count = 0) then
+            notify "Undo history is empty"
+            done
+            endif
+
+          ~rollback the last transaction for both usage pools
+          perform hero.usagepool[DmgNet].rollback
+          perform hero.usagepool[DmgAdjust].rollback
+
+          ~reset the damage field to ensure that everything gets properly updated
+          perform field[dmgDamage].reset
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="reset"
+      style="actReset"
+      tiptext="Click here to reset your health to fully healed. All records of past damage sustained and healed will be lost.">
+      <action
+        action="trigger"
+        confirm="This will reset your health to fully healed and discard all history of past damage sustained and healed. Proceed?">
+        <trigger><![CDATA[
+          ~if there is no history to undo, notify the user
+          if (hero.usagepool[DmgNet].count = 0) then
+            notify "Undo history is empty"
+            done
+            endif
+
+          ~empty out both usage pools
+          perform hero.usagepool[DmgNet].empty
+          perform hero.usagepool[DmgAdjust].empty
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        ~if our usage pool history is empty, indicate that fact and we're done
+        @text = " Damage History "
+        var history as number
+        history = hero.usagepool[DmgAdjust].count
+        if (history = 0) then
+          @text = @text & "{br}-none-"
+          done
+          endif
+
+        ~iterate through all elements of the usage pool history and build a report
+        var i as number
+        var cnt as number
+        var form as string
+        for i = 0 to history - 1
+
+          ~get the adjustment for this history entry
+          cnt = hero.usagepool[DmgAdjust].history[i]
+          if (cnt > 0) then
+            form = "Damage: "
+          else
+            form = "Healed: "
+            cnt = -cnt
+            endif
+
+          ~append the history entry to the overall text being reported
+          @text = @text & "{br}" & form & cnt
+          next
+        ]]></mouseinfo>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our title, a gap, and our tallest portal
+      height = portal[title].height + portal[health].height + 8
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~the title should span the full width
+      portal[title].width = width
+
+      ~position the tallest portal beneath the title
+      perform portal[health].alignrel[ttob,title,8]
+
+      ~center all non-text portals vertically on the health portal
+      perform portal[damage].centeron[vert,health]
+      perform portal[sustain].centeron[vert,health]
+      perform portal[heal].centeron[vert,health]
+      perform portal[undo].centeron[vert,health]
+      perform portal[reset].centeron[vert,health]
+      perform portal[info].centeron[vert,health]
+
+      ~align the smaller text portals to have the same baseline
+      perform portal[lblhealth].alignrel[btob,health,-4]
+      perform portal[lbldamage].alignrel[btob,health,-4]
+
+      ~position the current health portals on the left
+      portal[lblhealth].left = 35
+      perform portal[health].alignrel[ltor,lblhealth,10]
+
+      ~position the damage portals to the right of the current health
+      portal[lbldamage].left = 155
+      perform portal[damage].alignrel[ltor,lbldamage,10]
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,-25]
+
+      ~position the reset portal to the left of the info portal
+      perform portal[reset].alignrel[rtol,info,-10]
+
+      ~position the undo portal to the left of the reset portal
+      perform portal[undo].alignrel[rtol,reset,-10]
+
+      ~position the heal portal to the left of the undo portal
+      perform portal[heal].alignrel[rtol,undo,-20]
+
+      ~position the sustain portal to the left of the heal portal
+      perform portal[sustain].alignrel[rtol,heal,-10]
+
+      ~disable the sustain and heal portals if the current quantity is zero
+      if (field[dmgDamage].value = 0) then
+        portal[sustain].enable = 0
+        portal[heal].enable = 0
+        endif
+
+      ~disable the undo and reset portals if there is no history to undo
+      if (hero.usagepool[DmgAdjust].count = 0) then
+        portal[undo].enable = 0
+        portal[reset].enable = 0
+        endif
+      ]]></position>
+
+    </template>
+
+  <template
+    id="ipAttrDmg"
+    name="Attribute Damage"
+    compset="Attribute"
+    marginhorz="5"
+    marginvert="9">
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+		  @text &= field[name].text
+		  ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="dmg1"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage1">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="dmg2"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage2">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="dmg3"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage3">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="dmg4"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage4">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="dmg5"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage5">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="dmg6"
+      style="chkAttrDmg"
+      tiptext="Click to enable damage.">
+      <checkbox
+        field="atDamage6">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[dmg1].centervert
+      perform portal[dmg2].centervert
+      perform portal[dmg3].centervert
+      perform portal[dmg4].centervert
+      perform portal[dmg5].centervert
+      perform portal[dmg6].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      var trtVal as number
+	  trtVal = field[trtFinal].value 
+	  
+	  if (trtVal >= 1) then
+	    portal[dmg1].visible = 1
+	  else
+	    portal[dmg1].visible = 0
+		endif
+	  if (trtVal >= 2) then
+	    portal[dmg2].visible = 1
+	  else
+	    portal[dmg2].visible = 0
+		endif
+	  if (trtVal >= 3) then
+	    portal[dmg3].visible = 1
+	  else
+	    portal[dmg3].visible = 0
+		endif
+	  if (trtVal >= 4) then
+	    portal[dmg4].visible = 1
+	  else
+	    portal[dmg4].visible = 0
+		endif
+	  if (trtVal >= 5) then
+	    portal[dmg5].visible = 1
+	  else
+	    portal[dmg5].visible = 0
+		endif
+	  if (trtVal >= 6) then
+	    portal[dmg6].visible = 1
+	  else
+	    portal[dmg6].visible = 0
+		endif
+		
+      ~position the incrementer to the left of the info portal (plus a gap)
+      perform portal[dmg6].alignrel[rtol,info,-3]
+      perform portal[dmg5].alignrel[rtol,dmg6,-3]
+      perform portal[dmg4].alignrel[rtol,dmg5,-3]
+      perform portal[dmg3].alignrel[rtol,dmg4,-3]
+      perform portal[dmg2].alignrel[rtol,dmg3,-3]
+      perform portal[dmg1].alignrel[rtol,dmg2,-3]
+	  
+      ~position the name on the left and make sure its width does not exceed the available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[dmg1].left - portal[name].left - 10)
+      ]]></position>
+
+    </template>
+
+  <!-- inplay layout
+        This layout orchestrates the display of the visual elements that comprise
+        the InPlay tab. At the top is the Health section, with trackers beneath for
+        consumable resources that must be managed. At the bottom is the list of
+        in-play adjustments and activated abilities.
+  -->
+  <layout
+    id="inplay">
+    <portalref portal="ipTracker" taborder="20"/>
+    <portalref portal="ipActivate" taborder="30"/>
+    <portalref portal="ipAdjust" taborder="40"/>
+    <portalref portal="ipAttrib" taborder="10"/>
+    <templateref template="ipHealth" thing="mscDamage" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~set the width of all tables so the interior templates size to those widths
+      portal[ipTracker].width = width
+      portal[ipActivate].width = width
+      portal[ipAdjust].width = width
+      portal[ipAttrib].width = width
+
+      ~set the width of our health template to the width of the layout, then
+      ~render the health template to setup its height
+      template[ipHealth].width = width
+      perform template[ipHealth].render
+
+      ~center all tables and templates horizontally
+      template[ipHealth].left = (width - template[ipHealth].width) / 2
+      portal[ipTracker].left = (width - portal[ipTracker].width) / 2
+      portal[ipActivate].left = (width - portal[ipActivate].width) / 2
+      portal[ipAdjust].left = (width - portal[ipAdjust].width) / 2
+      portal[ipAttrib].left = (width - portal[ipAttrib].width) / 2
+
+      ~position the health template at the top
+	  var healthBot as number
+	  
+	  if (hero.tagis[SettingFlag.UseHealth?] <> 0) then
+        template[ipHealth].left = 0
+        template[ipHealth].top = 0
+	    template[ipHealth].visible = 1
+		healthBot = template[ipHealth].bottom
+	    portal[ipAttrib].visible = 0
+	  elseif (hero.tagis[SettingFlag.AttributeDamage] <> 0) then
+	    ~position the attribute damage at the top
+	    template[ipHealth].visible = 0
+        portal[ipAttrib].top = 0
+		healthBot = portal[ipAttrib].bottom
+		endif
+		
+      ~position the tracker table beneath the health template
+      portal[ipTracker].top = healthBot + 9
+
+      ~position the adjustments table at the bottom, allowing for at least three rows
+      portal[ipAdjust].maxrows = 3
+      portal[ipAdjust].top = height - portal[ipAdjust].height
+
+      ~set the height of the activated and resources tables to all the space available
+      portal[ipTracker].height = height
+      portal[ipActivate].height = height
+
+      ~determine the gap to use between tables
+      var gap as number
+      gap = 8
+
+      ~determine the remaining space for the activated and resources tables
+      var remain as number
+      remain = portal[ipAdjust].top - portal[ipTracker].top - (gap - 1) * 2
+
+      ~if we don't have enough space for both the activated and resources tables,
+      ~divvy up the space between the two tables
+      if (portal[ipTracker].height + portal[ipActivate].height > remain) then
+
+        ~if the activated table is less than half the gap, limit the resources
+        ~table to whatever space remains
+        if (portal[ipActivate].height < remain / 2) then
+          portal[ipTracker].height = remain - portal[ipActivate].height
+
+        ~if the resources table is less than half the gap, limit the activated
+        ~table to whatever space remains
+        elseif (portal[ipTracker].height < remain / 2) then
+          portal[ipActivate].height = remain - portal[ipTracker].height
+
+        ~if both tables are larger than half the gap, split the space between them
+        ~NOTE! If we just divide the remaining amount by two and set both tables to
+        ~that height, we could end up with both tables being truncated by more than
+        ~a half item, with the combined height being a full item short of taking up
+        ~the remaining space. So we have to set the height of one table to half the
+        ~remaining space, then subtract that table's final height from our remaining
+        ~space, and finally set that as the height for the second table
+        else
+          portal[ipTracker].height = remain / 2
+          portal[ipActivate].height = remain - portal[ipTracker].height
+          endif
+        endif
+
+      ~now that both the tables are sized, re-position the activated table properly
+      portal[ipActivate].top = portal[ipTracker].bottom + gap
+
+      ~re-position the adjustment table beneath the activated abilities table
+      ~NOTE! This ensures we don't leave a gap between the two tables.
+      portal[ipAdjust].top = portal[ipActivate].bottom + gap
+
+      ~set the height of the adjustments table to all the space remaining at the
+      ~bottom; this allows the table to grow as needed if the above tables don't
+      ~use up all the available space
+      portal[ipAdjust].height = height - portal[ipAdjust].top
+
+      ~set the height of the layout to the bottom of the adjustments table; this
+      ~eliminates any gap at the bottom when used by the direct manipulation form
+      height = portal[ipAdjust].bottom
+      ]]></position>
+
+    </layout>
+
+
+  <!-- inplay panel
+        This is the "InPlay" panel shown within Hero Lab. Since we want this panel
+        to appear first within the fourth grouping (inplay), we assign it an "order"
+        of 410.
+
+        The logic for this panel is similar to the logic for the preceeding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="inplay"
+    name="In-Play"
+    marginhorz="5"
+    marginvert="5"
+    order="410">
+    <live>!HideTab.inplay</live>
+    <layoutref layout="inplay"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

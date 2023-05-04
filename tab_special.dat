@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Special" tab panel. This tab is where
+      the user can view a summary of all the special aspects of the character.
+
+      All public visual elements used with this tab panel start with the prefix "sp"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- spSpecial portal
+        Presents a fixed table consisting of all special traits for the character.
+
+        The "list" element excludes all items that are designated as "hidden".
+
+        We use a "headertitle" script to place a suitable title above the table.
+
+        The "update" attribute is required so that the contents of this table are
+        updated whenever changes are made elsewhere within the character that don't
+        explicitly impact this table. For example, a special ability conferred by a
+        race selection can be made at the top, and Hero Lab will normally assume
+        the new race has no impact on the contents of this table. However, if the
+        new race confers a special ability that needs to appear in this table, HL
+        will assume there's no connection and not update this table. Using "update"
+        forces HL to always update the table after any change to the character. This
+        is expensive and should generally be avoided, so it should only be used in a
+        situation like this where it is truly needed.
+  -->
+  <portal
+    id="spSpecial"
+    style="tblNormal">
+    <table_fixed
+      component="SpecialTab"
+      showtemplate="spSpecial"
+      showsortset="SpecialTab"
+      alwaysupdate="yes">
+      <list>Helper.FirstCopy &amp; !Hide.Special</list>
+      <headertitle><![CDATA[
+        @text = "Special Traits"
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- spSpecial template
+        Display a pick within the special tab, allowing the user to promote items to
+        the top via a checkbox next to the name. Next to the name, the nature of the
+        pick is also shown.
+  -->
+  <template
+    id="spSpecial"
+    name="Sepcial Tab Pick"
+    compset="SpecialTab"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="promote"
+      style="chkPromote"
+      tiptext="Click to promote a frequently referenced entry to the group at the top or to return an entry to the main group below">
+      <checkbox
+        field="spcPromote">
+        </checkbox>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblLeft">
+      <label>
+        <labeltext><![CDATA[
+          ~if we have a custom name to display, use it; otherwise, use the base name
+          if (field[spcName].isempty = 0) then
+            @text = field[spcName].text
+          else
+            @text = field[name].text
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="source"
+      style="lblSecond">
+      <label>
+        <labeltext><![CDATA[
+          ~determine the source type
+          var source as string
+          source = tagnames[SpecialTab.?,","]
+          if (length(source) = 0) then
+            source = "????"
+            endif
+
+          ~piece the source together
+          @text = "(" & source & ")"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        var isprereq as number
+        isprereq = 1
+        var mouseinfo as string
+        call MouseInfo
+        @text = mouseinfo
+        ]]></mouseinfo>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~center the portals vertically, except for the source, which should share the
+      ~same baseline as the name for proper visual alignment
+      perform portal[promote].centervert
+      perform portal[name].centervert
+      perform portal[source].alignrel[btob,name,0]
+
+      ~position the various portals horizontally
+      perform portal[info].alignedge[right,0]
+      perform portal[name].alignrel[ltor,promote,10]
+      perform portal[source].alignrel[ltor,name,10]
+      portal[source].width = portal[info].left - 10 - portal[source].left
+      ]]></position>
+
+    </template>
+
+
+  <!-- special layout
+        This layout orchestrates the display of the visual elements that comprise
+        the "Special" tab. This amounts to a title and a table that displays the
+        itemsto the user.
+
+        The logic for this layout is similar to preceeding tabs, so please refer
+        to those tabs for more details.
+  -->
+  <layout
+    id="special">
+    <portalref portal="spSpecial" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~position and size the table to span the full layout
+      perform portal[spSpecial].autoplace
+      ]]></position>
+
+    </layout>
+
+
+  <!-- special panel
+        This is the "Special" panel shown within Hero Lab. Since we want this panel
+        to appear second within the fourth grouping (in-play), we assign it an
+        "order" of 420.
+
+        The logic for this panel is similar to the logic for the preceeding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="special"
+    name="Special"
+    marginhorz="5"
+    marginvert="5"
+    order="420">
+    <live>!HideTab.special</live>
+    <layoutref layout="special"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+  </document>

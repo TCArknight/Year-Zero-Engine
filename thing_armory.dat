@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of weapons, armor, and shields for the game
+      system. The various effects of each piece of equipment are controlled entirely
+      through field values and a few tags. Scripts on the underlying components use
+      these characteristics to apply all the correct behaviors.
+-->
+
+<document signature="Hero Lab Data">
+
+
+<!-- ##################
+      Armor and Shields
+     ##################
+-->
+
+
+  <!-- Natural armor is automatically equipped -->
+  <thing
+    id="armNatural"
+    name="Natural Armor"
+    compset="Armor"
+    description="Description goes here"
+    isunique="yes"
+    holdable="no">
+    <fieldval field="defArmorRating" value="1"/>
+    <tag group="Equipment" tag="Natural"/>
+    <tag group="Equipment" tag="AutoEquip"/>
+    </thing>
+
+  <!-- Sample armor -->
+  <thing
+    id="armSample"
+    name="Sample Armor"
+    compset="Armor"
+    description="Description goes here">
+    <fieldval field="defArmorRating" value="1"/>
+    <fieldval field="defStrReq" value="3"/>
+    <fieldval field="grCost" value="100"/>
+    <fieldval field="grWeight" value="15"/>
+    </thing>
+
+  <!-- Sample shield -->
+  <thing
+    id="shdSample"
+    name="Sample Shield"
+    compset="Shield"
+    description="Description goes here">
+    <fieldval field="defArmorRating" value="1"/>
+    <fieldval field="defStrReq" value="0"/>
+    <fieldval field="grCost" value="30"/>
+    <fieldval field="grWeight" value="5"/>
+    </thing>
+
+
+<!-- ##################
+      Melee Weapons
+     ##################
+-->
+
+
+  <!-- Unarmed Strike melee weapon -->
+  <thing
+    id="wpUnarmed"
+    name="Unarmed Strike"
+    compset="Melee"
+    description="Description goes here"
+    isunique="yes"
+    holdable="no">
+    <fieldval field="shortname" value="Unarmed"/>
+    <fieldval field="grBonus" value="0"/>
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="wpStrReq" value="0"/>
+    <fieldval field="wpSpecial" value=""/>
+    <fieldval field="grCost" value="0"/>
+    <fieldval field="grWeight" value="0"/>
+    <tag group="Equipment" tag="Natural"/>
+    <tag group="WeaponRange" tag="ArmLength"/>
+    <tag group="WeaponFeature" tag="Blunt"/>
+    </thing>
+
+  <!-- Sample melee weapon
+  <thing
+    id="wpSampleM"
+    name="Sample Melee"
+    compset="Melee"
+    description="Description goes here">
+    <fieldval field="shortname" value=""/>
+    <fieldval field="grBonus" value="0"/>
+    <fieldval field="wpDamage" value="1d3"/>
+    <fieldval field="wpStrReq" value="0"/>
+    <fieldval field="wpSpecial" value=""/>
+    <fieldval field="grCost" value="5"/>
+    <fieldval field="grWeight" value="1"/> -->
+    <!-- If this is a natural weapon, assign this tag
+    <tag group="Equipment" tag="Natural"/>
+    -->
+    <!-- If this is a two-handed weapon, assign this tag
+    <tag group="WeaponGrip" tag="TwoHand"/>
+    
+    </thing> -->
+
+
+<!-- ##################
+      Ranged Weapons
+     ##################
+-->
+
+
+  <!-- Sample ranged weapon -->
+  <thing
+    id="wpSampleR"
+    name="Sample Ranged"
+    compset="Ranged"
+    description="Description goes here">
+    <fieldval field="shortname" value=""/>
+    <fieldval field="grBonus" value="0"/>
+    <fieldval field="wpDamage" value="2d6"/>
+    <fieldval field="wpShort" value="20"/>
+    <fieldval field="wpMedium" value="30"/>
+    <fieldval field="wpLong" value="40"/>
+    <fieldval field="wpStrReq" value="5"/>
+    <fieldval field="wpSpecial" value=""/>
+    <fieldval field="grCost" value="200"/>
+    <fieldval field="grWeight" value="4"/>
+    </thing>
+
+
+  </document>

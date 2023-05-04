@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Abilities" tab panel. This tab is where
+      the user selects the special talents for the character.
+
+      All public visual elements used with this tab panel start with the prefix "ab"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <portal 
+    id="hdrRelPer" 
+    style="lblTitle">
+    <label>
+      <labeltext>
+        @text = "Personality Traits"
+        </labeltext>
+      </label>
+    </portal>
+	
+  <!-- relRelations portal
+        Presents a dynamic table where the user can add special talents for the
+        character.
+  -->
+  <portal
+    id="relRelations"
+    style="tblNormal">
+    <table_dynamic
+      component="Relationship"
+      showtemplate="relPick"
+      choosetemplate="SimpleItem"
+      showfixedlast="yes">
+      <candidate>!Hide.Relationship</candidate>
+      <titlebar><![CDATA[
+        @text = "Add a Relationship"
+        ]]></titlebar>
+      <description/>
+      <headertitle><![CDATA[
+        @text = "Relationships"
+        ]]></headertitle>
+      <additem><![CDATA[
+        @text &= "Add New Relationship"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- taPick template
+        Displays the name of the pick/thing and an info button with the basic
+        description text. This is basically the "SimpleItem" template, with one
+        key difference. Auto-added talents such as those conferred by races are
+        sorted and colored differently to distinguish their nature.
+  -->
+  <template
+    id="relPick"
+    name="Relationship Pick"
+    compset="Relationship"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="editNormal">
+      <edit
+        field="relName"
+        placeholdertext="Enter name of relationship here">
+        </edit>
+      </portal>
+
+    <portal
+      id="lblBuddy"
+      style="lblLeft"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+          @text = "Is Buddy?"
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="buddy"
+      style="chkNormal"
+      showinvalid="yes"
+      tiptext="Click to indicate this relationship is your buddy.">
+      <checkbox
+        field="relIsBuddy">
+        </checkbox>
+      </portal>
+	  
+    <portal
+      id="lblRival"
+      style="lblLeft"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+          @text = "Is Rival?"
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="rival"
+      style="chkNormal"
+      showinvalid="yes"
+      tiptext="Click to indicate this relationship is your rival.">
+      <checkbox
+        field="relIsRival">
+        </checkbox>
+      </portal>
+	  
+    <portal
+      id="details"
+      style="editNormal">
+      <edit
+        field="relDetails"
+        placeholdertext="Enter detail notes on the relationship here"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+      perform portal[lblBuddy].centervert
+      perform portal[lblRival].centervert
+      perform portal[buddy].centervert
+      perform portal[rival].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+	  portal[delete].top = 0
+
+      ~position the rival label and checkbox next to the delete portal
+	  perform portal[rival].alignrel[rtol,delete,-10]
+	  perform portal[lblRival].alignrel[rtol,rival,-5]
+	  portal[lblRival].top = 0
+	  portal[rival].top = 0
+	  portal[lblRival].visible = hero.tagis[SettingFlag.UseRival]
+	  portal[rival].visible = portal[lblRival].visible
+
+      ~position the rival label and checkbox next to the delete portal
+	  perform portal[buddy].alignrel[rtol,lblRival,-10]
+	  perform portal[lblBuddy].alignrel[rtol,buddy,-5]
+	  portal[lblBuddy].top = 0
+	  portal[buddy].top = 0
+	  portal[lblBuddy].visible = hero.tagis[SettingFlag.UseBuddy]
+	  portal[buddy].visible = portal[lblBuddy].visible
+	  
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+	  portal[name].top = 0
+      portal[name].width = minimum(200,portal[delete].left - 5)
+
+      ~position the name on the left and let it use all available space
+      portal[details].left = 0
+	  portal[details].top = portal[name].bottom + 5
+      portal[details].width = width
+	  portal[details].height = 75
+	  
+	  height = portal[details].bottom + 5
+
+      ]]></position>
+
+    </template>
+
+	
+  <!-- relOptPersonality template
+        This template displays all the optional fields for the character, such as 
+		...
+
+  -->
+  <template
+    id="relOptPersonality"
+    name="Optional Fields"
+    compset="OptPersonality">
+
+    <portal
+      id="lblpride"
+      style="lblNormal">
+      <label
+        text="Pride:">
+        </label>
+      </portal>
+
+    <portal
+      id="pride"
+      style="editNormal">
+      <edit
+        field="optPride"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <portal
+      id="lblweakness"
+      style="lblNormal">
+      <label
+        text="Weakness:">
+        </label>
+      </portal>
+
+    <portal
+      id="weakness"
+      style="editNormal">
+      <edit
+        field="optWeakness"
+        ismultiline="yes">
+        </edit>
+      </portal>
+	  
+    <portal
+      id="lblsecret"
+      style="lblNormal">
+      <label
+        text="Dark Secret:">
+        </label>
+      </portal>
+
+    <portal
+      id="secret"
+      style="editNormal">
+      <edit
+        field="optDarkSecret"
+        ismultiline="yes">
+        </edit>
+      </portal>
+	    
+    <portal
+      id="lbldream"
+      style="lblNormal">
+      <label
+        text="Big Dream:">
+        </label>
+      </portal>
+
+    <portal
+      id="dream"
+      style="editNormal">
+      <edit
+        field="optBigDream"
+        ismultiline="yes">
+        </edit>
+      </portal>
+	    
+    <portal
+      id="lblagenda"
+      style="lblNormal">
+      <label
+        text="Personal Agenda:">
+        </label>
+      </portal>
+
+    <portal
+      id="agenda"
+      style="editNormal">
+      <edit
+        field="optAgenda"
+        ismultiline="yes">
+        </edit>
+      </portal>	
+	    
+    <portal
+      id="lblmoral"
+      style="lblNormal">
+      <label
+        text="Moral Code:">
+        </label>
+      </portal>
+
+    <portal
+      id="moral"
+      style="editNormal">
+      <edit
+        field="optMoralCode"
+        ismultiline="yes">
+        </edit>
+      </portal>		 
+	  
+    <portal
+      id="lblmet"
+      style="lblNormal">
+      <label
+        text="How Met Group:">
+        </label>
+      </portal>
+
+    <portal
+      id="met"
+      style="editNormal">
+      <edit
+        field="optHowMet"
+        ismultiline="yes">
+        </edit>
+      </portal>	
+	  
+    <position><![CDATA[
+      ~set all label width to the longest
+	  var lblwidth as number
+	  var editleft as number
+	  var nexttop as number
+	  
+      portal[lblpride].visible = hero.tagis[SettingFlag.UsePride]
+      portal[pride].visible = portal[lblpride].visible
+      portal[lblweakness].visible = hero.tagis[SettingFlag.UseWeakness]
+      portal[weakness].visible = portal[lblweakness].visible
+      portal[lblsecret].visible = hero.tagis[SettingFlag.UseDarkSecret]
+      portal[secret].visible = portal[lblsecret].visible
+      portal[lbldream].visible = hero.tagis[SettingFlag.UseBigDream]
+      portal[dream].visible = portal[lbldream].visible
+      portal[lblagenda].visible = hero.tagis[SettingFlag.UseAgenda]
+      portal[agenda].visible = portal[lblagenda].visible
+      portal[lblmoral].visible = hero.tagis[SettingFlag.UseMoralCode]
+      portal[moral].visible = portal[lblmoral].visible
+      portal[lblmet].visible = hero.tagis[SettingFlag.UseHowMet]
+      portal[met].visible = portal[lblmet].visible
+	  
+	  lblwidth = portal[lblagenda].width
+	  portal[lblpride].width = lblwidth
+	  portal[lblweakness].width = lblwidth
+	  portal[lbldream].width = lblwidth
+	  portal[lblsecret].width = lblwidth
+	  portal[lblmoral].width = lblwidth
+	  portal[lblmet].width = lblwidth
+	  
+	  editleft = lblwidth + 5
+	  
+	  nexttop = 0
+
+      ~position the pride
+	  if (portal[pride].visible <> 0) then 
+        portal[lblpride].left = 0
+        portal[lblpride].top = nexttop
+        portal[pride].left = editleft
+        portal[pride].top = nexttop
+        portal[pride].width = width - editleft
+        portal[pride].height = 50
+	  
+	    nexttop = portal[pride].bottom + 5
+	    endif
+		
+      ~position the weakness
+	  if (portal[weakness].visible <> 0) then 
+        portal[lblweakness].left = 0
+        portal[lblweakness].top = nexttop
+        portal[weakness].left = editleft
+        portal[weakness].top = nexttop
+        portal[weakness].width = width - editleft
+        portal[weakness].height = 50
+	  
+	    nexttop = portal[weakness].bottom + 5
+	    endif
+		
+	  ~position the secret	  
+	  if (portal[secret].visible <> 0) then 
+        portal[lblsecret].left = 0
+        portal[lblsecret].top = nexttop
+        portal[secret].left = editleft
+        portal[secret].top = nexttop
+        portal[secret].width = width - editleft
+        portal[secret].height = 50
+	  
+	    nexttop = portal[secret].bottom + 5
+		endif
+	  
+	  ~position the big dream
+	  if (portal[dream].visible <> 0) then
+        portal[lbldream].left = 0
+        portal[lbldream].top = nexttop
+        portal[dream].left = editleft
+        portal[dream].top = nexttop
+        portal[dream].width = width - editleft
+        portal[dream].height = 50	 
+	  
+	    nexttop = portal[dream].bottom + 5
+		endif
+		
+      ~position the agenda
+	  if (portal[agenda].visible <> 0) then 
+        portal[lblagenda].left = 0
+        portal[lblagenda].top = nexttop
+        portal[agenda].left = editleft
+        portal[agenda].top = nexttop
+        portal[agenda].width = width - editleft
+        portal[agenda].height = 50
+	  
+	    nexttop = portal[agenda].bottom + 5
+	    endif	
+		
+      ~position the agenda
+	  if (portal[moral].visible <> 0) then 
+        portal[lblmoral].left = 0
+        portal[lblmoral].top = nexttop
+        portal[moral].left = editleft
+        portal[moral].top = nexttop
+        portal[moral].width = width - editleft
+        portal[moral].height = 50
+	  
+	    nexttop = portal[moral].bottom + 5
+	    endif
+		
+      ~position how met
+	  if (portal[met].visible <> 0) then 
+        portal[lblmet].left = 0
+        portal[lblmet].top = nexttop
+        portal[met].left = editleft
+        portal[met].top = nexttop
+        portal[met].width = width - editleft
+        portal[met].height = 50
+	  
+	    nexttop = portal[met].bottom + 5
+	    endif
+		
+	  height = nexttop
+		
+      ]]></position>
+
+    </template>
+
+  <!-- talents layout
+        This layout orchestrates the display of the visual elements that comprise
+        the Abilities tab. This amounts to a title at the top and a dynamic table
+        below where the user can add the special talents he wants.
+
+        The logic for this layout is similar to (albeit much simpler than) the
+        logic for the Basics tab. So please refer to the Basics tab for more details.
+  -->
+  <layout
+    id="personalities">
+	<portalref portal="hdrRelPer"/>
+    <portalref portal="relRelations" taborder="10"/>
+    <templateref template="relOptPersonality" thing="mscOptPersonality" taborder="20"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~freeze our table in advancement mode to disable adding new choices
+      ~Note: All freezing must be done *before* any positioning is performed.
+      if (state.iscreate = 0) then
+        portal[relRelations].freeze = 1
+        endif
+
+      ~position and size the table to span the full layout; it will only use the
+      ~vertical space that it actually needs
+      perform portal[hdrRelPer].autoplace[10]
+	  perform template[relOptPersonality].autoplace[5]
+      perform portal[relRelations].autoplace[10]
+
+      ]]></position>
+
+    </layout>
+
+
+  <!-- personalities panel
+        This is the "Talents" panel shown within Hero Lab. Since we want this
+        panel to appear after Basics and within the traits grouping, we nation it
+        an "order" of 120.
+
+        The logic for this panel is similar to the logic for the Basics panel, so
+        please refer to the Basics panel for more details.
+  -->
+  <panel
+    id="Personalities"
+    name="Personality Traits"
+    marginhorz="5"
+    marginvert="5"
+    order="315">
+    <live>!HideTab.personalities</live>
+    <layoutref layout="personalities"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+	
+  </document>

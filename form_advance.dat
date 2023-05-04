@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the form for creating an advancement.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- advNew chooser -->
+  <portal
+    id="advNew"
+    style="chsNormal"
+    width="275">
+    <chooser_table
+      component="none"
+      choosetemplate="advNew"
+      prereqtarget="hero"
+      candidatepick="advDetails"
+      candidatefield="advTagexpr"
+      descwidth="350">
+      <!-- preclude any trait that has already been added via advancement -->
+      <denytag usehero="yes" container="IsAdvance" thing="IsAdvance"/>
+      <autotag group="Helper" tag="Displace"/>
+      <autotag group="Advance" tag="Gizmo"/>
+      <chosen><![CDATA[
+        if (@ispick = 0) then
+          @text = "{text clrwarning}Select New Trait/Ability"
+        else
+          @text = "New Trait/Ability: " & field[thingname].text
+          endif
+        ]]></chosen>
+      <titlebar><![CDATA[
+        @text = "Choose the New Trait/Ability to Add"
+        ]]></titlebar>
+      <description/>
+      </chooser_table>
+    </portal>
+
+
+  <!-- advBoost chooser -->
+  <portal
+    id="advBoost"
+    style="chsNormal"
+    width="275">
+    <chooser_table
+      component="none"
+      choosetemplate="advBoost"
+      choosepicks="hero"
+      candidatepick="advDetails"
+      candidatefield="advTagexpr"
+      descwidth="350">
+      <!-- only traits that have already been added to the hero can be advanced -->
+      <needtag usehero="yes" container="CanAdvance" thing="CanAdvance"/>
+      <autotag group="Advance" tag="Gizmo"/>
+      <chosen><![CDATA[
+        if (@ispick = 0) then
+          @text = "{text clrwarning}Select Trait to Boost"
+        else
+          @text = "Boost: " & field[name].text
+          endif
+        ]]></chosen>
+      <titlebar><![CDATA[
+        @text = "Choose the Existing Trait to Boost"
+        ]]></titlebar>
+      <description><![CDATA[
+        ~ If we've failed any pre-requisites, get the info here
+        var prereqs as string
+        var use_hero as number
+        use_hero = 1
+        call Prereqs
+        @text = prereqs
+
+        ~append our description
+        var descript as string
+        call Descript
+        @text &= descript
+        ]]></description>
+      </chooser_table>
+    </portal>
+
+
+  <!-- advNew template -->
+  <template
+    id="advNew"
+    name="Add New Ability"
+    compset="Advance">
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~ Set up our width and height
+      width = 250
+      height = portal[name].height
+
+      ~if we've being sized, there's nothing more to do
+      doneif (issizing <> 0)
+
+      ~ Position our name appropriately
+      portal[name].left = 0
+      ]]></position>
+    </template>
+
+
+  <!-- advBoost template -->
+  <template
+    id="advBoost"
+    name="Boost Existing Ability"
+    compset="CanAdvance">
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          ~start with the base name; if no domain, we're done
+          @text = field[thingname].text
+          doneif (tagis[User.NeedDomain] = 0)
+
+          ~append any domain in a smaller, non-bold font for reference
+          if (field[domDomain].isempty = 0) then
+            @text = @text & "{size 36}{/b}  (" & field[domDomain].text & ")"
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~ Set up our width and height
+      width = 250
+      height = portal[name].height
+
+      ~if we've being sized, there's nothing more to do
+      doneif (issizing <> 0)
+
+      ~ Position our name appropriately
+      portal[name].left = 0
+      ]]></position>
+    </template>
+
+
+  <!-- Title template -->
+  <template
+    id="advTitle"
+    name="Title"
+    compset="AdvDetails">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes">
+        <labeltext><![CDATA[
+          ~determine if the current pick is the most recent or an old one
+          var is_newest as number
+          is_newest = parent.tagis[Advance.Newest]
+
+          ~determine the action being performed; if not the newest advancement,
+          ~mark it as historical
+          var action as string
+          if (is_newest = 0) then
+            action = "Historical: " & parent.field[advAction].text
+          else
+            action = parent.field[name].text
+            endif
+
+          ~Synthesize the final text to be displayed
+          @text = action
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our width and height
+      height = portal[title].height
+      doneif (issizing <> 0)
+
+      portal[title].width = width
+      ]]></position>
+    </template>
+
+
+  <!-- Static template -->
+  <template
+    id="advStatic"
+    name="Static (Non-Editable) Ability"
+    compset="AdvDetails">
+
+    <portal
+      id="name"
+      style="lblAdvance">
+      <label>
+        <labeltext><![CDATA[
+          ~use the name of the advancement synthesized for the parent
+          @text = parent.field[advAction].text & ": " & parent.field[name].text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our width and height
+      height = portal[name].fontheight + 2
+      doneif (issizing <> 0)
+
+      ~span the full with the name
+      portal[name].width = width
+
+      ~if our text won't fit in the space we've got, try shrinking the font size
+      perform portal[name].sizetofit[36]
+      perform portal[name].centervert
+      ]]></position>
+    </template>
+
+
+  <!-- Domain template -->
+  <template
+    id="advDomain"
+    name="Domain Specification"
+    compset="AdvDetails">
+
+    <portal
+      id="lbldomain"
+      style="lblStatic">
+      <label>
+        <labeltext><![CDATA[
+          ~use any domain term specified, else default to "domain"
+          @text = parent.tagnames[DomainTerm.?]
+          if (empty(@text) <> 0) then
+            @text = "Domain"
+            endif
+          @text &= ":"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="domain"
+      style="editNormal">
+      <edit
+        field="advUser"
+        maxlength="50">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our width and height
+      height = portal[domain].height
+      doneif (issizing <> 0)
+
+      ~center everything vertically
+      perform portal[lbldomain].centervert
+      perform portal[domain].centervert
+
+      ~position the label on the left with the edit portal next to it
+      portal[lbldomain].left = 0
+      perform portal[domain].alignrel[ltor,lbldomain,7]
+      portal[domain].width = width - portal[domain].left
+      ]]></position>
+    </template>
+
+
+  <!-- Notation template -->
+  <template
+    id="advNotate"
+    name="Notation Specification"
+    compset="AdvDetails">
+
+    <portal
+      id="lblnotate"
+      style="lblStatic">
+      <label
+        text="Notation:">
+        </label>
+      </portal>
+
+    <portal
+      id="notation"
+      style="editNormal">
+      <edit
+        field="advUser"
+        maxlength="50">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our width and height
+      height = portal[notation].height
+      doneif (issizing <> 0)
+
+      ~center everything vertically
+      perform portal[lblnotate].centervert
+      perform portal[notation].centervert
+
+      ~position the label on the left with the edit portal next to it
+      portal[lblnotate].left = 0
+      perform portal[notation].alignrel[ltor,lblnotate,7]
+      portal[notation].width = width - portal[notation].left
+      ]]></position>
+    </template>
+
+
+  <!-- Date template -->
+  <template
+    id="advDate"
+    name="Date Details"
+    compset="AdvDetails">
+
+    <portal
+      id="gamedate"
+      style="editDate">
+      <edit_date
+        field="advGame">
+        </edit_date>
+      </portal>
+
+    <portal
+      id="lblgame"
+      style="lblSmTitle">
+      <label
+        ismultiline="yes"
+        text="Game Date\n(YYYYMMDD)">
+        </label>
+      </portal>
+
+    <portal
+      id="realdate"
+      style="editDate">
+      <edit_date
+        field="advReal">
+        </edit_date>
+      </portal>
+
+    <portal
+      id="lblreal"
+      style="lblSmTitle">
+      <label
+        ismultiline="yes"
+        text="Real Date\n(YYYYMMDD)">
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~center everything horizontally
+      perform portal[lblgame].centerhorz
+      perform portal[gamedate].centerhorz
+      perform portal[lblreal].centerhorz
+      perform portal[realdate].centerhorz
+
+      ~position everything vertically
+      perform portal[lblgame].alignrel[ttob,gamedate,1]
+      perform portal[realdate].alignrel[ttob,lblgame,10]
+      perform portal[lblreal].alignrel[ttob,realdate,1]
+
+      ~our dimensions are dictated by the extent of our portals
+      width = portal[realdate].right
+      height = portal[lblreal].bottom
+      ]]></position>
+    </template>
+
+
+  <!-- Notes template -->
+  <template
+    id="advNotes"
+    name="Notes"
+    compset="AdvDetails">
+
+    <portal
+      id="lblnotes"
+      style="lblStatic">
+      <label
+        text=" User Notes">
+        </label>
+      </portal>
+
+    <portal
+      id="notes"
+      style="editNormal">
+      <edit
+        field="advNotes"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our width and height
+      doneif (issizing <> 0)
+
+      ~center the label horizontally and make the notes the full width
+      portal[notes].width = width
+      perform portal[lblnotes].centerhorz
+
+      ~position the label at the top with the notes beneath
+      portal[lblnotes].top = 0
+      perform portal[notes].alignrel[ttob,lblnotes,5]
+
+      ~provide vertical space for four lines of user notes
+      portal[notes].lineheight = 4
+      ]]></position>
+    </template>
+
+
+  <layout
+    id="advance">
+    <portalref portal="advNew" taborder="20"/>
+    <portalref portal="advBoost" taborder="20"/>
+    <templateref template="advTitle" thing="advDetails" taborder="10"/>
+    <templateref template="advStatic" thing="advDetails" taborder="20"/>
+    <templateref template="advNotate" thing="advDetails" taborder="20"/>
+    <templateref template="advDomain" thing="advDetails" taborder="30"/>
+    <templateref template="advNotes" thing="advDetails" taborder="40"/>
+    <templateref template="advDate" thing="advDetails" taborder="50"/>
+    <position><![CDATA[
+      ~setup a width that is generally reasonable
+      width = 475
+
+      ~set the fixed dimensions and render the title template
+      template[advTitle].width = width
+      perform template[advTitle].render
+
+      ~position the chooser to add a new advancement
+      portal[advNew].left = 20
+      portal[advNew].top = template[advTitle].bottom + 40
+      portal[advNew].width = 310
+
+      ~position the chooser for boosting in the same place
+      portal[advBoost].left = portal[advNew].left
+      portal[advBoost].top = portal[advNew].top
+      portal[advBoost].width = portal[advNew].width
+
+      ~position the static template in the same place (for non-editable items)
+      template[advStatic].left = portal[advNew].left
+      template[advStatic].top = portal[advNew].top
+      template[advStatic].width = portal[advNew].width
+
+      ~position the notation template in the same place
+      template[advNotate].left = portal[advNew].left
+      template[advNotate].top = portal[advNew].top
+      template[advNotate].width = portal[advNew].width
+
+      ~position the date to the right of the other portals
+      template[advDate].top = template[advTitle].bottom + 10
+      template[advDate].left = portal[advNew].right + 20
+
+      ~hide all of the different portals/templates - we'll show one below
+      template[advStatic].visible = 0
+      template[advNotate].visible = 0
+      portal[advNew].visible = 0
+      portal[advBoost].visible = 0
+
+      ~if this is NOT the newest advancement, show the static template so the user
+      ~can't change anything; otherwise, determine which chooser should be shown
+      if (container.parent.tagis[Advance.Newest] = 0) then
+        template[advStatic].visible = 1
+      elseif (container.parent.tagis[Advance.AddNew] <> 0) then
+        portal[advNew].visible = 1
+      elseif (container.parent.tagis[Advance.Notation] <> 0) then
+        template[advNotate].visible = 1
+      else
+        portal[advBoost].visible = 1
+        endif
+
+      ~position the domain template
+      template[advDomain].left = portal[advNew].left + 15
+      template[advDomain].top = portal[advNew].bottom + 8
+
+      ~position the notes template
+      template[advNotes].left = portal[advNew].left
+
+      ~setup fixed dimensions of our templates
+      template[advDomain].width = portal[advNew].width - template[advDomain].left
+      template[advNotes].width = width - template[advNotes].left * 2
+
+      ~render all remaining templates to finalize their dimensions
+      perform template[advDomain].render
+      perform template[advNotes].render
+
+      ~determine whether the domain template should be shown
+      ~Note: The final test below ensures that we only let the user change the domain
+      ~       when editing the newest advancement and not an old one.
+      var isdomain as number
+      isdomain = container.parent.tagis[Advance.AddNew]
+      if (isdomain <> 0) then
+        isdomain = container.findchild[none,"Advance.Gizmo"].tagis[User.NeedDomain]
+        if (isdomain <> 0) then
+          isdomain = container.parent.tagis[Advance.Newest]
+          endif
+        endif
+      template[advDomain].visible = isdomain
+
+      ~position the notes at the bottom
+      template[advNotes].top = template[advDate].bottom + 10
+
+      ~determine our overall height
+      height = template[advNotes].bottom
+      ]]></position>
+
+    </layout>
+
+
+  <form
+    id="advancegiz"
+    name="Advancement"
+    entity="Advance">
+    <layoutref layout="advance"/>
+    <position><![CDATA[
+      ~render the layout to position and size everything
+      perform layout[advance].render
+
+      ~set the dimensions of the overall form from the layouts
+      width = layout[advance].width
+      height = layout[advance].height
+      ]]></position>
+    </form>
+
+
+  </document>

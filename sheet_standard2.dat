@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the second page of the standard character
+      sheet for output. The second page is handled as a spillover sheet that will
+      output any details that didn't fit on the first page. This is a technique that
+      you will likely use for whatever game system you choose to support.
+
+      The first page of the character sheet will be found in "sheet_standard1.dat".
+
+      The portals used to output the equipment below are the same ones used on the
+      first page of the character sheet. As such, those portals will be found in
+      the file that defines the first page.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- oStandard2 layout
+        This layout contains all the remaining armor, weapons, and gear for the
+        character. If not all of the equipment can fit on the first sheet, the gear
+        that remains is output on a spillover sheet. Spillover sheets continue to
+        print as long as data remains that has not yet been output. This layout is
+        designed so that it can be re-used for both the lefthand and righthand
+        columns on the same sheet. So this layout shows all the armor it can, until
+        it either runs out of armor or runs out of available space. Then it does
+        the same for weapons, and finally for gear.
+  -->
+  <layout
+    id="oStandard2">
+    <portalref portal="oArmor"/>
+    <portalref portal="oWeapon"/>
+    <portalref portal="oGear"/>
+    <portalref portal="oPersonal"/>
+    <position><![CDATA[
+      ~position the armor table first
+      perform portal[oArmor].autoplace
+
+      ~position weapons next
+      perform portal[oWeapon].autoplace
+
+      ~position gear next
+      perform portal[oGear].autoplace
+
+      ~position personal details last
+      perform portal[oPersonal].autoplace
+
+      ~the height of the layout is the bottommost extent of the elements within
+      height = autoextent
+      ]]></position>
+    </layout>
+
+
+  <!-- standard2 sheet
+        This is the second and subsequent page of the character sheet. It is a
+        spillover sheet, so it is only printed when necessary and will continue to
+        print as long as it remains necessary. The role of a spillover sheet is to
+        output material that doesn't fit on previous pages, continuing to print
+        until all items have been output. For this example, we allow the armor,
+        weapons, and gear to spillover. However, spillover sheets are ideal for any
+        data that can vary in length, such as spell lists, special abilities, etc.
+        This particular sheet uses the same layout twice, using it for the left and
+        right columns of output. You can have different layouts on this sheet, just
+        like a standard character sheet, positioning them as you choose.
+  -->
+  <sheet
+    id="standard2"
+    name="Standard character sheet, page #2"
+    spillover="yes">
+    <layoutref layout="oStandard2" reference="left"/>
+    <layoutref layout="oStandard2" reference="right"/>
+    <position><![CDATA[
+      ~setup the gap to be used between the various sections of the character sheet
+      autogap = 40
+      scenevalue[sectiongap] = autogap
+
+      ~calculate the width of the two columns of the character sheet, leaving a
+      ~suitable center gap between them
+      var colwidth as number
+      colwidth = (width - 50) / 2
+
+      ~output the layout on the lefthand side with whatever information will fit
+      layout[left].width = colwidth
+      layout[left].height = height
+      perform layout[left].render
+
+      ~output the layout on the righthand side with whatever information will fit
+      layout[right].width = colwidth
+      layout[right].height = height
+      layout[right].left = width - colwidth
+      perform layout[right].render
+      ]]></position>
+    </sheet>
+
+
+  </document>

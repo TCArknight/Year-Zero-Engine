@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document signature="Hero Lab Data">
+  <thing id="mecSkillRename" name="Skill Rename" compset="Mechanics">
+    <eval phase="Initialize" priority="1000"><![CDATA[~ Copy the below for each skill to rename
+~ hero.childfound[skMarksmanship].field[sklSettingName].text = "Xxxxx"
+~ hero.childfound[skMarksmanship].field[sklSettingAbbrev].text = "Xxx"]]></eval>
+    </thing>
+  <thing id="setForbiddenLands" name="Forbidden Lands" description="Settings to create a hero for the Forbidden Lands game." compset="Setting">
+    <fieldval field="setNumSpecialties" value="2"/>
+    <fieldval field="setSpecialtyTerm" value="Talent"/>
+    <fieldval field="setSpecialtyTermP" value="Talents"/>
+    <usesource source="srcForbidden" parent="Settings" name="Forbidden Lands"/>
+    <tag group="SettingFlag" tag="UseArchetypeSec"/>
+    <tag group="SettingFlag" tag="ArchtypeSecReq"/>
+    <tag group="ArchetypeNameSec" tag="Profession"/>
+    <tag group="SettingFlag" tag="UseKeyAttributes"/>
+    <tag group="SettingFlag" tag="UseKeySkills"/>
+    <tag group="SettingFlag" tag="AgeAdjust"/>
+    <tag group="SettingFlag" tag="UsePride"/>
+    <tag group="SettingFlag" tag="UseDarkSecret"/>
+    <tag group="SettingFlag" tag="UseRelationship"/>
+    <tag group="SettingFlag" tag="UseArchetypePri"/>
+    <tag group="SettingFlag" tag="ArchtypePriReq"/>
+    <tag group="ArchetypeNamePri" tag="Kin"/>
+    <tag group="SettingSkill" tag="skAnimalHandFL"/>
+    <tag group="SettingSkill" tag="skCraftingFL"/>
+    <tag group="SettingSkill" tag="skEnduranceFL"/>
+    <tag group="SettingSkill" tag="skHealingFL"/>
+    <tag group="SettingSkill" tag="skInsightFL"/>
+    <tag group="SettingSkill" tag="skLoreFL"/>
+    <tag group="SettingSkill" tag="skManipulationFL"/>
+    <tag group="SettingSkill" tag="skMarksmanFL"/>
+    <tag group="SettingSkill" tag="skMeleeFL"/>
+    <tag group="SettingSkill" tag="skMightFL"/>
+    <tag group="SettingSkill" tag="skMoveFL"/>
+    <tag group="SettingSkill" tag="skPerformanceFL"/>
+    <tag group="SettingSkill" tag="skScoutFL"/>
+    <tag group="SettingSkill" tag="skSleightHandFL"/>
+    <tag group="SettingSkill" tag="skStealthFL"/>
+    <tag group="SettingSkill" tag="skSurvivalFL"/>
+    <tag group="SettingFlag" tag="DicePool"/>
+    <tag group="SettingFlag" tag="AttributeDamage"/>
+    <eval phase="Initialize" priority="500">perform hero.childfound[wpUnarmed].setfocus
+
+perform focus.delete[WeaponFeature.?]
+perform focus.assign[WeaponFeature.Blunt]</eval>
+    </thing>
+  <thing id="arcKinHuman" name="Human" description="Humans came to Ravenland as intruders. Yet, you have earned the respect of the other kin by showing them what organization and skill can do. While some fear or dislike you, the more open-minded among the native kin should understand that humans are a blessing, if only they could see past their prejudices – while also giving up some land and gold, of course.\n\nSome of your ancestors came with the armies from Alderland to fight against elves, dwarves, and orcs. Others sought sanctuary from the war as refugees and settlers. You came from across the southern mountains or rode from Aslene in the west, and stayed after the din of battle faded, the roads were closed, and demons feasted on whatever remained.\n\nWhen the Blood Mist fell like a shroud across Ravenland, your ancestors were forced to huddle together for ten generations, till the soil, and simply try to survive. But now the Mist has lifted, and the world has opened up again. You have exchanged the plow for a sword. You were born here, and you will take what you want, whether those who stand in your way be other humans or even stranger beings." compset="Archetype" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <tag group="KeyAttribute" tag="attrEmp"/>
+    <tag group="KeySkill" tag="skAnimalHandFL"/>
+    <tag group="KeySkill" tag="skEnduranceFL"/>
+    <tag group="KeySkill" tag="skHealingFL"/>
+    <tag group="KeySkill" tag="skInsightFL"/>
+    <tag group="KeySkill" tag="skSurvivalFL"/>
+    <bootstrap thing="abFLAdaptive"></bootstrap>
+    </thing>
+  <thing id="arcKinElf" name="Elf" description="At the dawn of time, you fell like a rain of glimmering rubies, scattered across the land by the Red Wanderer of the Heavens. Your task was to cover the barren land in life, for the Wanderer wished to lay his eyes on beauty. You clothed yourself in flesh and coaxed plants from the ground so that soon you could walk singing through the lush forests of Ravenland, to the joy of the Wanderer. The god Clay drew animals from the mud, fish and toads from the mires, and birds from the clouds. The Great Craftsman gave you the task of shepherding them, with the dwarves preparing the ground for your art.\n\nThen, the humans arrived. Their Raven God bought half the land for them and gave you the orcs in exchange. But the humans’ intentions were false and they soon attacked you, with demons in tow. Since you were few in number, you sent the orcs into battle, but those craven creatures failed you. Your elders claim that everything will return to the way things were if you only wait, that humankind will wither and eventually die, just as time eats away at all the stoneless kin. But the younger among you do not want to wait. While some desire to coexist with the humans peacefully, a growing number say the upstarts must be driven out." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeYoung" value="0"/>
+    <fieldval field="arcAgeAdult" value="9999"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLInnerPeace"></bootstrap>
+    </thing>
+  <thing id="arcProfDruid" name="Druid" description="Ever since the god Clay shaped the world, you and the brothers and sisters of your order have been tasked with safeguarding nature. You maintain the balance of the world. Your hand can be gentle or cruel, depending on what the situation requires, but you always act with respect and exercise judgment. You hold the forces of nature in your hands – the earth, the weather, the plants and the animals all listen to your voice. You are a Druid." compset="Archetype" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrWit"/>
+    <tag group="ArchetypeCat" tag="Secondary"/>
+    <tag group="KeySkill" tag="skAnimalHandFL"/>
+    <tag group="KeySkill" tag="skEnduranceFL"/>
+    <tag group="KeySkill" tag="skHealingFL"/>
+    <tag group="KeySkill" tag="skInsightFL"/>
+    <tag group="KeySkill" tag="skSurvivalFL"/>
+    <tag group="Magic" tag="CanUseMagic"/>
+    <bootstrap thing="magFLGeneral"></bootstrap>
+    </thing>
+  <thing id="setOGLSkills" name="OGL Skills" description="Use core OGL Skills" compset="Setting">
+    <usesource source="OGLSkills" parent="Settings" name="Use OGL Skills"/>
+    <tag group="SettingSkill" tag="skCrafting"/>
+    <tag group="SettingSkill" tag="skForce"/>
+    <tag group="SettingSkill" tag="skHealing"/>
+    <tag group="SettingSkill" tag="skInsight"/>
+    <tag group="SettingSkill" tag="skMarksmanship"/>
+    <tag group="SettingSkill" tag="skMelee"/>
+    <tag group="SettingSkill" tag="skMobility"/>
+    <tag group="SettingSkill" tag="skObservation"/>
+    <tag group="SettingSkill" tag="skPersuasion"/>
+    <tag group="SettingSkill" tag="skStamina"/>
+    <tag group="SettingSkill" tag="skStealth"/>
+    <tag group="SettingSkill" tag="skSurvival"/>
+    </thing>
+  <thing id="skMightFL" name="Might" description="You use MIGHT to lift, pull, push, or hold tight to something. If your roll succeeds, you perform this feat of strength." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mgt"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skForce"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skEnduranceFL" name="Endurance" description="When the road is long and hard, when your legs can’t carry you any longer, roll for ENDURANCE. Roll for this skill when you travel in extreme weather or when you are forced to suffer bitter cold. If you succeed, you push through the pain and can fight on for a while longer." compset="Skill" summary="When the road is long and hard, when your legs can’t carry you any longer, roll for ENDURANCE." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="End"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skStamina"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skMeleeFL" name="Melee" description="To be able to defend yourself with weapon in hand is important to all adventurers in the Forbidden Lands, regardless of your profession, though it is most important for a Fighter. Roll MELEE when you attack or parry in close combat. If the roll succeeds, you hit your adversary and do Weapon Damage (see page 100)." compset="Skill" summary="Roll MELEE when you attack or parry in close combat." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mel"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skMelee"/>
+    <tag group="Helper" tag="MeleeWpnSkill" name="MeleeWpnSkill" abbrev="MeleeWpnSkill"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skCraftingFL" name="Crafting" description="You often have to make your own gear in the Forbidden Lands, and repair it if it breaks. To do so requires the CRAFTING skill." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Cra"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skCrafting"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skStealthFL" name="Stealth" description="It is often wise to avoid combat and sneak past the enemy instead. Roll an opposed roll (see page 49) with your STEALTH skill against your adversary’s SCOUT. If you win, you manage to sneak past them without being spotted. You can also use this skill to remain hidden and avoid discovery when you are stationary. A third way to use this skill is to make a sneak attack (see page 90)." compset="Skill" summary="It is often wise to avoid combat and sneak past the enemy instead. Roll an opposed roll (see page 49) with your STEALTH skill against your adversary’s SCOUT." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Ste"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skStealth"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skMoveFL" name="Move" description="When you are going to jump, climb, move fast, or perform any other action that requires speed or motor control, you roll MOVE. You can also use MOVE to duck in close combat and run away from conflict." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mov"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skMobility"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skSleightHandFL" name="Sleight Of Hand" description="When you are trying to steal the queen’s jewel unnoticed, pick a lock, or perform any other action that requires fine motor skills, you roll SLEIGHT OF HAND." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sli"/>
+    <usesource source="srcForbidden"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skMarksmanFL" name="Marksmanship" description="Using a bow and arrow, sling, or a simple rock, you can stop enemies at a distance and can avoid bloodying your hands. Roll MARKSMANSHIP when you throw or fire a weapon at an enemy at a distance. If you succeed, the shot hits its target and you do weapon damage (see page 100) to your enemy." compset="Skill" summary="Using a bow and arrow, sling, or a simple rock, you can stop enemies at a distance and can avoid bloodying your hands. Roll MARKSMANSHIP when you throw or fire a weapon at an enemy at a distance." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mar"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skMarksmanship"/>
+    <tag group="Helper" tag="RangedWpnSkill" name="RangedWpnSkill" abbrev="RangedWpnSkill"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skScoutFL" name="Scouting" description="As an adventurer in the Forbidden Lands, you always have to be on your guard, or you won’t live long. You use your SCOUTING skill to discover anyone sneaking up on you." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sco"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skObservation"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skLoreFL" name="Lore" description="Myths and legends are not just tales to amuse around the campfire. They often contain vital knowledge about the Forbidden Lands that has been passed down through generations. Roll for LORE when you want to know more about an adventure site, an important NPC or an artifact. If you succeed, you will remember a legend (see page 6) about it. Some legends are available as premade handouts." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Lor"/>
+    <usesource source="srcForbidden"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skSurvivalFL" name="Survival" description="The Forbidden Lands are dangerous ground, where wild beasts roam the land. The ignorant can lose their lives by choosing the wrong path through the woods or drinking from the wrong water source. You can roll SURVIVAL in a number of different situations when you are traveling in the wilderness." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sur"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skSurvival"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skInsightFL" name="Insight" description="Being able to read other people and see through lies and deceit can be an important ability for an adventurer. Roll INSIGHT when someone is trying to MANIPULATE you (opposed roll). Read more below.\n\nYou can also use this skill to determine an NPC’s state of mind. You must be close to the NPC and spend a few minutes observing him. If your roll is successful, the GM must tell you which is the NPC’s strongest emotion right now – for example hate, fear, contempt, or love." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Ins"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skInsight"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skManipulationFL" name="Manipulation" description="Life in the Forbidden Lands is bloody, but you can often reach your goals without violence, through charm, threats, or sensible reasoning. There are many methods to make another person see things your way. Make an opposed roll (see page 49) with your MANIPULATION against your adversary’s INSIGHT. Your chances are affected both by your bargaining position and your Reputation (see page 40). If you succeed, your adversary must either do what you want or immediately attack you physically." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Man"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skPersuasion"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skHealingFL" name="Healing" description="The Forbidden Lands are a dangerous place. As an adventurer, there is a significant risk that you and your friends will be injured, sooner or later. This is when the HEALING skill is useful. It can be used in two different ways:" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Heal"/>
+    <usesource source="srcForbidden"/>
+    <tag group="CountsAsSkill" tag="skHealing"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skPerformanceFL" name="Performance" description="Singing and performing are highly valued in the Forbidden Lands. The land is permeated by legends and myths, passed on by the people through generations. The PERFORMANCE skill can be used in several ways." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Perf"/>
+    <usesource source="srcForbidden"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skAnimalHandFL" name="Animal Handling" description="The Forbidden Lands are full of horrible beasts and monsters, but there are also plenty of regular animals in the forests, on the plains, and in the mountains – these can be dangerous as well. Animals are either wild or tame. The ANIMAL HANDLING skill can be used in several different ways:" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Ani"/>
+    <usesource source="srcForbidden"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="abFLAdaptive" name="Adaptive" description="Humans are new to the Forbidden Lands and are seen as intruders by the other kin. But no other kin can adapt to new situations and living conditions the way the humans can. If you spend a Willpower Point when you are about to roll for a skill, you can roll for any skill of your choice to achieve the same result. You must be able to motivate how you use the chosen skill. The GM has final say, but should give you some leeway." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinHuman"/>
+    </thing>
+  <thing id="abFLInnerPeace" name="Inner Peace" description="Elves have a connection to the inner nature of their own, far beyond that of any of the other kin. Their immortality makes them less susceptible to the trials of the world compared to the other kin. By spending a WP, you can enter a state of deep meditation. This lasts for a Quarter Day during which you must remain undisturbed. When you emerge from the meditation, you have healed all damage as well as any critical injuries, except lost limbs." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinElf"/>
+    </thing>
+  <thing id="abHdrKin" name="-- Kin --" compset="Specialty" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    </thing>
+  <thing id="abHdrGeneral" name="-- General --" compset="Specialty" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="General"/>
+    </thing>
+  <thing id="abHdrProf" name="-- Profession --" compset="Specialty" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Profession"/>
+    </thing>
+  <thing id="abFLPsychicPwr" name="Psychic Power" description="The dual heritage of the half-elves makes them particularly suited to channel their force of will to achieve feats beyond the natural. Every time you spend one or more Willpower Points to activate a talent or cast a spell, the first WP count as two. If you spend two WP it counts as three, and so on. Note that this also increases the risk of magic mishaps." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinHalfElf"/>
+    </thing>
+  <thing id="arcKinHalfElf" name="Half-Elf" description="You are the best of two kin, born from the union of humans and elves after they traded hostages during The Shift. You were conceived because those things that are good, strong, and vibrant always find their way to each other. Your elven ancestors taught you the ways of magic, granted you wisdom and long life, but you rejected their torpid languor. Your human ancestors gave you vigor, but you rejected their foolishness and falsehood, as well as their smell and crude appearance. You are the future. Both elves and humans know it in their hearts – but let them be blind to your superiority if they can’t stomach realities. The half-elves are the crown of creation and you will mold the world into what the gods and your own glorious kin intended." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeYoung" value="30"/>
+    <fieldval field="arcAgeAdult" value="100"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrWit"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLPsychicPwr"></bootstrap>
+    </thing>
+  <thing id="arcKinDwarf" name="Dwarf" description="In the beginning, the god Huge gave your ancestors a small pebble and the task of building a world around it. They stoked their forges and sang their stone songs, so their words took hold and the sphere grew. Over many generations, the dwarves expanded the sphere. Soon, the curve of the world was barely visible. And so, you will continue building until the sphere reaches the god’s fiery hearth in the sky. The feeble elves were given the task of growing grass and trees across the surface of the sphere, to keep it moist and prepare it for new layers, like the carpenter who prepares a wooden surface before it is glued to another. Thus, the elves have a task to fulfill and you accept them.\n\nThe arrival of humans slowed down your holy task of building the world. You were given the orcs as servants in exchange for a piece of the forged land, but orcs have limited skills and questionable loyalty, as was displayed in the inevitable war that broke out. Humans may be resourceful but have no purpose and thus fail to understand your work as the chosen ones of Huge. They must be kept in check so your work may continue. Some younger ones are tempted to meet the harsh light of the world and run around on the surface like humans. Let them! Hopefully, they will come of age and return with more sense than when they left." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeYoung" value="40"/>
+    <fieldval field="arcAgeAdult" value="80"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrStr"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLTrueGrit"></bootstrap>
+    </thing>
+  <thing id="arcKinHalfling" name="Halfling" description="Everyone is happy and tubby in your family. They sing humorous songs in the inns, and drink and smoke, but when darkness falls, they vomit in the flowerbeds and go home to scold their children. Your crazy aunt is locked up, and no one wants to acknowledge your even more twisted relatives even though everybody knows they are out there in the woods. You clean the flowerbeds and oil the wooden facade of your burrow so the neighbors will see it and be forced to go out as well, and everyone smiles and nods, even though they hate and slander each other as soon as the opportunity arises. You can’t stand it anymore. You’re going out into the world and never coming back again. You want blood on your knife and gold in your purse, to eat dangerously spicy food and see streets that no one cares to sweep, in villages where no one grins without reason." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeAdult" value="60"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrEmp"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLHardToCatch"></bootstrap>
+    </thing>
+  <thing id="arcKinWolfkin" name="Wolfkin" description="You are part of this land. The other kin are pitiful and spoiled, needing to go inside to warm their paws by the fire after a day in the woods and boil their meat so their weak stomachs can handle it. They couldn’t stand the breath of the Huntress, so they died like weak pups. It’s known that rot springs from such weakness. You and your pack live as was intended. You hunt. You howl together and do not beat wood or tin cans because your own voices have grown weak.\n\nYou will roam day and night, basking in the far parts of the creation of the goddess. You long to wander unknown forests, to smell the distant scents and drink the intoxicating blood of strange prey." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeYoung" value="20"/>
+    <fieldval field="arcAgeAdult" value="40"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLHuntingInst"></bootstrap>
+    </thing>
+  <thing id="arcKinOrc" name="Orc" description="Orcs are an ancient and free kin, but the elves and dwarves of Ravenland enslaved your ancestors. When war came, they needed the courage and strong arms of the orcs. Your masters fled as the tide of battle turned, when humans, fearing the onslaught of your brethren, resorted to sorcery and to demons sprung from their unclean dreams. Now, you are free again, and the time has come for the world to learn to respect the orcs. You are many and you are strong, and you will show the other kin what your perseverance can accomplish. The clans grow. You will make Ravenland great again. But first, you will go out into the world to ravage and have a bit of fun." compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeYoung" value="20"/>
+    <fieldval field="arcAgeAdult" value="45"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrStr"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLUnbreakable"></bootstrap>
+    </thing>
+  <thing id="abFLTrueGrit" name="True Grit" description="Dwarves are far more stubborn than others, and can fight on when other kin have no strength left. You can push a dice roll multiple times by spending Willpower Points. Every point spent allows you to push the roll one more time." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinDwarf"/>
+    </thing>
+  <thing id="abFLHardToCatch" name="Hard To Catch" description="Halflings are notoriously hard to get a grip on, and they can easily evade even the most tenacious of pursuers. You can spend Willpower Points in combat to avoid being hit by physical attacks. Every WP spent eliminates one x the attacker rolls." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinHalfling"/>
+    </thing>
+  <thing id="abFLHuntingInst" name="Hunting Instincts" description="The wolfkin have a powerful sense of smell and can track their prey for days once they have caught their scent. You can spend Willpower Points to designate a person or a creature as your prey. Your prey must be within line of sight, or there must be a scent to follow. The number of WP you spend equals the number of days that you can follow your prey’s scent. In combat, all your attacks against your prey get a +1 bonus per WP spent, until the creature is Broken or until you choose to let your prey go." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinWolfkin"/>
+    </thing>
+  <thing id="abFLUnbreakable" name="Unbreakable" description="The orcs were created to serve. Their bodies are strong, and they are very resilient when it comes to pain and punishment. When you are Broken by any kind of damage (see page 107), you can spend Willpower Points to immediately get back on your feet. For every point you spend, you recover one point in the Broken attribute. You cannot use this talent unless you are Broken. The talent does not affect critical injuries." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinOrc"/>
+    </thing>
+  <thing id="abFLPathHealing" name="Path of Healing" description="Your calling is to use the forces of nature to heal and nurture the injured and the lost souls. The rank of this talent determines which spells you can use." compset="Specialty">
+    <fieldval field="spcDescRank1" value="You can cast rank 1 spells from the Healing discipline."/>
+    <fieldval field="spcDescRank2" value="You can cast rank 2 spells from the Healing discipline."/>
+    <fieldval field="spcDescRank3" value="You can cast rank 3 spells from the Healing discipline."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <tag group="Helper" tag="MagicSpecialty"/>
+    <tag group="Magic" tag="magFLHealing"/>
+    <bootstrap thing="magFLHealing"></bootstrap>
+    <eval phase="Final" priority="1000"><![CDATA[var summ as string
+summ = "You can cast up to rank " & field[xCount].value & " spells from the Healing discipline."
+
+field[spcRankSummary].text = summ]]></eval>
+    <pickreq thing="arcProfDruid"/>
+    <exprreq message="Max of 3 Ranks already taken."><![CDATA[hero.tagcount[Specialty.abFLPathHealing] <= 3]]></exprreq>
+    </thing>
+  <thing id="setOGLDice" name="OGL - Dice Pool" description="OGL Skills/Specialties with Dice Pool method" compset="Setting">
+    <usesource source="OGL_Dice" parent="Settings" name="OGL With Dice Pool"/>
+    <tag group="SettingSkill" tag="skCrafting"/>
+    <tag group="SettingSkill" tag="skForce"/>
+    <tag group="SettingSkill" tag="skHealing"/>
+    <tag group="SettingSkill" tag="skInsight"/>
+    <tag group="SettingSkill" tag="skMarksmanship"/>
+    <tag group="SettingSkill" tag="skMelee"/>
+    <tag group="SettingSkill" tag="skMobility"/>
+    <tag group="SettingSkill" tag="skObservation"/>
+    <tag group="SettingSkill" tag="skPersuasion"/>
+    <tag group="SettingSkill" tag="skStamina"/>
+    <tag group="SettingSkill" tag="skStealth"/>
+    <tag group="SettingSkill" tag="skSurvival"/>
+    <tag group="SettingFlag" tag="UseArchetypePri"/>
+    <tag group="ArchetypeNamePri" tag="Archetype"/>
+    <tag group="SettingFlag" tag="DicePool"/>
+    </thing>
+  <thing id="setOGLStepped" name="OGL - Stepped Dice" description="OGL Skills/Specialties with Dice Pool method" compset="Setting">
+    <usesource source="OGL_Step" parent="Settings" name="OGL With Stepped Dice"/>
+    <tag group="SettingSkill" tag="skForce"/>
+    <tag group="SettingSkill" tag="skHealing"/>
+    <tag group="SettingSkill" tag="skInsight"/>
+    <tag group="SettingSkill" tag="skMarksmanship"/>
+    <tag group="SettingSkill" tag="skMelee"/>
+    <tag group="SettingSkill" tag="skMobility"/>
+    <tag group="SettingSkill" tag="skObservation"/>
+    <tag group="SettingSkill" tag="skPersuasion"/>
+    <tag group="SettingSkill" tag="skStamina"/>
+    <tag group="SettingSkill" tag="skStealth"/>
+    <tag group="SettingSkill" tag="skSurvival"/>
+    <tag group="SettingFlag" tag="UseArchetypePri"/>
+    <tag group="ArchetypeNamePri" tag="Archetype"/>
+    <tag group="SettingFlag" tag="StepDice"/>
+    <tag group="SettingSkill" tag="skCrafting"/>
+    <tag group="SettingFlag" tag="DirectSkill"/>
+    </thing>
+  <thing id="arcKinGoblin" name="Goblin" description="The elders say you are the dark brothers of the halflings. Like you give a shit! All you know is that you live while the lardbags don’t even try. What do halflings know about howling with wolves, licking blood off drippertrees under a full moon or making love among nettles? If you didn’t keep nightwatch over their pretty villages, trolls and wolfkin would have torn them apart a long time ago. You say enough and be gone with that! The world’s out there, swollen with smells and flavor and silver and thrills. You’ll be taking off into the dark, fingers dug deep into your wolf ’s fur, froth washing your face. The night’s alive and you’re the ones living it!" compset="Archetype" uniqueness="unique">
+    <fieldval field="arcAgeAdult" value="60"/>
+    <usesource source="srcForbidden"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <bootstrap thing="abFLNocturnal"></bootstrap>
+    </thing>
+  <thing id="abFLNocturnal" name="Nocturnal" description="Goblin prefer the night and hate daylight, which hurts their eyes. They can see in the dark and are thus not affected by darkness at all. Also, when rolling for STEALTH in a dark or dimly lit environment, you can spend Willpower Points which are automatically turned into extra x. You may even roll first and spend WP after you see how the roll goes." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="Kin"/>
+    <pickreq thing="arcKinDwarf"/>
+    </thing>
+  <thing id="abFLPathSight" name="Path of Sight" description="You can see beyond sight, and your inner eye can\nsee what has happened and what will happen. The rank of this talent determines which spells you can use." compset="Specialty">
+    <fieldval field="spcDescRank1" value="You can cast rank 1 spells from the Awareness discipline."/>
+    <fieldval field="spcDescRank2" value="You can cast rank 2 spells from the Awareness discipline."/>
+    <fieldval field="spcDescRank3" value="You can cast rank 3 spells from the Awareness discipline."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <tag group="Helper" tag="MagicSpecialty"/>
+    <tag group="Magic" tag="magFLAwareness"/>
+    <eval phase="Final" priority="1000"><![CDATA[var summ as string
+summ = "You can cast up to rank " & field[xCount].value & " spells from the Awareness discipline."
+
+field[spcRankSummary].text = summ]]></eval>
+    <pickreq thing="arcProfDruid"/>
+    </thing>
+  <thing id="abFLPathShiftSha" name="Path of Shifting Shapes" description="You are one with the feral creatures of the world and can assume their attributes or even take their form. The rank of this talent determines which spells you can use." compset="Specialty">
+    <fieldval field="spcDescRank1" value="You can cast rank 1 spells from the Shapeshifting discipline."/>
+    <fieldval field="spcDescRank2" value="You can cast rank 2 spells from the Shapeshifting discipline."/>
+    <fieldval field="spcDescRank3" value="You can cast rank 3 spells from the Shapeshifting discipline."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <tag group="Helper" tag="MagicSpecialty"/>
+    <tag group="Magic" tag="magFLShapeshift"/>
+    <eval phase="Final" priority="1000"><![CDATA[var summ as string
+summ = "You can cast up to rank " & field[xCount].value & " spells from the Shapeshifting discipline."
+
+field[spcRankSummary].text = summ]]></eval>
+    <pickreq thing="arcProfDruid"/>
+    </thing>
+  <thing id="abFLAmbidextrous" name="Ambidextrous" description="You are skilled in the art of fighting with one close combat weapon in each hand. You have a primary weapon in your favored (or sword) hand and a secondary weapon in your other hand.\n\nYou can draw both weapons with a single DRAW WEAPON action." compset="Specialty">
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank1" value="You can use your secondary weapon to perform one extra attack per round, as a fast action. It must be a LIGHT weapon and the attack is modified by –2."/>
+    <fieldval field="spcDescRank2" value="You can use your secondary weapon to perform one extra attack per round, as a fast action. You can use a normal weapon and the attack is modified by –2."/>
+    <fieldval field="spcDescRank3" value="You can use your secondary weapon to perform one extra attack per round, as a fast action."/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="General"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    </thing>
+  <thing id="magFLHealing" name="Healing" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="splFLMagicSeal" name="Magical Seal" description="Using this spell, you protect a person or a location (no bigger than a human) from magic. The Power Level of any spells cast against that person or place during the Quarter Day is decreased by the Power Level of the MAGICAL SEAL." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Piece of chalk"/>
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLGeneral"/>
+    <tag group="MagicRange" tag="ArmLength"/>
+    <tag group="MagicDuration" tag="QuarterDay"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="splFLSenseMagic" name="Sense Magic" description="As a sorcerer or druid, you automatically sense whenever someone uses magic within SHORT range or if an item you hold is charged with magical power. If you want to know more about what kind of magic is involved, you must cast the SENSE MAGIC spell. Using this spell is also required to detect OBSCURED magic (see below) – your Power Level must then be equal to or higher than the Power Level of the OBSCURE MAGIC spell." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Divining Rod"/>
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLGeneral"/>
+    <tag group="MagicRange" tag="Short"/>
+    <tag group="MagicDuration" tag="Immediate"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="splFLDispelMagic" name="Dispel Magic" description="You can interfere with the spells cast by other magic users. This spell is reactive and breaks the initiative order of combat in the round (see page 83). You decrease the Power Level of your opponent’s spell with the Power Level of your DISPEL. If the result is zero or less, your opponent’s spell has no effect at all. You must both roll for overcharge and mishaps, as with any other spell. You must decide how many WP you spend on your DISPEL before you both roll." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Iron Filings"/>
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLGeneral"/>
+    <tag group="MagicRange" tag="Short"/>
+    <tag group="MagicDuration" tag="Immediate"/>
+    <tag group="MagicRank" tag="Rank2"/>
+    </thing>
+  <thing id="splFLHealingHands" name="Healing Hands" description="You can heal damage to Strength or Agility by laying your hands on the wounded. You immediately heal a number of points equal to the Power Level. This spell does not affect critical injuries. You cannot heal yourself." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Clay"/>
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLHealing"/>
+    <tag group="MagicRange" tag="ArmLength"/>
+    <tag group="MagicDuration" tag="Immediate"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="magFLGeneral" name="General" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="splFLAnimalSpeech" name="Animal Speech" description="This spell allows you to speak with a mammal. You can ask a number of questions equal to the Power Level of the spell. The animal can tell you what it has seen, heard, or smelled – but they do not perceive the world as humanoids do, so their answers are often hard to interpret. The main advantage is that they never lie." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Claw or Tooth"/>
+    <usesource source="srcForbidden"/>
+    <tag group="MagicRange" tag="Near"/>
+    <tag group="MagicDuration" tag="Turn15"/>
+    <tag group="Magic" tag="magFLShapeshift"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="magFLShapeshift" name="Shapeshifting" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="magFLAwareness" name="Awareness" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="magFLSymbolism" name="Symbolism" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="magFLStoneSong" name="Stone Song" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="magFLBloodMagic" name="Blood Magic" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="magFLDeathMagic" name="Death Magic" compset="Magic" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    </thing>
+  <thing id="splFLBearsClaw" name="Bear&apos;s Claw" description="You can strike your enemy with the force of a great bear. You hit automatically and cause damage equal to the Power Level. The attack cannot be PARRIED or DODGED, but armor has normal effect." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Bear&apos;s Claw"/>
+    <usesource source="srcForbidden"/>
+    <tag group="MagicRange" tag="ArmLength"/>
+    <tag group="MagicDuration" tag="Immediate"/>
+    <tag group="Magic" tag="magFLShapeshift"/>
+    <tag group="MagicRank" tag="Rank2"/>
+    </thing>
+  <thing id="splFLCleanseSpi" name="Cleanse Spirit" description="You can focus the forces of nature to enlighten dark souls. You immediately heal a number of Wits or Empathy points equal to the Power Level of your spell. You cannot heal yourself." compset="Spell" uniqueness="useronce">
+    <fieldval field="splIngredients" value="Burning Candle"/>
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLHealing"/>
+    <tag group="MagicRange" tag="ArmLength"/>
+    <tag group="MagicDuration" tag="Immediate"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLGeneral" name="-- General --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLGeneral"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLHealing" name="-- Healing --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLHealing"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLAwareness" name="-- Awareness --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLAwareness"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLBloodMagic" name="-- Blood Magic --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLBloodMagic"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLDeathMagic" name="-- Death Magic --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLDeathMagic"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLShapeshif" name="-- Shapeshifting --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLShapeshift"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLStoneSong" name="-- Stone Song --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLStoneSong"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="hdrFLSymbolism" name="-- Symbolism --" compset="Spell" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <tag group="Magic" tag="magFLSymbolism"/>
+    <tag group="MagicRank" tag="Rank1"/>
+    </thing>
+  <thing id="wpFLKnife" name="Knife" compset="Melee">
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="grCost" value="1"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponRange" tag="ArmLength"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="WeaponFeature" tag="Pointed"/>
+    <tag group="WeaponGrip" tag="OneHand"/>
+    <tag group="GearWeight" tag="Light"/>
+    </thing>
+  <thing id="wpFLRock" name="Rock" compset="Ranged">
+    <fieldval field="wpDamage" value="1"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponRange" tag="Near"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="WeaponGrip" tag="OneHand"/>
+    </thing>
+  <thing id="wpThrowKnife" name="Throwing Knife" compset="Ranged">
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="grCost" value="1"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="WeaponGrip" tag="OneHand"/>
+    <tag group="WeaponRange" tag="Near"/>
+    <tag group="GearWeight" tag="Light"/>
+    </thing>
+  <thing id="wpFLCrossbowLight" name="Light Crossbow" compset="Ranged">
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="wpDamage" value="2"/>
+    <fieldval field="grCost" value="24"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponGrip" tag="TwoHand"/>
+    <tag group="WeaponRange" tag="Long"/>
+    <tag group="WeaponFeature" tag="LoadSlow"/>
+    <tag group="GearWeight" tag="Normal"/>
+    </thing>
+  <thing id="shdFLSmall" name="Small Shield" compset="Shield">
+    <fieldval field="defArmorRating" value="1"/>
+    <fieldval field="grCost" value="6"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Normal"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="DefenseFeature" tag="Light"/>
+    </thing>
+  <thing id="shdFLLarge" name="Large Shield" compset="Shield">
+    <fieldval field="defArmorRating" value="2"/>
+    <fieldval field="grCost" value="6"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Heavy"/>
+    </thing>
+  <thing id="armFLLeather" name="Leather" compset="Armor">
+    <fieldval field="grCost" value="4"/>
+    <fieldval field="defArmorRating" value="2"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Light"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="DefenseFeature" tag="Light"/>
+    <tag group="ArmorLoc" tag="Body"/>
+    </thing>
+  <thing id="armFLStudded" name="Studded Leather" compset="Armor">
+    <fieldval field="grCost" value="6"/>
+    <fieldval field="defArmorRating" value="3"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Normal"/>
+    <tag group="ArmorLoc" tag="Body"/>
+    </thing>
+  <thing id="armFLChainmail" name="Chainmail" compset="Armor">
+    <fieldval field="grCost" value="24"/>
+    <fieldval field="defArmorRating" value="6"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Heavy"/>
+    <tag group="WeaponFeature" tag="Heavy"/>
+    <tag group="DefenseFeature" tag="HalfArmorStabs"/>
+    <tag group="DefenseFeature" tag="Heavy"/>
+    <tag group="ArmorLoc" tag="Body"/>
+    </thing>
+  <thing id="armFLPlate" name="Plate Armor" compset="Armor">
+    <fieldval field="defArmorRating" value="8"/>
+    <fieldval field="grCost" value="80"/>
+    <usesource source="srcForbidden"/>
+    <tag group="GearWeight" tag="Heavy"/>
+    <tag group="ArmorLoc" tag="Body"/>
+    <tag group="DefenseFeature" tag="Heavy"/>
+    </thing>
+  <thing id="armFLStuddedCap" name="Studded Leather Cap" compset="Armor">
+    <fieldval field="defArmorRating" value="1"/>
+    <usesource source="srcForbidden"/>
+    <tag group="DefenseFeature" tag="Light"/>
+    <tag group="GearWeight" tag="Light"/>
+    <tag group="ArmorLoc" tag="Head"/>
+    <tag group="Equipment" tag="NoHands"/>
+    </thing>
+  <thing id="setAliens" name="Aliens" compset="Setting">
+    <fieldval field="setSpecialtyTerm" value="Talent"/>
+    <fieldval field="setSpecialtyTermP" value="Talents"/>
+    <usesource source="srcAliens" parent="Settings" name="Aliens Roleplaying Game"/>
+    <tag group="SettingFlag" tag="DicePool"/>
+    <tag group="SettingFlag" tag="UseArchetypePri"/>
+    <tag group="ArchetypeNamePri" tag="Career"/>
+    <tag group="SettingFlag" tag="UseKeyAttributes"/>
+    <tag group="SettingSkill" tag="skCloseCombatALI"/>
+    <tag group="SettingSkill" tag="skCommandALI"/>
+    <tag group="SettingSkill" tag="skComtechALI"/>
+    <tag group="SettingSkill" tag="skHvyMachALI"/>
+    <tag group="SettingSkill" tag="skManipulationALI"/>
+    <tag group="SettingSkill" tag="skMedicalALI"/>
+    <tag group="SettingSkill" tag="skMobilityALI"/>
+    <tag group="SettingSkill" tag="skObserveALI"/>
+    <tag group="SettingSkill" tag="skPilotingALI"/>
+    <tag group="SettingSkill" tag="skRangeCbtALI"/>
+    <tag group="SettingSkill" tag="skStaminaALI"/>
+    <tag group="SettingSkill" tag="skSurvivalALI"/>
+    <tag group="SettingFlag" tag="UseKeySkills"/>
+    <tag group="SettingFlag" tag="UseStress"/>
+    <tag group="SettingFlag" tag="UseHealthStrOnly"/>
+    <eval phase="Initialize" priority="500">perform hero.childfound[wpUnarmed].setfocus
+
+perform focus.delete[WeaponFeature.?]
+perform focus.assign[WeaponFeature.DoubleArmor]</eval>
+    </thing>
+  <thing id="arcCarRoughneck" name="Roughneck" description="Someone has to do the manual labor on the Frontier, and that someone is you. Life has dealt you some harsh blows but you’ve always struck back. You’ve been in countless barroom brawls, you swear a lot, and belch at the dinner table. In short, people find you uncouth. You really don’t care—you’ve grown past the need for niceties. No one works harder than you. You are up before first dawn and finish your workday long after second twilight. You are the cog that keeps the Frontier chugging. Your hands are calloused and your face is dirty, and the only thing harder than the work you do is the way you party." compset="Archetype" uniqueness="unique">
+    <usesource source="srcAliens"/>
+    <tag group="KeyAttribute" tag="attrStr"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <tag group="KeySkill" tag="skCloseCombatALI"/>
+    <tag group="KeySkill" tag="skHvyMachALI"/>
+    <tag group="KeySkill" tag="skStaminaALI"/>
+    </thing>
+  <thing id="skHvyMachALI" name="Heavy Machinery" description="Hard work is part of life for any roughneck on the\nFrontier, but at least you have powerful machines\nto help you. Roll for this skill when you attempt\nto use, repair, jury-rig or break any kind of heavy\nmachinery." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Hvy"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skStaminaALI" name="Stamina" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sta"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skCloseCombatALI" name="Close Combat" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="CCbt"/>
+    <usesource source="srcAliens"/>
+    <tag group="Helper" tag="MeleeWpnSkill"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skMobilityALI" name="Mobility" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mob"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skPilotingALI" name="Piloting" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Pil"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skRangeCbtALI" name="Ranged Combat" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="RCbt"/>
+    <usesource source="srcAliens"/>
+    <tag group="Helper" tag="RangedWpnSkill"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skObserveALI" name="Observation" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Obs"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skComtechALI" name="Comtech" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Comt"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skSurvivalALI" name="Survival" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Surv"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skManipulationALI" name="Manipulation" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Man"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skMedicalALI" name="Medical Aid" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Med"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skCommandALI" name="Command" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Comm"/>
+    <usesource source="srcAliens"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="abHdrCareer" name="-- Career --" compset="Specialty" isshowonly="yes">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    </thing>
+  <thing id="abALIResilient" name="Resilient" description="Only the hardiest folk survive out here. Roll for STRENGTH (attribute only, no skill) any time you suffer damage. You can’t push the roll, which does not count as an action. For every success you roll, one point of damage is eliminated. If all damage is eliminated, you suffer none at all." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="abALILongHaul" name="The Long Haul" description="You’ve seen it and done it all before. Nothing surprises you anymore. Once per Act in Cinematic play and once per game session in Campaign play, you may ignore all from a single roll." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="abALITrueGrit" name="True Grit" description="Life on the Frontier is a constant struggle. Luckily, you have what it takes to overcome anything that comes your way. You can push any skill roll based on STRENGTH twice, not just once like other characters. Each push increases your STRESS LEVEL by one." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="arcCarPilot" name="Pilot" compset="Archetype" uniqueness="unique">
+    <usesource source="srcAliens"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="KeySkill" tag="skPilotingALI"/>
+    </thing>
+  <thing id="abALIFullThrottle" name="Full Throttle" description="You like to go fast. Really fast. When piloting a spacecraft, you get a +2 modification to PILOTING rolls for any Accelerate or Decelerate actions." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="abALILikeBackHand" name="Like The Back Of Your Hand" description="This vehicle is yours, and you know every bolt and cable, nook and cranny. Choose one vehicle or spacecraft (not one type, but a single, specific craft). You get a +2 modification to PILOTING with the chosen vehicle. You can choose this talent several times, once for each vehicle." compset="Specialty">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="abALIReckless" name="Reckless" description="You live for the rush of adrenaline through your veins, pushing harder than others dare. You can push any skill roll based on AGILITY twice, not just once like other characters. Each push increases your STRESS LEVEL by one." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="Career"/>
+    <pickreq thing="arcCarRoughneck"/>
+    </thing>
+  <thing id="abALIBodyguard" name="Bodyguard" description="If someone within SHORT range of you is hit by an attack, you can dive in to take the hit. Roll for MOBILITY. It doesn’t count as an action in combat. If you roll one or more success, you take the hit instead. You can push the roll." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="General"/>
+    </thing>
+  <thing id="abALICalmBreath" name="Calm Breather" description="When making a supply roll for air, you get to roll two dice fewer than your Supply Level, to a minimum of one die." compset="Specialty" uniqueness="useronce">
+    <usesource source="srcAliens"/>
+    <tag group="SpecCat" tag="General"/>
+    </thing>
+  <thing id="wpALIM41AE2" name="Armat M41AE2 Heavy Pulse Rifle" description="A USCMC Squad Automatic Weapon modification of the M41A, this electric pulse support rifle has a longer barrel in place of the U1 grenade launcher. This is the machinegun you want laying down suppressing fire to cover your ass during an evac." compset="Ranged">
+    <fieldval field="shortname" value="M41AE2 Hvy. Pulse Rifle"/>
+    <usesource source="srcAliens"/>
+    <tag group="WeaponRange" tag="ArmLength"/>
+    </thing>
+  <thing id="wpALIU1GrenLau" name="Armat U1 Grenade Launcher" compset="Ranged">
+    <fieldval field="shortname" value="Gren. Launcher"/>
+    <fieldval field="wpDamage" value="Blast 9"/>
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="grCost" value="600"/>
+    <fieldval field="grWeight" value=".5"/>
+    <usesource source="srcAliens"/>
+    <tag group="WeaponRange" tag="Long"/>
+    </thing>
+  <thing id="wpALIM41A" name="Armat M41A Pulse Rifle" description="The standard issue weapon of the USCMC, the M41A Pulse Rifle is a 10mm automatic assault rifle with underslung 30mm pump-action grenade launcher combined in a sturdy housing with retractable stock and optional scope. The M41A fires explosive-tip caseless standard light armor-penetrating US M309 rounds accelerated via electronic pulse. Remaining ammo is tracked via an LED counter and the rifle has two firing modes—burst and full automatic. For more about the grenade launcher, see the U1 below. An otherwise reliable weapon, the M41A can jam when fully-loaded, so partially loaded magazines are recommended. (In their downtime on mission Marines will take the time to remove a few rounds from each of the magazines they carry.) Even with this flaw, the M41A is what you want slung over your shoulder—but if you are a civilian, good luck getting a permit to own one." compset="Ranged">
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="wpDamage" value="2"/>
+    <fieldval field="grCost" value="1200"/>
+    <fieldval field="wpSpecial" value="Grenade Launcher"/>
+    <fieldval field="grWeight" value=".5"/>
+    <fieldval field="shortname" value="M41A Pulse Rifle"/>
+    <usesource source="srcAliens"/>
+    <tag group="WeaponRange" tag="Long"/>
+    <tag group="WeaponGrip" tag="TwoHand"/>
+    <tag group="WeaponFeature" tag="ArmorPiercing"/>
+    <tag group="WeaponFeature" tag="FullAuto"/>
+    <bootstrap thing="wpALIU1GrenLau">
+      <autotag group="Equipment" tag="NoHands"/>
+      </bootstrap>
+    </thing>
+  </document>

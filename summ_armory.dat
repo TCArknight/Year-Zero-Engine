@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Armory" summary panel. This panel
+      contains the list of weapons and armor for the character.
+
+      Since all of the tables shown within this summary panel should normally fit
+      within the available vertical space, no scroller is required, so we turn off
+      the scroller for each table so that Hero Lab doesn't leave space for one. It
+      is possible that the list of weapons and armor is longer than will fit. If so,
+      then we just truncate the list to what we can actually fit.
+
+      All public visual elements used with summary panels start with the prefix "sm"
+      to associate them with the various summary panels.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- smDefense portal - table of armor and Shields
+  -->
+  <portal
+    id="smDefense"
+    style="tblInvisSm">
+    <table_fixed
+      component="Defense"
+      showtemplate="smDefense"
+      showsortset="Armory"
+      scrollable="no">
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & " Armor & Shields " & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- smRange portal - table of ranged weapons
+  -->
+  <portal
+    id="smRange"
+    style="tblInvisSm">
+    <table_fixed
+      component="WeapRange"
+      showtemplate="smWeapon"
+      scrollable="no">
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & " Ranged Weapons " & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- smMelee portal - table of melee weapons
+  -->
+  <portal
+    id="smMelee"
+    style="tblInvisSm">
+    <table_fixed
+      component="WeapMelee"
+      showtemplate="smWeapon"
+      scrollable="no">
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & " Melee Weapons " & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- smDefense template
+        This template shows the name and defensive value of armor and shields,
+        providing mouse-over behavior to show the details of each piece of gear.
+  -->
+  <template
+    id="smDefense"
+    name="Summary Defense Pick"
+    compset="Defense">
+
+    <portal
+      id="value"
+      style="lblSummary">
+      <label
+        field="defArmorRating">
+        </label>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblSummary">
+      <label>
+        <labeltext><![CDATA[
+          if (field[grIsEquip].value <> 0) then
+            @text = "{b}{i}"
+            endif
+          @text &= field[name].text
+          ]]></labeltext>
+        </label>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[name].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position the value on the left in a limited span and the name on the right
+      portal[value].width = 30
+      perform portal[name].alignrel[ltor,value,5]
+      ]]></position>
+    </template>
+
+
+  <!-- smWeapon template
+        This template shows the name and attack value of weapons, providing mouse-over
+        behavior to show the details of each piece of gear.
+  -->
+  <template
+    id="smWeapon"
+    name="Summary Weapon Pick"
+    compset="Weapon">
+
+    <portal
+      id="attack"
+      style="lblSummary">
+      <label
+        field="wpNetAtkOutput">
+        </label>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblSummary">
+      <label>
+        <labeltext><![CDATA[
+          if (field[grIsEquip].value <> 0) then
+            @text = "{b}{i}"
+            endif
+          @text &= field[name].text
+          ]]></labeltext>
+        </label>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[name].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position the attack value on the left in a limited span and the name on the right
+      portal[attack].width = 40
+      perform portal[name].alignrel[ltor,attack,5]
+      ]]></position>
+    </template>
+
+
+  <!-- smArmory layout
+        This layout contains the table of armor, table of ranged weapons, and table
+        of melee weapons for the character.
+  -->
+  <layout
+    id="smArmory">
+    <portalref portal="smDefense"/>
+    <portalref portal="smRange"/>
+    <portalref portal="smMelee"/>
+
+    <position><![CDATA[
+      ~position and size the tables to span the full layout
+      perform portal[smDefense].autoplace
+      perform portal[smRange].autoplace[20]
+      perform portal[smMelee].autoplace[20]
+      ]]></position>
+
+    </layout>
+
+
+  <!-- smArmory panel
+        This panel is designated as a summary panel and given an order that positions
+        it properly amongst the other defined summary panels. We setup a small margin
+        to indent the layout from the edges of the panel.
+
+        The panel is assigned a "live" tagexpr so that its visibility can be
+        controlled for different types of characters. While not really useful in the
+        sample data files, this approach can be quite useful when the data files
+        expand to govern creation of widely varying characters, such as vampires vs.
+        ghosts vs. mortals in the World of Darkness game system.
+  -->
+  <panel
+    id="smArmory"
+    name="Armory"
+    order="10030"
+    marginhorz="2"
+    marginvert="2"
+    issummary="yes">
+    <live>!HideTab.smArmory</live>
+    <layoutref layout="smArmory"/>
+
+    <position><![CDATA[
+      ]]></position>
+
+    </panel>
+
+
+  </document>

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Gear" tab panel. This tab is where
+      the user selects general gear (non-weapons) for the character.
+
+      All public visual elements used with this tab panel start with the prefix "gr"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- grGear portal
+        Presents a dynamic table where the user can add gear for the character.
+
+        We use separate templates for selecting gear and showing the gear that has
+        been chosen. Each of these appears further below.
+
+        We use an "additem" script to simply prompt the user to add gear.
+
+        The "buytemplate" and "selltemplate" attributes hook in the logic for
+        properly buying and selling gear for cash.
+
+        We use a "headertitle" script to place a suitable title above the table.
+
+        The "list" tag expression restricts everything to only equipment (e.g. no
+        weapons). The "candidate" tag expression is omitted, resulting in the same
+        contents as the "list" tag expression.
+  -->
+  <portal
+    id="grGear"
+    style="tblNormal">
+    <table_dynamic
+      component="Gear"
+      showtemplate="grGrPick"
+      choosetemplate="grGrThing"
+      buytemplate="BuyCash"
+      selltemplate="SellCash">
+      <list>component.Equipment</list>
+      <titlebar><![CDATA[
+        @text = "Select Gear to Purchase from the List Below"
+        ]]></titlebar>
+      <headertitle><![CDATA[
+        @text = "Miscellaneous Gear"
+        ]]></headertitle>
+      <additem><![CDATA[
+        @text = "Add New Gear"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- grGrThing template
+        Derived from the SimpleItem template, this includes the purchase cost and
+        the lotsize of the item to be purchased.
+  -->
+  <template
+    id="grGrThing"
+    name="Gear Thing"
+    compset="Equipment"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[name].text
+          if (field[lotsize].value > 1) then
+            @text &= " (x" & field[lotsize].text & ")"
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="cost"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[grCost].text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our dimensions, with a width that we dictate
+      height = portal[name].height
+      width = 250
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position the cost portal on the far right
+      perform portal[cost].alignedge[right,0]
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[cost].left - 10)
+      ]]></position>
+
+    </template>
+
+
+  <!-- grGrPick template
+        Derived from the SimpleItem template, this includes the gear button to move
+        equipment between various containers.
+  -->
+  <template
+    id="grGrPick"
+    name="Gear Pick"
+    compset="Equipment"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="name"
+      style="lblLeft"
+      showinvalid="yes">
+      <label
+        field="grStkName">
+        </label>
+      </portal>
+
+    <portal
+      id="username"
+      style="editNormal">
+      <edit
+        field="UserName"
+        maxlength="100">
+        </edit>
+      </portal>
+
+    <portal
+      id="container"
+      style="imgNormal">
+      <image_literal
+        image="container.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      <mouseinfo><![CDATA[
+        call InfoHolder
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="heldby"
+      style="imgNormal">
+      <image_literal
+        image="gearinfo.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      <mouseinfo><![CDATA[
+        call InfoHeld
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="gearmanage"
+      style="actGear"
+      tiptext="Click here to choose which container to place this equipment within.">
+      <action
+        action="gear">
+        </action>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this equipment">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~determine whether the container and heldby indicators should be visible
+      portal[container].visible = tagis[thing.holder?]
+      portal[heldby].visible = isgearheld
+
+      ~center the portals vertically
+      perform portal[info].centervert
+      perform portal[name].centervert
+      perform portal[username].centervert
+      perform portal[gearmanage].centervert
+      perform portal[delete].centervert
+      perform portal[container].centervert
+      perform portal[heldby].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~position the gear portal to the left of the info button
+      perform portal[gearmanage].alignrel[rtol,info,-8]
+
+      ~calculate the space to reserve for the various indicators
+      var reserve as number
+      if (portal[heldby].visible <> 0) then
+        reserve += portal[heldby].width + 2
+        endif
+      if (portal[container].visible <> 0) then
+        reserve += portal[container].width + 2
+        endif
+      if (portal[heldby].visible + portal[container].visible <> 0) then
+        reserve += 3
+        endif
+
+      ~position the name on the left and let it use all available space
+      var limit as number
+      limit = portal[gearmanage].left - 8 - reserve
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,limit)
+
+      ~if this is a "custom" gear pick, show an edit portal instead of the name
+      var nextleft as number
+      if (tagis[Helper.CustomItem] <> 0) then
+        portal[name].visible = 0
+        portal[username].left = portal[name].left
+        portal[username].width = minimum(200,limit)
+        nextleft = portal[username].right
+      else
+        portal[username].visible = 0
+        nextleft = portal[name].right
+        endif
+      nextleft += 5
+
+      ~show the 'container' icon to the right of the name (if visible)
+      if (portal[container].visible <> 0) then
+        portal[container].left = nextleft
+        nextleft = portal[container].right + 2
+        endif
+
+      ~show the 'held by' icon to the right of the container icon (if visible)
+      if (portal[heldby].visible <> 0) then
+        portal[heldby].left = nextleft
+        endif
+
+      ~if the gear can't be deleted (i.e. it's been auto-added instead of user-added,
+      ~set the style to indicate that behavior to the user
+      if (candelete = 0) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- gear layout
+        This layout orchestrates the display of the visual elements that comprise
+        the Gear tab. This amounts to a title and a table that allow the user to
+        add gear to the character.
+
+        The logic for this layout is similar to preceeding tabs, so please refer
+        to those tabs for more details.
+  -->
+  <layout
+    id="gear">
+    <portalref portal="grGear" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~position and size the table to span the full layout
+      perform portal[grGear].autoplace
+      ]]></position>
+
+    </layout>
+
+
+  <!-- gear panel
+        This is the "Gear" panel shown within Hero Lab. Since we want this panel to
+        appear second within the second grouping (equipment), we assign it an
+        "order" of 220.
+
+        The logic for this panel is similar to the logic for the preceeding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="gear"
+    name="Gear"
+    marginhorz="5"
+    marginvert="5"
+    order="220">
+    <live>!HideTab.gear</live>
+    <layoutref layout="gear"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

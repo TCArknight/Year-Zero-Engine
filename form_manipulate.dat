@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "tacManip" form for the game system.
+      The "tacManip" form represents the form where the user can apply damage and
+      other in-play effects to a character. This form is accessed via the Tactical
+      Console and not part of the normal Hero Lab interface for a character.
+
+      This form is shown as a standalone form, so the form must specify its own
+      dimensions. No sizing information is externally provided.
+
+      In general, the "tacManip" form should contain access to damage tracking,
+      key resource utilization, and any other in-play effects that will often be
+      needed when the user is focused on the Tactical Console.
+
+      All public visual elements used with this form start with the prefix "tac"
+      to associate them with the form.
+
+      NOTE! Unlike most other forms, the unique id of the "tacManip" form is NOT
+      specially recognized by Hero Lab. Instead, the form is explicitly identified
+      for use within the Tactical Console. As such, the id may be changed.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- tacNotes template
+        This template allows the user to annotate the actor with notes, such as
+        who he is attacking or being attacked by.
+  -->
+  <template
+    id="tacNotes"
+    name="Tactical Console Notes"
+    compset="Actor">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes"
+        text="Tactical Notes">
+        </label>
+      </portal>
+
+    <portal
+      id="notes"
+      style="editNormal">
+      <edit
+        field="tactNotes"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~our title should span the full width
+      portal[title].width = width
+
+      ~position the notes beneath the title
+      perform portal[notes].alignrel[ttob,title,3]
+
+      ~the notes are a bit narrower than the overall template width and centered
+      portal[notes].width = width - 50
+      perform portal[notes].centerhorz
+
+      ~show only three lines of visible text at a time
+      portal[notes].lineheight = 3
+
+      ~our height is the extent of our bottommost portal
+      height = portal[notes].bottom
+      ]]></position>
+
+    </template>
+
+
+  <!-- tacNotes layout
+        This layout consists only of the tactical notes defined above.
+  -->
+  <layout
+    id="tacNotes">
+    <templateref template="tacNotes" thing="actor" taborder="10"/>
+    <position>
+      ~position and size the template to span the full layout
+      perform template[tacNotes].autoplace
+
+      ~the height of the layout is the bottommost extent of our contents
+      height = autotop
+      </position>
+    </layout>
+
+
+  <!-- tacManip form
+        This is the manipulation form shown from within the Tactical Console where
+        the user can apply damage and other in-play effects to a character.
+
+        When this form is shown, the primary use is to apply damage or a similar
+        effect to an actor. Consequently, pressing the <Enter> key should trigger
+        damage to be applied or something similar, as opposed to closing the form.
+        To establish this distinction in behavior, the form is designated as
+        having no default button via the "defbutton" attribute.
+  -->
+  <form
+    id="tacManip"
+    name="Tactical Console Manipulation"
+    showbutton="no">
+    <layoutref layout="inplay"/>
+    <layoutref layout="tacNotes"/>
+
+    <position><![CDATA[
+      ~choose a good width for our form, since the default is almost certainly
+      ~too wide, and set the layout widths appropriately
+      width = 500
+      layout[inplay].width = width
+      layout[tacNotes].width = width
+
+      ~render the notes layout to position and size everything
+      perform layout[tacNotes].render
+
+      ~get the maximum height remaining based on our initial default
+      var ht as number
+      ht = height - layout[tacNotes].height - 10
+
+      ~pick a suitable height for the in-play layout that is capped both by our
+      ~maximum and a reasonable minimum
+      ht = minimum(700,ht)
+      ht = maximum(400,ht)
+      layout[inplay].height = ht
+
+      ~render the in-play layout to position and size everything
+      perform layout[inplay].render
+
+      ~position the notes layout beneath the in-play layout
+      layout[tacNotes].top = layout[inplay].bottom + 10
+      layout[tacNotes].left = (width - layout[tacNotes].width) / 2
+
+      ~set the dimensions of the overall form from the layouts
+      width = layout[inplay].width + (layout[inplay].left * 2)
+      height = layout[tacNotes].bottom
+      ]]></position>
+
+    </form>
+
+
+  </document>

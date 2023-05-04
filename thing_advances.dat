@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of advances that can be selected by actors as
+      their experience accrues.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- Advancement Details - shared by all advancements
+  -->
+  <thing
+    id="advDetails"
+    name="Advancement Details"
+    compset="AdvDetails">
+    </thing>
+
+
+  <!-- New Ability advance
+  -->
+  <thing
+    id="advAbility"
+    name="Gain a New Ability"
+    compset="Advance"
+    description="Select a new ability of your choice.">
+    <fieldval field="advAction" value="New Ability"/>
+    <fieldval field="advDynamic" value="component.Ability"/>
+    <tag group="Advance" tag="AddNew"/>
+    <!-- Modify tagexpr to deny abilities that have already been added to the character -->
+    <eval index="1" phase="Render" priority="1000">
+      <before name="Assign Dynamic Tagexpr"/><![CDATA[
+      ~get the list of all abilities on the hero and assemble it as a list of precluded tags
+      var tagexpr as string
+      tagexpr = hero.tagids[Ability.?," & !"]
+      ~if there are any tags to exclude, append them to the tagexpr appropriately
+      field[advDynamic].text = splice(field[advDynamic].text,tagexpr," & !")
+      ]]></eval>
+
+    <!-- Attach the child entity for tracking the advance -->
+    <child entity="Advance">
+      <tag group="Advance" tag="MustChoose"/>
+      </child>
+    </thing>
+
+  <!-- Increase Skill advance
+  -->
+  <thing
+    id="advSkill"
+    name="Increase Skill"
+    compset="Advance"
+    description="Select a skill to increase by one.">
+    <fieldval field="advAction" value="Increase Skill"/>
+    <fieldval field="advDynamic" value="component.Skill &amp; !Helper.Maximum &amp; !Hide.Skill"/>
+    <tag group="Advance" tag="Increase"/>
+
+    <!-- Attach the child entity for tracking the advance -->
+    <child entity="Advance">
+      <tag group="Advance" tag="MustChoose"/>
+      </child>
+    </thing>
+
+  <!-- Increase Attribute advance
+  -->
+  <thing
+    id="advAttrib"
+    name="Increase Attribute"
+    compset="Advance"
+    description="Select an attribute to increase by one.">
+    <fieldval field="advAction" value="Increase Attribute"/>
+    <fieldval field="advDynamic" value="component.Attribute &amp; !Helper.Maximum &amp; !Hide.Attribute"/>
+    <tag group="Advance" tag="Increase"/>
+
+    <!-- Attach the child entity for tracking the advance -->
+    <child entity="Advance">
+      </child>
+    </thing>
+
+
+  </document>

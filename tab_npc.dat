@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "NPC" tab panel. This tab is where
+      the user manages all the physical characteristics and background details for
+      the character.
+
+      All public visual elements used with this tab panel start with the prefix "pe"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- npcInfo portal
+        Displays a table of picks showing edit controls, allowing you to enter
+        text for the attributes of a variety of NPCs.
+
+        We use a "headertitle" script to place a suitable title above the table.
+   -->
+  <portal
+    id="npcInfo"
+    style="tblNormal">
+    <table_dynamic
+      component="NPCInfo"
+      showtemplate="npcInfo"
+      headertemplate="npcHeader"
+      headerpick="actor"
+      choosetemplate="SimpleItem"
+      choosesortset="explicit"
+      showsortset="explicit"
+      descwidth="0">
+      <additem><![CDATA[
+        @text = "Click here to add a facet of NPC information"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- npcHeader template
+        Allows entry of book id / name.
+  -->
+  <template
+    id="npcHeader"
+    name="NPC Header"
+    compset="Actor">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes"
+        text="NPC Information">
+        </label>
+      </portal>
+
+    <portal
+      id="lblbook"
+      style="lblNormal">
+      <label
+        text="Sourcebook Name:">
+        </label>
+      </portal>
+
+    <portal
+      id="bookname"
+      style="editNormal"
+      tiptext="If the NPC is from a specific sourcebook, you can enter the name of that sourcebook here.">
+      <edit
+        field="acBookName">
+        </edit>
+      </portal>
+
+    <portal
+      id="lblid"
+      style="lblNormal">
+      <label
+        text="Id / SKU:">
+        </label>
+      </portal>
+
+    <portal
+      id="bookid"
+      style="editNormal"
+      tiptext="If the NPC is from a specific sourcebook, you can enter the SKU or other id of that sourcebook here.">
+      <edit
+        field="acBookId">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~our title spans the whole width
+      portal[title].width = width
+
+      ~book name / id go underneath it
+      perform portal[lblbook].alignrel[ttob,title,5]
+      perform portal[bookname].centeron[vert,lblbook]
+      perform portal[lblid].centeron[vert,lblbook]
+      perform portal[bookid].centeron[vert,lblbook]
+
+      ~give everything appropriate widths and positions
+      var horzmargin as number
+      horzmargin = 3
+      portal[bookname].width = width / 3
+      portal[lblbook].left = horzmargin
+      perform portal[bookname].alignrel[ltor,lblbook,10]
+      perform portal[lblid].alignrel[ltor,bookname,15]
+      perform portal[bookid].alignrel[ltor,lblid,10]
+      portal[bookid].width = width - portal[bookid].left - horzmargin
+
+      height = portal[bookname].bottom + 5
+      ]]></position>
+
+    </template>
+
+
+  <!-- npcInfo template
+        This template allows you to enter text into a large edit control.
+  -->
+  <template
+    id="npcInfo"
+    name="NPC Info"
+    compset="NPCInfo"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="lblinfo"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[name].text & ":"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="name"
+      style="editNormal">
+      <edit
+        field="username">
+        </edit>
+      </portal>
+
+    <portal
+      id="info"
+      style="editNormal">
+      <edit
+        field="npcInfo"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~give us enough height for ~3 lines of text in the info control
+      height = 75
+      doneif (issizing <> 0)
+
+      ~if this is a custom item, show our name edit control - otherwise just
+      ~show a label
+      portal[name].visible = tagis[Helper.CustomItem]
+      portal[lblinfo].visible = !portal[name].visible
+      portal[name].width = width / 3
+
+      perform portal[delete].alignedge[right,-2]
+      portal[delete].top = 2
+
+      ~position the info control beneath our name
+      perform portal[info].alignrel[ltol,lblinfo,0]
+      perform portal[info].alignrel[ttob,lblinfo,5]
+      portal[info].width = width
+      portal[info].height = height - portal[info].top
+      ]]></position>
+
+    </template>
+
+
+  <!-- npc layout
+        This simple layout includes a single table, which displays edit
+        controls to allow the user to edit NPC characteristics of a hero.
+  -->
+  <layout
+    id="npc">
+    <portalref portal="npcInfo" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      perform portal[npcInfo].autoplace
+      ]]></position>
+
+    </layout>
+
+
+  <!-- npc panel
+        This is the "NPC" panel shown within Hero Lab. Since we want this panel
+        to appear between the Advances tab and the Personal tab, we assign it an
+        "order" of 305.
+
+        The logic for this panel is similar to the logic for the preceding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="npc"
+    name="NPC"
+    marginhorz="5"
+    marginvert="5"
+    order="305">
+    <live>CharType.typNPC</live>
+    <layoutref layout="npc"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

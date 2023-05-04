@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Basics" tab panel. This tab is where
+      the user configures that attributes and skills of the character.
+
+      All public visual elements used with this tab panel start with the prefix "ba"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- baAttrib portal
+        Presents a fixed table that consists of the various attributes for the
+        character. The "explicit" sortset is used to enforce a hand-numbered
+        ordering of the attributes. Since the full list is short enough to always
+        be visible, the table has no scroller.
+
+        We use a "headertitle" script to place a suitable title above the table.
+  -->
+  <portal
+    id="baAttrib"
+    style="tblInvis">
+    <table_fixed
+      component="Attribute"
+      showtemplate="baAttrPick"
+      showsortset="explicit"
+      scrollable="no">
+      <list>!Hide.Attribute</list>
+      <headertitle><![CDATA[
+        @text = "Attributes"
+        @text &= hero.child[resAttrib].field[resShortAlt].text
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- baSkill portal
+        Presents a fixed table consisting of all skills for the character, which
+        are shown in alphabetical order (the default). The full list will fit, so
+        no scroller is needed.
+
+        We use a "headertitle" script to place a suitable title above the table.
+		
+		
+	  showsortset="SettingSkill" 
+  -->
+  <portal
+    id="baSkill"
+    style="tblInvis">
+    <table_fixed
+      component="Skill"
+      showtemplate="baSklPick"
+      showsortset="explicit"
+      scrollable="no">
+      <list>!Hide.Skill</list>
+      <headertitle><![CDATA[
+        @text = "Skills"
+        @text &= hero.child[resSkill].field[resShortAlt].text
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- baTrait portal
+        Presents a fixed table with all derived traits in it. The sortset allows
+        us to dictate the order of display via a hand-numbered sequence. All traits
+        are always visible, so we don't need a scroller.
+  -->
+  <portal
+    id="baTrait"
+    style="tblInvis">
+    <table_fixed
+      component="Derived"
+      showtemplate="baTrtPick"
+      showsortset="explicit"
+      scrollable="no">
+      <list>!Hide.Trait</list>
+      </table_fixed>
+    </portal>
+
+  <portal
+    id="baSpecialty"
+    style="tblNormal">
+    <table_dynamic
+      component="Specialty"
+      showtemplate="baSpecPick"
+      choosetemplate="SimpleItem"
+      choosesortset="SpecCategory"
+      showfixedlast="yes"
+      addpick="resSpecialties">
+      <candidate>!Hide.Specialty</candidate>
+      <titlebar><![CDATA[
+        @text = "Add a " & herofield[acSpecialtyTerm].text & " - " & hero.child[resSpecialties].field[resSummary].text
+        ]]></titlebar>
+      <description/>
+      <headertitle><![CDATA[
+        @text = herofield[acSpecialtyTermP].text & ": " & hero.child[resSpecialties].field[resSummary].text
+        ]]></headertitle>
+      <additem><![CDATA[
+        ~if we're in advancement mode, we've been frozen, so display accordingly
+        if (state.iscreate = 0) then
+          @text = "{text clrgrey}Add " & herofield[acSpecialtyTermP].text & " Via Advances Tab"
+          done
+          endif
+
+        ~set the color based on whether the proper number of slots are allocated
+        if (field[resLeft].value = 0) then
+          @text = "{text clrgrey}"
+        elseif (field[resLeft].value < 0) then
+          @text = "{text clrwarning}"
+          endif
+        @text &= "Add New " & herofield[acSpecialtyTerm].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- spcPick template
+        Displays the name of the pick/thing and an info button with the basic
+        description text. This is basically the "SimpleItem" template, with one
+        key difference. Auto-added abilities such as those conferred by races are
+        sorted and colored differently to distinguish their nature.
+  -->
+  <template
+    id="baSpecPick"
+    name="Specialty Pick"
+    compset="Specialty"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[info].left - 5)
+
+      ~if the ability is auto-added, change its font to indicate that fact
+      if (candelete = 0) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+
+    </template>	
+	
+  <!-- baAttrPick template
+        Displays one attribute within the table of attributes. We setup suitable
+        margins around each template, which provides substantial spacing between
+        each item and the edges of the table. Each attribute consists of its name,
+        an incrementer where the user can assign the value, and an info button that
+        provides details on the attribute when the user moves the mouse over it.
+  -->
+  <template
+    id="baAttrPick"
+    name="Attribute Pick"
+    compset="Attribute"
+    marginhorz="5"
+    marginvert="9">
+
+    <portal
+      id="name"
+      style="lblXLarge"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+		  
+		  if (field[atIsKey].value <> 0) then
+            @text &= "{text 00FFFF}"
+			endif
+ 
+		  @text &= field[name].text
+
+			
+		  ~if (field[atIsKey].value <> 0) then
+          ~  @text &= "{text 010101}"
+		  ~  endif
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="value"
+      style="incrBox">
+      <incrementer
+        field="trtUser">
+        </incrementer>
+      <mouseinfo><![CDATA[
+        if (hero.tagis[mode.creation] = 0) then
+          @text = "Attributes must be modified via the Advances tab once the character is locked for play."
+        elseif (autonomous = 0) then
+          @text = "This trait has been improved via the Advances tab and cannot be modified further from here."
+        else
+          @text = "Allocate points to this attribute by clicking on the arrows to increase/decrease the number of points assigned."
+          endif
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~freeze our value in advancement mode or if an advancement has modified us
+      ~Note: All freezing must be done *before* any positioning is performed.
+      if (state.iscreate = 0) then
+        portal[value].freeze = 1
+      elseif (autonomous = 0) then
+        portal[value].freeze = 1
+        endif
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[value].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the incrementer to the left of the info portal (plus a gap)
+      perform portal[value].alignrel[rtol,info,-5]
+	  
+      ~position the name on the left and make sure its width does not exceed the available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[value].left - portal[name].left - 10)
+      ]]></position>
+
+    </template>
+
+
+  <!-- baSklPick template
+        Displays one skill within the table of skills. This template is very
+        similar to the one used for attributes. The key differences are that this
+        template is tied to skills and has slightly different margins for closer
+        grouping of the items in the table.
+  -->
+  <template
+    id="baSklPick"
+    name="Skill Pick"
+    compset="Skill"
+    marginhorz="5"
+    marginvert="3">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+		  
+		  if (field[sklIsKey].value <> 0) then
+            @text &= "{text 00FFFF}"
+			endif
+			
+		  if (field[sklSettingName].isempty = 0) then
+		    @text &= field[sklSettingName].text
+		  else 
+		    @text &= field[name].text
+			endif
+			
+		  ~if (field[sklIsKey].value <> 0) then
+          ~  @text &= "{text 010101}"
+		  ~  endif
+			
+		  ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="link"
+      style="lblSmlLeft"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = ""
+		  
+		  if (field[sklIsKey].value <> 0) then
+            @text &= "{text 00FFFF}"
+			endif
+			
+		  if (islinkage[attribute] <> 0) then
+            @text &= "(" & linkage[attribute].field[trtAbbrev].text & ")"
+            endif
+			
+		  ~if (field[sklIsKey].value <> 0) then
+          ~  @text &= "{text 010101}"
+		  ~  endif
+			
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="value"
+      style="incrSimple">
+      <incrementer
+        field="trtUser">
+        </incrementer>
+      <mouseinfo><![CDATA[
+        if (hero.tagis[mode.creation] = 0) then
+          @text = "Skills must be modified via the Advances tab once the character is locked for play."
+        elseif (autonomous = 0) then
+          @text = "This trait has been improved via the Advances tab and cannot be modified further from here."
+        else
+          @text = "Allocate points to this skill by clicking on the arrows to increase/decrease the number of points assigned."
+          endif
+        ]]></mouseinfo>
+      </portal>
+	  
+    <portal
+      id="valuealpha"
+      style="incrSimple">
+      <incrementer
+        field="trtUser">
+        </incrementer>
+      <mouseinfo><![CDATA[
+        if (hero.tagis[mode.creation] = 0) then
+          @text = "Skills must be modified via the Advances tab once the character is locked for play."
+        elseif (autonomous = 0) then
+          @text = "This trait has been improved via the Advances tab and cannot be modified further from here."
+        else
+          @text = "Allocate points to this skill by clicking on the arrows to increase/decrease the number of points assigned."
+          endif
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="alpha"
+      style="lblNormal"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+		  @text = field[trtAlpha].text
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~freeze our value in advancement mode or if an advancement has modified us
+      ~Note: All freezing must be done *before* any positioning is performed.
+      if (state.iscreate = 0) then
+        portal[value].freeze = 1
+      elseif (autonomous = 0) then
+        portal[value].freeze = 1
+        endif
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[value].centervert
+      perform portal[alpha].centervert
+      perform portal[valuealpha].centervert
+      perform portal[link].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the incrementer to the left of the info portal (plus a gap)
+      perform portal[value].alignrel[rtol,info,-10]
+	  
+	  ~position the alpha value to the left of the info portal (plus a gap)
+      perform portal[alpha].alignrel[rtol,info,-10]
+	  
+	  ~position the alpha value to the left of the info portal (plus a gap)
+      perform portal[valuealpha].alignrel[rtol,info,-10]
+	  
+	  ~ if for Step Dice, show alpha version, otherwise show the incrementer
+	  if (hero.tagis[SettingFlag.StepDice] = 0) then
+	    portal[alpha].visible = 0
+		portal[valuealpha].visible = 0  
+		if (hero.tagis[SettingFlag.DirectSkill] = 0) then
+		  portal[value].visible = 1
+		  portal[valuealpha].visible = 0
+		else
+		  portal[value].visible = 0
+		  portal[valuealpha].visible = 1 
+		  endif
+	  else
+	    portal[value].visible = 0  
+		if (hero.tagis[SettingFlag.DirectSkill] = 0) then
+		  portal[alpha].visible = 1
+		  portal[valuealpha].visible = 0  
+		else
+	      portal[alpha].visible = 0
+		  portal[valuealpha].visible = 1
+		  endif
+	    endif
+		
+	  ~position the alpha value to the left of the info portal (plus a gap)
+      ~perform portal[link].alignrel[rtol,valuealpha,-10]
+      perform portal[link].alignedge[left,110]
+	  
+      ~position the name on the left and make sure its width does not exceed the available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[link].left - portal[name].left - 10)
+      ]]></position>
+
+    </template>
+
+  <!-- baTrtPick template
+        Displays one trait within the table of traits. The trait name is shown on
+        the left, with appropriate details about the derived value on the right.
+        At the right edge is an info button that can be moused over for more info.
+        As with the other templates above, we use the margins to establish good
+        visual spacing between and around the items in the table.
+  -->
+  <template
+    id="baTrtPick"
+    name="Trait Pick"
+    compset="Trait"
+    marginhorz="16"
+    marginvert="3">
+
+    <portal
+      id="name"
+      style="lblLeft"
+      showinvalid="yes">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[name].text & ":"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="details"
+      style="lblLeft">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[trtFinal].text
+          ]]></labeltext>
+        </label>
+      <mouseinfo><![CDATA[
+        ~insert appropriate code to explain how the trait was derived
+        @text = "???"
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[details].centervert
+
+      ~position the info portal on the far right
+      perform portal[info].alignedge[right,0]
+
+      ~position the name on the left and give it some reasonable space
+      portal[name].left = 0
+      portal[name].width = 135
+
+      ~position the details to the right of the name and the left of the info portal
+      perform portal[details].alignrel[ltor,name,10]
+      portal[details].width = portal[info].left - portal[details].left - 10
+      ]]></position>
+
+    </template>
+
+
+  <!-- basics layout
+        This layout orchestrates the display of all various visual elements that
+        comprise the Basics tab. We have titles above the attributes and skills,
+        the attributes and skills tables themselves, a horizontal separator, and
+        the table of derived traits.
+
+        Each of these portals and templates is identified as a "reference" by the
+        layout. Using references allows distinct instances of portals and templates
+        to be re-used within multiple layouts. You can even use the same template
+        multiple times within a single layout.
+
+        The visual elements used in the layout are all sized and positioned via
+        the "position" script. This script is invoked to setup the dimensions of
+        visual elements and trigger the positioning of the contents of those
+        elements via the "render" invocation.
+
+        The tab order between items is controlled via the optional "taborder" XML
+        attribute on the various portal and template references. Within a template,
+        the tab order is dictated by the order the portals are listed within the
+        XML. Within a table, the tab order is dictated by the item sequence. The
+        "taborder" attribute coordinates the relative sequence of portals and
+        templates within the layout. In this layout, the tab order will move down
+        the left column and then shift over to the right column.
+  -->
+  <layout
+    id="basics">
+    <portalref portal="baAttrib" taborder="10"/>
+    <portalref portal="baTrait" taborder="20"/>
+    <portalref portal="baSkill" taborder="30"/>
+    <portalref portal="baSpecialty" taborder="40"/>
+    <portalref portal="Horizontal"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~size and position the attributes table in the top left; we set the height to
+      ~the full layout height, but the table will only use the space it needs
+      portal[baAttrib].width = width / 2 - 5
+      portal[baAttrib].left = 0
+      portal[baAttrib].height = height
+
+      ~size and position the skills table in the top right; we set the height to
+      ~the full layout height, but the table will only use the space it needs
+      portal[baSkill].width = portal[baAttrib].width
+      portal[baSkill].left = width - portal[baSkill].width
+      portal[baSkill].height = height - portal[baSkill].top
+
+      ~set the separator width and position it beneath the attributes
+      portal[Horizontal].width = portal[baAttrib].width - 30
+      portal[Horizontal].top = portal[baAttrib].bottom + 15
+      portal[Horizontal].left = portal[baAttrib].left + (portal[baAttrib].width - portal[Horizontal].width) / 2
+
+      ~size and position the traits table beneath the separator; we set the height
+      ~the the full layout height, but the table will only use the space it needs
+      portal[baTrait].width = portal[baAttrib].width
+      portal[baTrait].left = portal[baAttrib].left
+      portal[baTrait].top = portal[Horizontal].bottom + 15
+      portal[baTrait].height = height - portal[baTrait].top
+	  
+      ~size and position the traits table beneath the separator; we set the height
+      ~the the full layout height, but the table will only use the space it needs
+      portal[baSpecialty].width = width
+      portal[baSpecialty].left = portal[baAttrib].left
+      portal[baSpecialty].top = maximum(portal[baTrait].bottom, portal[baSkill].bottom) + 10
+      portal[baSpecialty].height = height - portal[baSpecialty].top
+	  
+      ~figure out the total height we need for the tab
+      ~height = maximum(portal[baTrait].bottom, portal[baSkill].bottom)
+      height = portal[baSpecialty].bottom
+	  
+      ]]></position>
+
+    </layout>
+
+
+  <!-- basics panel
+        This is the "Basics" panel shown within Hero Lab.
+
+        The "order" attribute dictates the sequence in which the various tabs will
+        be displayed. To keep everything well organized, We break the tabs up into
+        four logical groupings: (1) traits and creation details, (2) equipment,
+        (3) details, and (4) in-play support. Each of these groupings will have a
+        three-digit value that starts with the grouping number. Since the Basics
+        panel should appear first within the traits group, it has an order of "110".
+
+        As we assign order values, We'll leave gaps in the sequence (e.g. 110, 120,
+        etc.). This will allow us to easily change our minds and slip a new panel
+        inbetween two existing ones as the data files evolve, without having to go
+        through and re-number everything.
+
+        We setup a suitable margin around the edges of the panel. This ensures that
+        there is a little bit of spacing from the edges and eliminates the need for
+        our positioning scripts to make the appropriate adjustments.
+
+        Like with layouts, panels have a "position" script to setup the dimensions
+        of child elements and orchestrate the rendering of their contents. In many
+        cases, as with this panel, the default handling of panels will ensure that
+        the layouts are properly rendered.
+
+        The panel is assigned a "live" tagexpr so that its visibility can be
+        controlled for different types of characters. While not really useful in the
+        sample data files, this approach can be quite useful when the data files
+        expand to govern creation of widely varying characters, such as vampires vs.
+        ghosts vs. mortals in the World of Darkness game system.
+  -->
+  <panel
+    id="basics"
+    name="Basics"
+    marginhorz="5"
+    marginvert="5"
+    order="110">
+    <live>!HideTab.basics</live>
+    <layoutref layout="basics"/>
+    <position><![CDATA[
+      ~get the height used by the layout and use it, as that means we scroll
+      ~if necessary
+      perform layout[basics].render
+      height = layout[basics].height
+      ]]></position>
+    </panel>
+
+
+  </document>

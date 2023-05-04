@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of elements associated with advancement of
+      characters.
+-->
+
+<document signature="Hero Lab Structure">
+
+
+  <!-- Advance group - tags used to manage advancement
+  -->
+  <group
+    id="Advance">
+    <value id="Gizmo"/>       <!-- Used on the gizmo that represents each advancement-->
+    <value id="MustChoose"/>  <!-- Used to require selection of an attribute, skill, etc. -->
+    <value id="Newest"/>      <!-- Identifies the most recent advancement on character -->
+    <value id="Increase"/>    <!-- Advancement increases the value of the associated trait -->
+    <value id="Decrease"/>    <!-- Advancement decreases the value of the associated trait -->
+    <value id="AddNew"/>      <!-- Advancement adds a new trait to the character -->
+    <value id="Notation"/>    <!-- Advancement provides place for a notation by the user (like a domain) -->
+    </group>
+
+
+  <!-- CanAdvance component
+        Each attribute and skill that can be advanced derives from this component
+  -->
+  <component
+    id="CanAdvance"
+    name="Can Advance"
+    ispublic="no">
+
+    <!-- Each advancement needs its own identity tag to support denial of duplicate advancements -->
+    <identity group="IsAdvance"/>
+
+    <!-- Each advancement needs its own identity tag to restrict enhancement to existing advances -->
+    <identity group="CanAdvance"/>
+
+    <!-- All advancements need to displace themselves to the hero -->
+    <displace target="hero">Helper.Displace</displace>
+
+    <!-- Forward all advancement tags up to the containing gizmo.
+        NOTE! Only do this when we're within an advancement gizmo and NOT the hero.
+        -->
+    <eval index="1" phase="Setup" priority="3000"><![CDATA[
+      if (tagis[Advance.Gizmo] <> 0) then
+        perform forward[IsAdvance.?,origin]
+        endif
+      ]]></eval>
+
+    <!-- Forward the advancement allowed tag up to the hero -->
+    <eval index="2" phase="Setup" priority="3000"><![CDATA[
+      perform hero.setidentity[CanAdvance]
+      ]]></eval>
+
+    <!-- If this thing is unique, forward its identity advancement tag to the hero
+        NOTE! This is needed to enable deny tags so we avoid adding an existing trait again.
+        NOTE! We only need to do this for user-added things.
+        -->
+    <eval index="3" phase="Setup" priority="3000"><![CDATA[
+      if (isunique <> 0) then
+        if (isuser <> 0) then
+          perform hero.setidentity[IsAdvance]
+          endif
+        endif
+      ]]></eval>
+
+    <!-- If this is an increase, add one to the trait, and subtract one for a decrease -->
+    <eval index="4" phase="Effects" priority="1000"><![CDATA[
+      ~we only worry about this on actual advances - not traits added at creation
+      doneif (tagis[Advance.Gizmo] = 0)
+
+      ~apply any appropriate increase or decrease for the linked trait
+      ~Note: This pick is a child of the gizmo and our parent pick is the actual "Advance"
+      ~       pick that contains the appopriate "Advance" tag, so be sure to check there.
+      ~Note: Since the advancement is displaced to the hero, it's "parent" is *not* the
+      ~       gizmo, so we must explicitly reference through the "origin" container.
+      if (origin.parent.tagis[Advance.Increase] > 0) then
+        linkage[basis].field[trtBonus].value += 1
+      elseif (origin.parent.tagis[Advance.Decrease] > 0) then
+        linkage[basis].field[trtBonus].value -= 1
+        endif
+      ]]></eval>
+
+    </component>
+
+
+  <!-- Advance component
+        Each advancement derives from this component
+        NOTE! Advancement picks utilize "unwind" logic based on the "IsAdvance" identity
+                tag assigned by the child pick.
+  -->
+  <component
+    id="Advance"
+    name="Advancement"
+    orderfield="advOrder"
+    autocompset="no"
+    unwind="IsAdvance">
+
+    <!-- Dynamic tagexpr for selecting what to improve -->
+    <field
+      id="advDynamic"
+      name="Dynamic TagExpr"
+      type="derived"
+      maxlength="1000">
+      </field>
+
+    <!-- Action associated with this advancement entry -->
+    <field
+      id="advAction"
+      name="Action"
+      type="derived"
+      maxlength="25">
+      </field>
+
+    <!-- Number of advancement slots consumed -->
+    <field
+      id="advCost"
+      name="Cost"
+      type="static"
+      defvalue="1">
+      </field>
+
+    <!-- Advances need an identity tag so we can identify specific ones during validation -->
+    <identity group="AdvanceId"/>
+
+    <!-- Use a custom width for showing advances for selection with the LargeItem template -->
+    <tag group="SimpleItem" tag="width225"/>
+
+    <!-- Each advancement consumes its cost in accrued advances -->
+    <eval index="1" phase="Setup" priority="5000"><![CDATA[
+      #resspent[resAdvance] += field[advCost].value
+      ]]></eval>
+
+    <!-- Put the largest advancement index into the hero for reference
+        NOTE! We use this value to determine if an advancement is the last added.
+        -->
+    <eval index="3" phase="Final" priority="1000"><![CDATA[
+      if (herofield[acLastAdv].value < field[advOrder].value) then
+        herofield[acLastAdv].value = field[advOrder].value
+        endif
+      ]]></eval>
+
+    <!-- Determine if this is the most recent advancement pick -->
+    <eval index="4" phase="Render" priority="1000"><![CDATA[
+      if (herofield[acLastAdv].value = field[advOrder].value) then
+        perform assign[Advance.Newest]
+        endif
+      ]]></eval>
+
+    <!-- Put the dynamic tagexpr for choosers into the child gizmo -->
+    <eval index="5" phase="Render" priority="2000" name="Assign Dynamic Tagexpr"><![CDATA[
+      if (empty(field[advDynamic].text) = 0) then
+        gizmo.child[advDetails].field[advTagexpr].text = field[advDynamic].text & " & !thing.showonly"
+        endif
+      ]]></eval>
+
+    <!-- Synthesize an appropriate name for the advancement -->
+    <eval index="6" phase="Final" priority="10000"><![CDATA[
+      ~if this advancement has an annotation, there is no user-selection, so build
+      ~the name from our pieces and we're done
+      if (tagis[Advance.Notation] <> 0) then
+        perform gizmo.child[advDetails].setfocus
+        field[livename].text = field[name].text & ": " & focus.field[advUser].text
+        done
+        endif
+
+      ~start with the name of the selected advancement
+      field[livename].text = gizmo.findchild[none,"Advance.Gizmo"].field[name].text
+
+      ~determine the user-selected child associated with this advancement
+      ~Note: If the user hasn't selected anything yet, we won't have one, so we need
+      ~       to bail out at this point if we don't have one yet.
+      perform gizmo.findchild[none,"Advance.Gizmo"].setfocus
+      doneif (state.isfocus = 0)
+
+      ~if we have a domain, append it to our name
+      ~Note: If this is a boost, we need to get the domain from the basis linkage.
+      if (focus.tagis[User.NeedDomain] <> 0) then
+        if (tagis[Advance.AddNew] <> 0) then
+          field[livename].text &= ": " & focus.field[domDomain].text
+        else
+          field[livename].text &= ": " & focus.linkage[basis].field[domDomain].text
+          endif
+        endif
+      ]]></eval>
+
+    </component>
+
+
+  <!-- AdvDetails component - advancement details living within each gizmo
+  -->
+  <component
+    id="AdvDetails"
+    name="Advancement Details"
+    ispublic="no">
+
+    <!-- Target of advancement (specific attribute, skill, etc. that is improved) -->
+    <field
+      id="advTarget"
+      name="Target"
+      type="user">
+      </field>
+
+    <!-- Real world date when the improvement is performed -->
+    <field
+      id="advReal"
+      name="Real World Date"
+      type="user">
+      </field>
+
+    <!-- Game world date when the improvement is performed -->
+    <field
+      id="advGame"
+      name="Game World Date"
+      type="user">
+      </field>
+
+    <!-- User notes regarding the improvement -->
+    <field
+      id="advNotes"
+      name="User Notes"
+      type="user"
+      maxlength="500">
+      </field>
+
+    <!-- Dynamic tagexpr for selecting what to improve -->
+    <field
+      id="advTagexpr"
+      name="Dynamic TagExpr"
+      type="derived"
+      maxlength="1000">
+      </field>
+
+    <!-- User-assigned text (required here so advancement form can capture text and forward it to actual trait) -->
+    <field
+      id="advUser"
+      name="User Text"
+      type="user"
+      maxlength="100">
+      </field>
+
+    <!-- Initialize the real world date appropriately -->
+    <creation>
+      field[advReal].value = today()
+      </creation>
+
+    <!-- If we have user text, forward it to the associated object
+        NOTE! This must be done BEFORE anything tries to access the domain text for use.
+        -->
+    <eval index="1" phase="Setup" priority="100"><![CDATA[
+      if (field[advUser].isempty = 0) then
+        trustme
+        container.findchild[none,"Advance.Gizmo"].field[domDomain].text = field[advUser].text
+        endif
+      ]]></eval>
+
+    </component>
+
+
+  <!-- Define various component sets associated with the components defined above.
+  -->
+
+  <!-- The "CanAdvance" compset is auto-defined for the component -->
+
+
+  <!-- Advance - all advances utilize this compset -->
+  <compset
+    id="Advance">
+    <compref component="Advance"/>
+    </compset>
+
+
+  <!-- Define any entities associated with the components defined above.
+  -->
+
+
+  <!-- Advancement Encapsulation -->
+  <entity
+    id="Advance"
+    form="advancegiz">
+    <bootstrap thing="advDetails"/>
+    <integrity><![CDATA[
+      var bullet as string
+      bullet = "{bmp bullet_red}{horz 4}"
+      @message = ""
+
+      ~verify that a chooser selection is made if one is required
+      if (parent.tagis[Advance.MustChoose] + parent.tagis[Advance.AddNew] >= 2) then
+        if (findchild[none,"Advance.Gizmo"].tagis[Advance.Gizmo] = 0) then
+          @message &= bullet & "A specific trait/ability must be selected via the chooser.{br}"
+          endif
+        endif
+
+      ~verify that we've been given a domain if one is required
+      if (parent.tagis[Advance.MustChoose] + parent.tagis[Advance.AddNew] >= 2) then
+        if (findchild[none,"Advance.Gizmo"].tagis[User.NeedDomain] <> 0) then
+          if (empty(child[advDetails].field[advUser].text) <> 0) then
+            @message &= bullet & "The selection requires that you specify an appropriate domain.{br}"
+            endif
+          endif
+        endif
+      ]]></integrity>
+    </entity>
+
+
+  </document>

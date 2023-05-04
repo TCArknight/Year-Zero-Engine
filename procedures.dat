@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of assorted procedures that are used
+      throughout the data files. Since procedures are typically called from multiple
+      places, it usually makes sense to put them all in one central location where
+      you can always find them instead of having them littered throughout the data
+      files and hard to locate when you need to refer to them.
+  -->
+
+<document signature="Hero Lab Data">
+
+
+<!-- ##################
+      The following procedures are generic and used in various places
+     ##################
+-->  <procedure id="CombatGear" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var cbtgear as string
+
+	var tempStr as string
+	var ismore as number
+	var gearExpr as string
+	
+	ismore = 0
+	~ tempStr = "  * "
+	gearExpr = "!Helper.InBackpack & !Print.NoPrint & !Equipment.Natural"
+	
+	foreach pick in hero from Gear where gearExpr
+	  if (eachpick.tagis[Equipment.InMagazine] <> 0) then
+	    ~ if in a magazine, don't output it as the magazine will be output
+	  else
+	    if (ismore <> 0) then
+          tempStr &= "{br}"
+          endif
+	    tempStr &= "  * " & eachpick.field[grStkName].text
+	    ismore = 1
+		endif
+	  nexteach
+	
+    if (ismore = 0) then
+      tempStr &= "  " & "-none- {br}"
+      endif	
+	cbtgear = tempStr
+	
+    ]]></procedure>
+	
+  <procedure id="BackpackGear" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var packgear as string
+	
+	var tempBack as string
+	var ismore as number
+	
+	ismore = 0
+    
+	foreach pick in hero from Gear where "Helper.InBackpack"
+	  tempBack = splice(tempBack,eachpick.field[grStkName].text,"{br}  * ")
+	  ismore = 1
+	nexteach
+
+    if (ismore = 0) then
+      tempBack &= "-none- {br}"
+      endif	
+	  
+	packgear = "  * " & tempBack
+	
+    ]]></procedure>	
+  <!-- Procedure GetMeleeSkillValue
+
+        Outbound parameter: meleevalue
+  -->
+  <procedure id="GetMeleeSkillValue" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var meleevalue as number
+    
+	meleevalue = 0
+	
+	foreach pick in hero from Skill where "Helper.MeleeWpnSkill"
+	  meleevalue = eachpick.field[trtFinal].value
+	  meleevalue += eachpick.linkage[attribute].field[trtFinal].value
+	  nexteach
+
+    ]]></procedure>
+	
+  <!-- Procedure GetRangedSkillValue
+
+        Outbound parameter: rangedvalue
+  -->
+  <procedure id="GetRangedSkillValue" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var rangedvalue as number
+    
+	rangedvalue = 0
+	
+	foreach pick in hero from Skill where "Helper.RangedWpnSkill"
+	  rangedvalue = eachpick.field[trtFinal].value
+	  rangedvalue += eachpick.linkage[attribute].field[trtFinal].value
+	  nexteach
+
+
+    ]]></procedure>
+	
+  <!-- Procedure Money
+        Format monetary values for appropriate display. The value to be formatted
+        is passed in via the "moneyvalue" variable. The formatted string is returned
+        in the "money" variable. If the money is an integral value, no decimals
+        are appended. Otherwise, the value is rounded to two decimals and output
+        with two decimals, so "$1.5" actually looks like "$1.50".
+
+        Outbound parameter: money
+        Inbound parameter:  moneyvalue
+  -->
+  <procedure id="Money" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var moneyvalue as number
+    var money as string
+
+    ~invoke the MoneyBare procedure to format the value
+    call MoneyBare
+
+    ~prepend a "$" on the value
+    money = "$" & money
+    ]]></procedure>
+
+
+  <!-- Procedure MoneyBare
+        Handles the formatting of the money value without prepending the currency
+        symbol, which is useful in situations where you just want the raw value.
+
+        Outbound parameter: money
+        Inbound parameter:  moneyvalue
+  -->
+  <procedure id="MoneyBare" scripttype="none"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var moneyvalue as number
+    var money as string
+
+    ~format the value properly for display as currency
+    if (moneyvalue = int(moneyvalue)) then
+      money = moneyvalue
+    else
+      money = decimals(moneyvalue,2)
+      endif
+    ]]></procedure>
+
+
+<!-- ##################
+      The following procedures are used in conjuction with description and mouse-info scripts
+     ##################
+-->
+
+  <!-- Procedure Prereqs
+        Generate a list of all failed pre-requisites for the pick/thing that is the
+        current script context, with one failed prereq to a line. We do this for use
+        within all "info" scripts, so we cannot use any special symbols. Instead, we
+        put the results into the "prereqs" text variable that the caller must also
+        declare, allowing the caller to extract the results synthesized below. The
+        caller can also specify that we always check our prereqs against the hero
+        instead of the pick/thing's container, which is done by setting the
+        "use_hero" variable to a non-zero value.
+
+        Outbound parameter: prereqs
+        Inbound parameter:  use_hero
+  -->
+  <procedure id="Prereqs" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var prereqs as string
+    var use_hero as number
+
+    ~declare variables that are used internally
+    var v_req_text as string
+    var v_reqnum as number
+    var v_req as string
+    var v_i as number
+    var v_is_first as number
+    var v_result as number
+
+    ~get the number of prereqs for the pick/thing and reset the text to empty
+    v_reqnum = prereqnum - 1
+    prereqs = ""
+
+    ~if we're building all the description text for use on the server, we
+    ~should never include any pre-reqs
+    doneif (state.isfixedtxt <> 0)
+
+    ~iterate through all of our prereqs and append any that aren't satisfied
+    for v_i = 0 to v_reqnum
+
+      ~get the message for the next prereq
+      if (use_hero <> 0) then
+        v_req = prereqmsg[v_i,hero]
+      else
+        v_req = prereqmsg[v_i]
+        endif
+
+      ~if the message is non-empty, it's been failed, so append it
+      prereqs = splice(prereqs,v_req,"{br}")
+      next
+
+    ~if we have any failed prerequisites, wrap them in red to highlight them
+    if (v_is_first = 0) then
+      prereqs = "{text clrwarning}" & prereqs & "{text clrreset}{br}{br}"
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure MouseInfo
+        Generate full details for the pick/thing that is the current script context.
+        The details include the name and are intended for use within a mouseinfo
+        script. As with the "Prereqs" script above, we want this procedure to work
+        from any "info" script, so we cannot use special symbols. The results are
+        synthesized into a variable named "mouseinfo" that the caller must also
+        declare, allowing the caller to access the results upon return. The caller
+        can request the inclusion of failed prereqs in the details by setting the
+        "isprereq" variable to non-zero. Failed prereqs are typically only included
+        for things but can be included for picks.
+
+        Outbound parameter: mouseinfo
+        Inbound parameter:  isprereq
+  -->
+  <procedure id="MouseInfo" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var mouseinfo as string
+
+    ~declare variables that are used internally
+    var v_name as string
+
+    ~get the item name; if this is a pick, amend the name with our gear quantity
+    v_name = field[name].text
+    if (ispick <> 0) then
+      ~if this is gear with a quantity of more than one, append it to the name
+      if (isgear <> 0) then
+        if (stackable <> 0) then
+          if (field[stackQty].value > 1) then
+            v_name &= " (x" & field[stackQty].text & ")"
+            endif
+          endif
+        endif
+      endif
+
+    ~start our info text with the centered name and switch to left-justified text
+    mouseinfo = "{b}" & v_name & "{/b}{br}{br}{align left}"
+
+    ~get the rest of the details for the item using the normal description procedure;
+    ~we call another procedure, so we must declare the variables it uses to pass in
+    ~our state and return the synthesized text, then pull the results out of the
+    ~variable for our use
+    var descript as string
+    call Descript
+    mouseinfo &= descript
+    ]]></procedure>
+
+
+  <!-- Procedure Descript
+        Generate full details for the pick/thing that is the current script context.
+        The details exclude the name and are intended for use within a description
+        script. As with the "Prereqs" script above, we want this procedure to work
+        from any "info" script, so we cannot use special symbols. The results are
+        synthesized into a variable named "descript" that the caller must also
+        declare, allowing the caller to access the results upon return. The caller
+        can request the inclusion of failed prereqs in the details by setting the
+        "isprereq" variable to non-zero. Failed prereqs are typically only included
+        for things but can be included for picks.
+
+        Outbound parameter: descript
+        Inbound parameter:  isprereq
+  -->
+  <procedure id="Descript" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var descript as string
+    var isprereq as number
+	var x as number
+
+    ~declare variables that are used by called procedures
+    var iteminfo as string
+
+    ~if this is a show-only thing, just output any description text and we're done
+    if (tagis[thing.showonly] <> 0) then
+      descript = splicedesc
+      done
+      endif
+
+    ~we start our details text with nothing
+    descript = ""
+
+    ~if requested or renderend for a thing, append any failed prereq details
+    if (isprereq + !ispick <> 0) then
+      var prereqs as string
+      call Prereqs
+      descript &= prereqs
+      endif
+
+    ~based on the nature of the item, synthesize the appropriate details that are
+    ~specific to the particular item type
+    iteminfo = ""
+    if (tagis[component.WeapRange] <> 0) then
+      call InfoRange
+    elseif (tagis[component.WeapMelee] <> 0) then
+      call InfoMelee
+    elseif (tagis[component.Defense] <> 0) then
+      call InfoDef
+    elseif (tagis[component.Advance] <> 0) then
+      call InfoAdv
+    elseif (tagis[component.Spell] <> 0) then
+      call InfoSpell
+      endif
+
+    ~if this is a piece of gear, append proper info to the item-specific details
+    if (tagis[component.Gear] <> 0) then
+
+      ~if this is a thing, append the cost
+      if (ispick = 0) then
+        iteminfo &= "Cost: " & splicetext[both, grcost, field[grCost].text] & "{br}"
+        endif
+
+      ~append the item's weight
+      iteminfo &= "Weight: "
+      if (field[grWeight].value > 0) then
+        iteminfo &= field[grWeight].text & " each"
+      else
+        iteminfo &= chr(150)
+        endif
+      iteminfo &= "{br}"
+      endif
+
+    ~append our item-specific info to the synthesized details text
+    descript &= iteminfo
+
+    ~append the description of the item
+    if (empty(iteminfo) = 0) then
+      descript &= "{br}"
+      endif
+    if (field[descript].isempty <> 0) then
+      descript &= chr(150) & " no description " & chr(150)
+    else
+      descript &= splicedesc
+      endif
+
+    if (tagis[component.Specialty] <> 0) then
+	  if (tagis[SpecRank.Ranked] = 0) then
+	    done
+	  else
+        ~if this is a thing, append the rank info else the summary
+        if (ispick = 0) then
+	      descript &= "{br}{br}"
+	      for x = 1 to field[spcMaxRank].value
+	        ~build the rank summary
+	        if (x = 1) then
+              descript &= "{b}Rank 1: {/b}" & field[spcDescRank1].text & "{br}"
+	          endif
+	        if (x = 2) then
+              descript &= "{b}Rank 2: {/b}" & field[spcDescRank2].text & "{br}"
+	          endif
+	        if (x = 3) then
+              descript &= "{b}Rank 3: {/b}" & field[spcDescRank3].text & "{br}"
+	          endif
+	        if (x = 4) then
+              descript &= "{b}Rank 4: {/b}" & field[spcDescRank4].text & "{br}"
+	          endif
+	        if (x = 5) then
+              descript &= "{b}Rank 5: {/b}" & field[spcDescRank5].text & "{br}"
+	          endif
+		    next
+	    else
+	      descript &= "{br}{br}" & field[spcRankSummary].text
+		  endif
+		endif
+	  endif
+	  
+    ~if this is gear, output any container/containee details
+    if (isgear <> 0) then
+
+      ~if we're held somewhere, append our path
+      if (isgearheld <> 0) then
+        descript &= "{br}{br}{b}Container{/b}: " & gearpath["->"]
+        endif
+
+      ~if we're a gear holder, append our contents
+      if (isgearlist <> 0) then
+        iteminfo = gearlist[", ", TRUE]
+        if (empty(iteminfo) <> 0) then
+          iteminfo = "None"
+          endif
+        descript &= "{br}{br}{b}Carries{/b}: " & iteminfo
+        endif
+
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure InfoWeapon
+        Generate details specific to all weapons. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoWeapon" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~report the weapon bonus gear dice (omitting if there is none)
+    iteminfo = ""
+    if (field[grBonus].value <> 0) then
+      iteminfo &= "Gear Bonus/Penalty: "
+      iteminfo &= splicetext[details, wpbonus, signed(field[grBonus].text)] & "{br}"
+      endif
+
+    ~report the net attack rating of the weapon
+    iteminfo &= "Net Attack (Attr/Skill Dice + Gear Dice): " & field[wpNetAtkOutput].text & "{br}"
+
+    ~report the damage rating of the weapon
+    iteminfo &= "Damage Rating: " & field[wpDamage].text & "{br}"
+
+    ~report the minimum strength requirement (omitting if there is none)
+    if (field[wpStrReq].value > 0) then
+      iteminfo &= "Minimum Strength: " & field[wpStrReq].text & "{br}"
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure InfoWeapSp
+        Generate special abilities specific to all weapons. This is separate from
+        the "InfoWeapon" procedure so that it can always be performed last. The
+        text is placed into the "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoWeapSp" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~report any special details about the weapon (omitting if there are none)
+    var special as string
+    special = tagnames[WeaponFeature.?,", "]
+    special = splice(special,field[wpSpecial].text,", ")
+    if (empty(special) = 0) then
+      iteminfo &= "Special: " & special & "{br}"
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure InfoMelee
+        Generate details specific to a melee weapon. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoMelee" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~start with generic details for all weapons
+    call InfoWeapon
+
+    ~finish with generic special abilities for all weapons
+    call InfoWeapSp
+    ]]></procedure>
+
+
+  <!-- Procedure InfoRange
+        Generate details specific to a ranged weapon. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoRange" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~start with generic details for all weapons
+    call InfoWeapon
+
+    ~add the range details for the weapon
+    iteminfo &= "Range: " & field[wpRange].text & "{br}"
+
+    ~finish with generic special abilities for all weapons
+    call InfoWeapSp
+    ]]></procedure>
+
+
+  <!-- Procedure InfoDef
+        Generate details specific to defensive gear, including armor and shields.
+        The text is placed into the "iteminfo" variable for subsequent use by our
+        caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoDef" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~add the defense rating
+    iteminfo &= "Defense: " & field[defArmorRating].text & "{br}"
+
+    ~report the minimum strength requirement (omitting if there is none)
+    if (field[defStrReq].value > 0) then
+      iteminfo &= "Minimum Strength: " & field[defStrReq].text & "{br}"
+      endif
+	  
+    ~add avy features
+    iteminfo &= "Features: " & tagnames[DefenseFeature.?,", "] & "{br}"
+    ]]></procedure>
+
+
+  <!-- Procedure InfoAdv
+        Generate details specific to advances. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoAdv" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~if we don't have a valid pick to operate upon, just get out, else we get errors
+    doneif (ispick = 0)
+
+    ~add any user notes
+    if (gizmo.child[advDetails].field[advNotes].isempty = 0) then
+      iteminfo &= "User Notes: " & gizmo.child[advDetails].field[advNotes].text & "{br}"
+      endif
+    ]]></procedure>
+
+  <!-- Procedure InfoSpell
+        Generate details specific to advances. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoSpell" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+
+    ~add Rank
+    iteminfo &= "Rank: " & tagnames[MagicRank.?,", "] & "{br}"
+    ~add Range
+    iteminfo &= "Range: " & tagnames[MagicRange.?,", "] & "{br}"
+    ~add Duration
+    iteminfo &= "Duration: " & tagnames[MagicDuration.?,", "] & "{br}"
+    ~add ingredients
+    iteminfo &= "Ingredients: " & field[splIngredients].text & "{br}"
+	
+    ]]></procedure>
+
+  <!-- Procedure InfoHeld
+        Retrieve a summary of what container this gear is currently held within.
+        Used for mouse-info scripts with equipment, with the generated text being
+        assigned to the @text special symbol for the script.
+  -->
+  <procedure id="InfoHeld" scripttype="mouseinfo"><![CDATA[
+    @text = "Held by: " & gearholder.field[name].text
+    ]]></procedure>
+
+
+  <!-- Procedure InfoHolder
+        Retrieve a summary of what equipment is held within this gear container.
+        Used for mouse-info scripts with equipment, with the generated text being
+        assigned to the @text special symbol for the script.
+  -->
+  <procedure id="InfoHolder" scripttype="mouseinfo"><![CDATA[
+    var gear as string
+    gear = gearlist["; ", TRUE]
+    if (empty(gear) <> 0) then
+      gear = "Empty"
+      endif
+    @text = "{align left}This item is a container.{br}{br}Contents: " & gear
+    ]]></procedure>
+	
+<!-- ##################
+      The folowing procedures are used with transactions for buying and selling items
+     ##################
+-->
+
+
+  <!-- Procedure XactSetup
+        Perform setup of the transaction fields when the user is purchasing an item.
+  -->
+  <procedure id="XactSetup" scripttype="xactsetup"><![CDATA[
+    ~start by assuming our unit cost is the cost of one item
+    ~Note: If this is the purchase of a thing and we have a non-zero lot cost, we
+    ~     need to calculate the unit cost appropriately.
+    var cost as number
+    if (@isbuy = 0) then
+      cost = field[grCost].value
+    elseif (field[grLotCost].value <> 0) then
+      cost = field[grLotCost].value / field[lotsize].value
+    else
+      cost = field[grCost].value
+      endif
+
+    ~setup the unit cost for the item
+    hero.transact.field[xactEach].value = cost
+
+    ~zero out the cash amount to be paid (implying use of the standard cost)
+    hero.transact.field[xactCash].value = 0
+
+    ~if the item is gear, setup whether the item holds other gear
+    if (isgear <> 0) then
+      hero.transact.field[xactHolder].value = gearcount
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure XactBuy
+        Purchase an item for cash from the character's resources.
+  -->
+  <procedure id="XactBuy" scripttype="xactbuy"><![CDATA[
+    ~if we're buying for free, no cash should be touched, so get out
+    doneif (hero.transact.field[xactIsFree].value <> 0)
+
+    ~get the cash amount specified by the user
+    var cash as number
+    cash = hero.transact.field[xactCash].value
+
+    ~if no cash amount was given, get the standard total cost for the purchase
+    if (cash = 0) then
+      cash = hero.transact.field[xactQty].value * hero.transact.field[xactEach].value
+      endif
+
+    ~if we don't have enough cash to make the purchase, reject the transaction
+    if (cash > herofield[acCashNet].value) then
+      @reject = "You lack sufficient cash to purchase the item."
+      done
+      endif
+
+    ~subtract the amount from the current pool of cash
+    perform hero.usagepool[TotalCash].adjust[-cash]
+    ]]></procedure>
+
+
+  <!-- Procedure XactSell
+        Sell an item for cash that gets added to the character's resources.
+  -->
+  <procedure id="XactSell" scripttype="xactsell"><![CDATA[
+    ~get the cash amount specified by the user
+    var cash as number
+    cash = hero.transact.field[xactCash].value
+
+    ~add the amount to the current pool of cash
+    perform hero.usagepool[TotalCash].adjust[cash]
+    ]]></procedure>
+
+
+<!-- ##################
+      The following procedures are used by the Dashboard and Tactical Console panels
+     ##################
+-->
+
+
+  <!-- Procedure DshName
+        Synthesize the actor name for display in the Dashboard/TacCon. As this is
+        specified as a "label" script, the script can access special symbols for the
+        script type and we can avoid using a variable to return the results. Instead,
+        we can write the name directly into the "@text" special symbol for the
+        script. The caller can disable the automatic color highlighting of the name
+        by setting the "isnocolor" variable. By default, the actor name is colored
+        based on whether it is the active actor.
+
+        Inbound parameter:  isnocolor
+  -->
+  <procedure id="DshName" scripttype="label"><![CDATA[
+    var isnocolor as number
+
+    ~unless disabled, if this hero is active or a minion, change the color
+    if (isnocolor = 0) then
+      if (hero.isactive <> 0) then
+        @text &= "{text clractive}"
+      elseif (hero.isminion <> 0) then
+        @text &= "{text clrauto}"
+        endif
+      endif
+
+    ~start with the hero name
+    if (empty(hero.actorname) <> 0) then
+      if (hero.isminion <> 0) then
+        @text &= "Unnamed"
+      else
+        @text &= "Unnamed Character"
+        endif
+    else
+      @text &= hero.actorname
+      endif
+
+    ~if this is a minion, append the master's name
+    if (hero.isminion <> 0) then
+      var mastername as string
+      if (empty(hero.master.actorname) <> 0) then
+        if (hero.master.isminion <> 0) then
+          mastername = "Unnamed"
+        else
+          mastername = "Unnamed Character"
+          endif
+      else
+        mastername = hero.master.actorname
+        endif
+      @text &= " (" & mastername & ")"
+      endif
+
+    ~if we have minion text, show it after the name unless it's the same as the hero name
+    if (hero.isminion <> 0) then
+      var result as number
+      result = compare(hero.actorname,hero.miniontext)
+      if (result <> 0) then
+        @text &= " {text clrdisable}(" & hero.miniontext & "){text clrreset}"
+        endif
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure DshGear
+        Synthesize the actor's full gear info for display in the Dashboard/TacCon.
+        The generated text is placed directly into the "@text" special symbol for
+        the "mouseinfo" script, so all the caller needs to do is invoke the script
+        and be done.
+  -->
+  <procedure id="DshGear" scripttype="mouseinfo"><![CDATA[
+    @text = "{align left}Click to transfer gear from this character to the active character.{br}{br}"
+    var gear as string
+    gear = hero.geartree[!Helper.NoMove]
+    if (empty(gear) <> 0) then
+      @text &= "Gear: No transferable gear possessed"
+    else
+      @text &= "Gear List:{br}" & gear
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure DshSpecial
+        Synthesize a report of the actor's various special abilities for display in
+        the Dashboard/TacCon. The generated text is placed directly into the "@text"
+        special symbol for the "mouseinfo" script, so all the caller needs to do is
+        invoke the script and be done.
+  -->
+  <procedure id="DshSpecial" scripttype="mouseinfo"><![CDATA[
+    var final as string
+    var name as string
+    var source as string
+
+    ~output all items designated for inclusion
+    foreach pick in hero where "DashTacCon.Special" sortas SpecInfo
+      if (eachpick.field[spcName].isempty = 0) then
+        name = eachpick.field[spcName].text
+      else
+        name = eachpick.field[name].text
+        endif
+      source = eachpick.tagnames[SpecialTab.?,","]
+      if (length(source) = 0) then
+        source = "????"
+        endif
+      final &= source & ": {b}" & name & "{/b}{br}"
+      nexteach
+
+    ~if we have no special abilities, output something appropriate
+    if (empty(final) <> 0) then
+      final = "- No Special Abilities -"
+      endif
+
+    @text = "{align left}" & final
+    ]]></procedure>
+
+
+  <!-- Procedure DshRolls
+        Synthesize a report of the pertinent rolls for display in the Dashboard/TacCon.
+        The generated text is placed directly into the "@text" special symbol for the
+        "mouseinfo" script, so all the caller needs to do is invoke the script and be
+        done.
+  -->
+  <procedure id="DshRolls" scripttype="mouseinfo"><![CDATA[
+    var final as string
+    var roll as string
+    foreach pick in hero where "DashTacCon.Rolls"
+      if (eachpick.tagis[component.Skill] <> 0) then
+        roll = eachpick.field[sklRoll].text & "{text clrsecond}  (" & eachpick.field[trtFinal].text & " + " & eachpick.linkage[attribute].field[name].text & " " & eachpick.linkage[attribute].field[trtFinal].text & "){text clrreset}"
+      else
+        roll = "????"
+        endif
+      final &= eachpick.field[name].text & " {b}" & roll & "{/b}{br}"
+      nexteach
+    @text = "{align left}" & final
+    ]]></procedure>
+
+
+  <!-- Procedure DshCombat
+        Synthesize a report of the various combat details (e.g. weapons and armor)
+        for display in the Dashboard/TacCon. The generated text is placed directly
+        into the "@text" special symbol for the "mouseinfo" script, so all the
+        caller needs to do is invoke the script and be done.
+  -->
+  <procedure id="DshCombat" scripttype="mouseinfo"><![CDATA[
+    var ismore as number
+    var final as string
+    var info as string
+
+    ~output basic combat information
+    foreach pick in hero where "DashTacCon.Combat" sortas explicit
+      info = eachpick.field[name].text & " {b}" & eachpick.field[trtFinal].text & "{/b}"
+      final = splice(final,info,", ")
+      nexteach
+    final &= "{br}{br}"
+
+    ~output equipped armor and shield
+    info = ""
+    foreach pick in hero from Armor
+      if (eachpick.field[grIsEquip].value <> 0) then
+        info &= eachpick.field[name].text & " {b}" & eachpick.field[defArmorRating].text & "{/b}{br}"
+        endif
+      nexteach
+    if (empty(info) <> 0) then
+      info = "-No Armor Equipped-{br}"
+      endif
+    final &= info
+    info = ""
+    foreach pick in hero from Shield
+      if (eachpick.field[grIsEquip].value <> 0) then
+        info &= eachpick.field[name].text & " {b}" & eachpick.field[defArmorRating].text & "{/b}{br}"
+        endif
+      nexteach
+    if (empty(info) <> 0) then
+      info = "-No Shield Equipped-{br}"
+      endif
+    final &= info & "{br}"
+
+    ~output all weapons, with equipped ones first
+    info = ""
+    foreach pick in hero from WeaponBase sortas Armory
+      info &= eachpick.field[name].text & " {b}" & eachpick.field[wpNetAtk].text & " {/b}{text clrsecond}@{text clrreset}" & eachpick.field[wpDamage].text & "{br}"
+      nexteach
+    if (empty(info) <> 0) then
+      info = "-No Weapons-{br}"
+      endif
+    final &= info
+
+    @text = "{align left}" & final
+    ]]></procedure>
+
+
+  <!-- Procedure DshBasics
+        Synthesize a report of the various character basic details for display in
+        the Dashboard/TacCon. The generated text is placed directly into the "@text"
+        special symbol for the "mouseinfo" script, so all the caller needs to do is
+        invoke the script and be done.
+  -->
+  <procedure id="DshBasics" scripttype="mouseinfo"><![CDATA[
+    var final as string
+    var info as string
+
+    ~output our race
+    info = hero.findchild[Archetype].field[name].text
+    if (empty(info) <> 0) then
+      info = "-none-"
+      endif
+    final = "Archetype: {b}" & info & "{/b}{br}{br}"
+
+    ~output our power point pool
+    perform hero.child[trPowerPts].setfocus
+    final &= "Power Points: {b}" & focus.field[trtFinal].text & " / " & focus.field[trtMaximum].text & "{/b}{br}{br}"
+
+    ~output our resistance traits
+    foreach pick in hero where "User.Resistance"
+      final &= eachpick.field[name].text & ": {b}" & eachpick.field[trtFinal].text & "{/b}{br}"
+      nexteach
+    final &= "{br}"
+
+    ~output attributes
+    foreach pick in hero from Attribute
+      final &= eachpick.field[name].text & ": {b}" & eachpick.field[trtFinal].text & "{/b}{br}"
+      nexteach
+
+    ~output any permanent adjustments
+    info = ""
+    foreach pick in hero where "InPlay.Permanent"
+      info &= eachpick.field[adjName].text & "{br}"
+      nexteach
+    if (empty(info) = 0) then
+      info = "{br}{b}Permanent Adjustments:{/b}{br}" & info
+      endif
+    final &= info
+
+    ~return the final text
+    @text = "{align left}" & final
+    ]]></procedure>
+
+
+  <!-- Procedure DshActive
+        Synthesize a report of the character's activated abilities for display in
+        the Dashboard/TacCon. The generated text is placed directly into the "@text"
+        special symbol for the "mouseinfo" script, so all the caller needs to do is
+        invoke the script and be done.
+  -->
+  <procedure id="DshActive" scripttype="mouseinfo"><![CDATA[
+    ~if there are no activated abilities for the character, report that fact
+    if (hero.tagis[Activated.?] = 0) then
+      if (herofield[tactNotes].isempty <> 0) then
+        @text = "No abilities are active."
+        done
+        endif
+      endif
+
+    ~output all activated abilities and conditions for the character (if any)
+    var final as string
+    if (hero.tagis[Activated.?] <> 0) then
+      final = "{b}Activated Abilities:{/b}"
+      foreach pick in hero where "(Adjustment.? | Helper.Activated) & !InPlay.Permanent"
+        final &= "{br}"
+        if (eachpick.tagis[Adjustment.?] <> 0) then
+          final &= eachpick.field[adjName].text
+        else
+          final &= eachpick.field[name].text
+          endif
+        nexteach
+      endif
+
+    ~append any tactical console notes at the end
+    if (herofield[tactNotes].isempty = 0) then
+      if (empty(final) = 0) then
+        final &= "{br}{br}"
+        endif
+      final &= "{b}Tactical Notes:{/b}{br}" & herofield[tactNotes].text
+      endif
+
+    @text = "{align left}" & final
+    ]]></procedure>
+
+
+<!-- ##################
+      The following procedures are used in conjunction with printed output
+     ##################
+-->
+
+
+  <!-- Procedure JrnInfo
+        Synthesize a journal entry for detailed output. The generated text is
+        placed in the "infotext" variable. If special spacing needs to be inserted
+        between sections of the output, the caller can dictate that via the
+        "spacing" variable.
+
+        Inbound parameter:  spacing
+        Outbound parameter: infotext
+  -->
+  <procedure id="JrnInfo" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var spacing as string
+    var infotext as string
+
+    ~start with left-aligned text and append the date and award details
+    infotext = "{align left}"
+    if (field[jrnGame].value <> 0) then
+      infotext = infotext & "{b}Date (game world){/b}: " & field[jrnGame].datetime[gamedate,"/"] & "{br}"
+      endif
+    infotext = infotext & "{b}Date (real world){/b}: " & field[jrnReal].datetime[realdate,"/"] & "{br}" & spacing
+    infotext = infotext & "{b}XP Awarded{/b}: " & usagepool[JrnlXP].value & "{br}"
+    infotext = infotext & "{b}Cash Awarded{/b}: " & usagepool[JrnlCash].value & "{br}"
+    infotext = infotext & spacing
+    ]]></procedure>
+
+
+  </document>

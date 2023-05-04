@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of skills for the game system. Note that each
+      skill is linked to an associated attribute for the character. This linkage allows
+      the value of the skill to easily incorporate the effects of the linked attribute
+      via a script on the component.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Sample Skill
+  <thing
+    id="skSample"
+    name="Sample"
+    compset="Skill"
+    isunique="yes"
+    description="Description goes here">
+    <fieldval field="trtAbbrev" value="Sam"/> -->
+
+    <!-- If this skill should be shown as an out-of-combat skill on the TacCon, assign this tag
+    <tag group="DashTacCon" tag="NonCombat"/>
+    -->
+
+    <!-- Specify the attribute to which this skill is linked 
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing> -->
+
+  <thing 
+    id="skForce" 
+	name="Force" 
+	description="When something heavy or solid blocks your way and you need to lift, push, or break it, roll for Force. Use this skill for any feat of strength." compset="Skill" uniqueness="unique">
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+	
+  <thing
+    id="skMelee"
+    name="Melee"
+    compset="Skill"
+    uniqueness="unique"
+    description="Sometimes, you need to fight for your life, hand-to-hand with your opponent. Roll for this skill when you attack someone or defend yourself using only your body or a melee weapon.">
+    <fieldval field="trtAbbrev" value="Mel"/>
+    <usesource source="OGLSkills"/>
+    <tag group="Helper" tag="MeleeWpnSkill"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+
+  <thing 
+    id="skStamina" 
+	name="Stamina" 
+	description="When your physical endurance or vigor is tested, roll for Stamina. For example, this skill is used to survive under water or to resist a deadly poison. You also roll Stamina to stay alive when you have suffered a lethal critical injury." compset="Skill" uniqueness="unique">
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+	
+  <thing
+    id="skMarksmanship"
+    name="Marksmanship"
+    compset="Skill"
+    isunique="yes"
+    description="Use the Marksmanship skill to fire all types of range weapons.">
+    <fieldval field="trtAbbrev" value="Mar"/>
+    <usesource source="OGLSkills"/>
+    <tag group="Helper" tag="RangedWpnSkill"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+	
+  <thing
+    id="skMobility"
+    name="Mobility"
+    compset="Skill"
+    isunique="yes"
+    description="Roll for Mobility when you want to perform any action that requires speed or motor control – be it a risky climb, a dangerous jump, or a foot chase after a fleeing enemy.">
+    <fieldval field="trtAbbrev" value="Mob"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+	
+  <thing
+    id="skStealth"
+    name="Stealth"
+    compset="Skill"
+    isunique="yes"
+    description="Roll for Stealth when trying to sneak past someone, staying undetected, or picking someone’s pocket.">
+    <fieldval field="trtAbbrev" value="Ste"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+	
+  <thing
+    id="skCrafting"
+    name="Crafting"
+    compset="Skill"
+    isunique="yes"
+    description="The Crafting skill is primarily used to repair broken gear or building new items, but it can also be used to understand or operate mechanical constructions. Repairing a broken item typically takes a shift of work. The exact uses of this skill vary depending on the specific game setting.">
+    <fieldval field="trtAbbrev" value="Cra"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+	
+  <thing
+    id="skObservation"
+    name="Observation"
+    compset="Skill"
+    isunique="yes"
+    description="The Observation skill can be used to examine an area to find useful information or to spot something or someone from a distance. When the GM calls for it, you can make a passive roll for this skill to detect an approaching threat in time. When examining an area, the GM can give you a positive modifier if your description of where you are searching is very precise, or even let you succeed without a roll.">
+    <fieldval field="trtAbbrev" value="Obs"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+	
+  <thing
+    id="skSurvival"
+    name="Survival"
+    compset="Skill"
+    isunique="yes"
+    description="Year Zero Engine games often take place in harsh and dangerous environments. Roll for Survival when you’re in a hazardous environment of some kind, be it extreme heat and cold, sandstorms, acid rain, or other forms of extreme weather, and need to figure out a way to stay alive.">
+    <fieldval field="trtAbbrev" value="Sur"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+	
+  <thing
+    id="skHealing"
+    name="Healing"
+    compset="Skill"
+    isunique="yes"
+    description="In many YZE games, your PC risks getting hurt. This is when the Healing skill is useful. It can be used to get a broken character back on their feet, or even save their life if they suffered a critical injury.">
+    <fieldval field="trtAbbrev" value="Heal"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+	
+  <thing
+    id="skInsight"
+    name="Insight"
+    compset="Skill"
+    isunique="yes"
+    description="This skill represents the ability to read other people and see through lies. Roll for Insight to assess an NPC’s mood. If you succeed, the GM must reveal the NPC’s current, most powerful emotion – hate, fear, contempt, love, etc. If you roll several successes, you can also determine if an NPC is lying – but not exactly what they are lying about or what the truth is. The Insight skill can also be used in opposed rolls to resist Persuasion (below).">
+    <fieldval field="trtAbbrev" value="Ins"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+	
+  <thing
+    id="skPersuasion"
+    name="Persuasion"
+    compset="Skill"
+    isunique="yes"
+    description="Sometimes, you can make things go your way without resorting to violence. Instead, you trick or convince your opponents without drawing your weapon. For this, you use the Persuasion skill. If your opponent is actively trying to resist you, it’s an opposed roll against their Insight. If not, it’s a straight roll.">
+    <fieldval field="trtAbbrev" value="Per"/>
+    <usesource source="OGLSkills"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+
+
+  </document>

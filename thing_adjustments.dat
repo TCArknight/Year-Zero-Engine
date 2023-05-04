@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of adjustments that can be applied to actors
+      for the game system. The behaviors of adjustments are varied and configured via
+      the assignment of tags. Additionally, many adjustments can target a type of trait
+      that the user can select, so fields are used to constrain the valid options. The
+      actual net effect of each adjustment is applied via the script associated with
+      the adjustment. All of these scripts are applied at a timing of Setup/8000 to
+      ensure that they occur at an appropriate point in the overall evaluation cycle.
+
+      The visual behavior of each adjustment is controlled via the various "AdjustShow"
+      tags that are assigned, such as whether to show an incrementer and/or a menu for
+      user selection. The "Helper.UserAdjust" tag is used to identify an adjustment
+      that is controllable by the user. Suitable "InPlay" tags are assigned to control
+      whether an adjustment can be permanent or temporary, governing where the actual
+      adjustment appears for selection and how its effects are applied.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Define the assortment of adjustments for the game system. Adjustments are
+        selected on the Personal and In-Play tabs and applied to the character.
+  -->
+
+  <!-- Attribute Adjustment -->
+  <thing
+    id="adjAttr"
+    name="Attribute"
+    compset="Adjustment"
+    description="Select this adjustment to change one of your attributes.">
+    <fieldval field="adjUsePick" value="1"/>
+    <fieldval field="adjCandid" value="component.Attribute"/>
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="AdjustShow" tag="Menu"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <tag group="InPlay" tag="TempOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc trtFinal"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        field[adjChosen].chosen.field[trtInPlay].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Skill Adjustment -->
+  <thing
+    id="adjSkill"
+    name="Skill"
+    compset="Adjustment"
+    description="Select this adjustment to change one of your skills.">
+    <fieldval field="adjUsePick" value="1"/>
+    <fieldval field="adjCandid" value="component.Skill"/>
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="AdjustShow" tag="Menu"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <tag group="InPlay" tag="TempOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc trtFinal"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        field[adjChosen].chosen.field[trtInPlay].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Derived Trait Adjustment -->
+  <thing
+    id="adjDerived"
+    name="Derived Trait"
+    compset="Adjustment"
+    description="Select this adjustment to change one of your derived traits.">
+    <fieldval field="adjUsePick" value="1"/>
+    <fieldval field="adjCandid" value="component.Derived"/>
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="AdjustShow" tag="Menu"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <tag group="InPlay" tag="TempOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc trtFinal"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        field[adjChosen].chosen.field[trtInPlay].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Weapon Adjustment -->
+  <thing
+    id="adjWeapon"
+    name="Weapon"
+    compset="Adjustment"
+    description="Select this adjustment to apply a bonus/penalty to a specific weapon. This can be used to readily account for temporary equipment add-ons (e.g. laser sights).">
+    <fieldval field="adjUsePick" value="1"/>
+    <fieldval field="adjCandid" value="component.WeaponBase"/>
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="AdjustShow" tag="Menu"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="TempOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc wpNetAtk"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        field[adjChosen].chosen.field[grBonus].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- CP Adjustment -->
+  <thing
+    id="adjCP"
+    name="Character Points"
+    compset="Adjustment"
+    description="Select this adjustment to apply a bonus/penalty to your total character points (CP).">
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc wpNetAtk"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        #resmax[resCP] += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Ability Slot Adjustment -->
+  <thing
+    id="adjAbility"
+    name="Ability Slots"
+    compset="Adjustment"
+    description="Select this adjustment to apply a bonus/penalty to your total Ability slots.">
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc wpNetAtk"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        hero.child[resAbility].field[resMax].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Power Points Adjustment -->
+  <thing
+    id="adjPower"
+    name="Power Points"
+    compset="Adjustment"
+    description="Select this adjustment to apply a bonus/penalty to your total Power Points.">
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc wpNetAtk"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        #traitinplay[trPowerPts] += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+
+  <!-- Counter Adjustment -->
+  <thing
+    id="adjCounter"
+    name="Counter"
+    compset="Adjustment"
+    description="Select this adjustment to keep track of a value that can go up or down.">
+    <fieldval field="adjMinimum" value="-99"/>
+    <fieldval field="adjMaximum" value="99"/>
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="TempOK"/>
+    </thing>
+
+  </document>

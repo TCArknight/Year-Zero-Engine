@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Statblock" summary panel. This panel
+      contains the list of special abilities and all skills for the character.
+
+      Since all of the tables shown within this summary panel should fit within the
+      available vertical space, no scroller is required, so we turn off the scroller
+      for each table so that Hero Lab doesn't leave space for one.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- smStatbl portal - statblock label
+  -->
+  <portal
+    id="smStatbl"
+    style="lblSummLf">
+    <label
+      dossier="statblock"
+      ismultiline="yes">
+      </label>
+    <mouseinfo/>
+    </portal>
+
+
+  <!-- smStatbl layout
+        This layout contains a single statblock label.
+  -->
+  <layout
+    id="smStatbl">
+    <portalref portal="smStatbl"/>
+
+    <position><![CDATA[
+      perform portal[smStatbl].autoplace
+      ]]></position>
+
+    </layout>
+
+
+  <!-- smStatbl panel
+        This panel is designated as a summary panel and given an order that positions
+        it properly amongst the other defined summary panels. We setup a small margin
+        to indent the layout from the edges of the panel.
+
+        The panel is assigned a "live" tagexpr so that its visibility can be
+        controlled for different types of characters. While not really useful in the
+        sample data files, this approach can be quite useful when the data files
+        expand to govern creation of widely varying characters, such as vampires vs.
+        ghosts vs. mortals in the World of Darkness game system.
+  -->
+  <panel
+    id="smStatbl"
+    name="Statblock"
+    order="10040"
+    marginhorz="5"
+    marginvert="5"
+    issummary="yes">
+    <live>!HideTab.smStatbl</live>
+    <layoutref layout="smStatbl"/>
+
+    <position><![CDATA[
+      ]]></position>
+
+    </panel>
+
+
+  </document>

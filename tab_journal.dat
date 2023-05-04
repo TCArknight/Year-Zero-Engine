@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Journal" tab panel. This tab is where
+      the user controls all journal entries for the character.
+
+      All public visual elements used with this tab panel start with the prefix "jr"
+      to associate them with the tab.
+
+      In general, you should be able to use the bulk of this tab panel as-is, only
+      needing to change the "jrPick" template. You'll need to adapt the template to
+      use the usage pools you define for your game system and display everything as
+      you prefer. In most cases, this will be a rather quick process, unless you
+      need to squeeze in lots more data or want to use a substantially different
+      visual presentation.
+
+      If you don't need the header at the top of the tab (many games don't), you
+      can easily omit it. First, change the "labeltext" script to do nothing within
+      the header template, as this will eliminate any potential compiler errors due
+      to references to usage pools that might not exist for your game system. Second,
+      designate the template to be non-visible at the top of the "journal" layout's
+      "position" script.
+
+      IMPORTANT!
+      The "journal" portal below is REQUIRED to have the unique id "journal". If you
+      change the id of the portal, you will make it such that Hero Lab is unable to
+      properly locate and handle the journal portal specially (i.e. sort the journal
+      entries properly).
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- jrTitle portal
+        Unlike other tabs, the title for this tab is independent of the table, so
+        this portal is simply a title like is assigned on other tabs.
+  -->
+  <portal
+    id="jrTitle"
+    style="lblTitle">
+    <label
+      istitle="yes"
+      text="Journal">
+      </label>
+    </portal>
+
+
+  <!-- journal portal
+        Presents a table of journal entries, where adding a new entry always adds a
+        new instance of the same thing every time.
+
+        We use an "additem" script to simply prompt the user to add new entries,
+        along with a little bit of extra vertical spacing around it.
+
+        NOTE! This portal *must* have the id "journal" so Hero Lab can recognize
+                it and handle it properly and automatically.
+  -->
+  <portal
+    id="journal"
+    style="tblNormal">
+    <table_auto
+      component="Journal"
+      showtemplate="jrPick"
+      autothing="journal">
+      <additem><![CDATA[
+        @text = "Add New Journal Entry"
+        ]]></additem>
+      </table_auto>
+    </portal>
+
+
+  <!-- jrHeader template
+        Displays summary information about the journal at the top of the tab, such
+        as total cash or XP accrued.
+
+        NOTE! There is no need for this with many games, so this entire template
+        can often be omitted. The easiest way to do this is to simply designate the
+        template as NON-visible at the top of the "position" script within the
+        "journal" layout. If made non-visible, the layout script handles everything
+        properly and you can leave this template in place (and unused).
+  -->
+  <template
+    id="jrHeader"
+    name="Journal Header"
+    compset="Actor"
+    marginhorz="0"
+    marginvert="0">
+
+    <portal
+      id="info"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          var moneyvalue as number
+          var money as string
+          moneyvalue = herofield[acCashNet].value
+          call MoneyBare
+          @text = "{text clrgrey}Total $: " & money
+          @text &= "{horz 40} Total XP: " & #resmax[resXP]
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on the tallest portal
+      height = portal[info].height
+
+      ~our portal should be centered in the template
+      perform portal[info].centerhorz
+      perform portal[info].centervert
+      ]]></position>
+
+    </template>
+
+
+  <!-- jrPick template
+        This template presents a single journal entry to the user. Each journal
+        entry should consist of a number of basic elements. First, the entry needs
+        a title and the ability to add detailed notes via an edit button. Second,
+        the entry should allow the user to specify both a real world date and a
+        game world date. Lastly, the user should be able to accrue cash, XP, or
+        whatever is appropriate for the game system into the journal entry, with
+        the total accrued value(s) being shown.
+
+        Cash, XP, and other resources that are accrued via journal entries must be
+        defined as usage pools that are associated with picks (not the actor). Once
+        the usage pools are setup and associated with the component used for the
+        journal entry, "trigger" scripts on buttons can be used to let the user
+        tally up the resource within a given journal pick. The resources can also
+        be accrued directly on the actor via separate usage pools for that purpose.
+        The net result is that each journal entry tracks its own independent tally
+        and also tallies for the overall actor. This allows us to properly delete
+        the resource from the actor tally if the journal entry is deleted by the
+        user.
+  -->
+  <template
+    id="jrPick"
+    name="Journal"
+    compset="Journal"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="title"
+      style="editNormal">
+      <edit
+        field="jrnTitle">
+        </edit>
+      </portal>
+
+    <portal
+      id="editgame"
+      style="editDate">
+      <edit_date
+        field="jrnGame"
+        format="gamedate">
+        </edit_date>
+      </portal>
+
+    <portal
+      id="lblgame"
+      style="lblSmTitle">
+      <label
+        text="Game Date">
+        </label>
+      </portal>
+
+    <portal
+      id="editreal"
+      style="editDate">
+      <edit_date
+        field="jrnReal"
+        format="realdate">
+        </edit_date>
+      </portal>
+
+    <portal
+      id="lblreal"
+      style="lblSmTitle">
+      <label
+        text="Real Date">
+        </label>
+      </portal>
+
+    <portal
+      id="lblformat"
+      style="lblSmTitle">
+      <label
+        text="(YYYYMMDD)">
+        </label>
+      </portal>
+
+    <portal
+      id="separator"
+      style="sepVert">
+      <separator
+        isvertical="yes">
+        </separator>
+      </portal>
+
+    <portal
+      id="editcash"
+      style="editCenter">
+      <edit
+        field="jrnCash"
+        maxlength="6"
+        format="integer"
+        signed="yes">
+        </edit>
+      </portal>
+
+    <portal
+      id="addcash"
+      style="actSmall">
+      <action
+        action="trigger"
+        buttontext="Add $">
+        <trigger><![CDATA[
+          ~add the cash total to both the journal entry's usage pool and the hero's as well
+          ~debug "Adding Cash: " & field[jrnCash].value
+          perform usagepool[JrnlCash].adjust[field[jrnCash].value]
+          perform hero.usagepool[TotalCash].adjust[field[jrnCash].value]
+          perform field[jrnCash].reset
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="editxp"
+      style="editCenter">
+      <edit
+        field="jrnXP"
+        maxlength="6"
+        format="integer"
+        signed="yes">
+        </edit>
+      </portal>
+
+    <portal
+      id="addxp"
+      style="actSmall">
+      <action
+        action="trigger"
+        buttontext="Add XP">
+        <trigger><![CDATA[
+          ~add the XP total to both the journal entry's usage pool and the hero's as well
+          ~debug "Adding XP: " & field[jrnXP].value
+          perform usagepool[JrnlXP].adjust[field[jrnXP].value]
+          perform hero.usagepool[TotalXP].adjust[field[jrnXP].value]
+          perform field[jrnXP].reset
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="summary"
+      style="lblJrnSumm">
+      <label
+        field="jrnSummary">
+        </label>
+      </portal>
+
+    <portal
+      id="notes"
+      style="actNotesSm"
+      tiptext="Click here to edit detailed notes for the journal entry.">
+      <action
+        action="notes"
+        field="jrnDescr">
+        </action>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        ~start with the title of the entry
+        @text = "{b}" & field[jrnTitle].text & "{/b}" & chr(10)
+
+        ~append the standard details for the entry
+        var infotext as string
+        call JrnInfo
+        @text &= infotext
+
+        ~if there are no details for the entry, prompt the user to add some
+        var value as number
+        value = length(field[jrnDescr].text)
+        if (value = 0) then
+          @text &= "Click the pencil-shaped 'Notes' button to add details for this journal entry."
+        else
+          @text &= field[jrnDescr].text
+          endif
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click here to delete this journal entry.">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height with a suitable size
+      height = 59
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~put the info button in the top right corner
+      perform portal[info].alignedge[right,0]
+
+      ~position the notes button to the left of the info button
+      perform portal[notes].alignrel[rtol,info,-6]
+      perform portal[notes].centeron[vert,info]
+
+      ~position the title in the top left and spanning to fill the available space
+      perform portal[title].centeron[vert,info]
+      portal[title].width = portal[notes].left - portal[title].left - 10
+
+      ~determine the "top" of the lower section of the template
+      var lower as number
+      lower = portal[info].bottom + 4
+
+      ~setup a suitable sized span in the lower left for the date portals
+      var span as number
+      span = 190
+
+      ~center the delete button horizontally beneath the info button
+      perform portal[delete].centeron[horz,info]
+
+      ~center the delete button vertically within the lower portion of the template
+      portal[delete].top = lower + (height - lower - portal[delete].height) / 2
+
+      ~position the game date label in the lower left corner
+      portal[lblgame].left = portal[title].left
+      perform portal[lblgame].alignedge[bottom,0]
+
+      ~position the game date edit portal above the label
+      portal[editgame].left = portal[title].left
+      perform portal[editgame].alignrel[btot,lblgame,-1]
+      portal[editgame].width = (span - 10) / 2
+
+      ~position the real date edit portal next to the game date
+      portal[editreal].width = portal[editgame].width
+      portal[editreal].left = span - portal[editreal].width
+      portal[editreal].top = portal[editgame].top
+
+      ~position the real date label beneath the real date edit portal
+      portal[lblreal].left = span - portal[lblreal].width
+      portal[lblreal].top = portal[lblgame].top
+
+      ~center the format label between the two date labels
+      portal[lblformat].left = portal[lblgame].right + (portal[lblreal].left - portal[lblgame].right - portal[lblformat].width) / 2
+      portal[lblformat].top = portal[lblgame].top
+
+      ~position the vertical separator appropriately
+      portal[separator].left = span + 10
+      portal[separator].top = portal[editgame].top
+      portal[separator].width = 3
+      portal[separator].height = height - portal[separator].top - 1
+
+      ~position the cash edit portal
+      portal[editcash].width = 50
+      perform portal[editcash].alignrel[ltor,separator,10]
+      perform portal[editcash].alignedge[bottom,-1]
+
+      ~position the button to add the cash
+      perform portal[addcash].alignrel[ltor,editcash,5]
+      perform portal[addcash].centeron[vert,editcash]
+
+      ~position the xp edit portal
+      portal[editxp].width = 50
+      perform portal[editxp].alignrel[ltor,addcash,15]
+      portal[editxp].top = portal[editcash].top
+
+      ~position the button to add the xp
+      perform portal[addxp].alignrel[ltor,editxp,5]
+      portal[addxp].top = portal[addcash].top
+
+      ~position the summary in the open region in the lower right
+      perform portal[summary].alignrel[btot,addxp,-4]
+      perform portal[summary].alignrel[ltol,editcash,45]
+      portal[summary].width = portal[addxp].right - portal[editcash].left - 90
+      ]]></position>
+    </template>
+
+
+  <!-- journal layout
+        This layout consists of the title at the top, with the header beneath and
+        the table of journal entries beneath that.
+
+        If the header should not be shown, just set its "visible" state to zero as
+        the first thing in the "position" script below.
+  -->
+  <layout
+    id="journal">
+    <portalref portal="jrTitle"/>
+    <portalref portal="journal" taborder="10"/>
+    <templateref template="jrHeader" thing="actor"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~configure whether our header is visible or not
+      ~Note: If the header is non-visible, no space is allotted for it below.
+      template[jrHeader].visible = 1
+
+      ~position the title at the top, followed by the template, and then the table
+      perform portal[jrTitle].autoplace
+      perform template[jrHeader].autoplace[6]
+      perform portal[journal].autoplace[9]
+      ]]></position>
+
+    </layout>
+
+
+  <!-- journal panel
+        This is the "Journal" panel shown within Hero Lab. Since we want this panel
+        to appear second within the third grouping (details), we assign it an "order"
+        of 320.
+
+        The logic for this panel is similar to the logic for the preceeding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="journal"
+    name="Journal"
+    marginhorz="5"
+    marginvert="5"
+    order="320">
+    <live>!HideTab.journal</live>
+    <layoutref layout="journal"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of the various dossiers that users can print
+      for the game system. Text-based dossiers are defined separately.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Standard character sheet
+        This is the default character sheet for any actor, consisting of two pages.
+        The first page includes all the core information for the character and will
+        usually be all that is needed. The second page provides a place for any info
+        that didn't fit on the first page to be output (e.g. too many weapons). The
+        sheet contents are defined in the files "sheet_standard1.dat" and
+        "sheet_standard2.dat".
+  -->
+  <dossier
+    id="standard"
+    name="Standard Character Sheet">
+    <dossier_sheet
+      grouping="AtTop"
+      default="yes">
+      <sheetref sheet="standard1"/>
+      <sheetref sheet="standard2"/>
+      </dossier_sheet>
+    </dossier>
+
+  <!-- Journal output
+        This dossier outputs the character's journal entries as a kind of diary. The
+        sheet contents are defined in the file "sheet_journal.dat".
+  -->
+  <dossier
+    id="journal"
+    name="Journal Contents">
+    <dossier_sheet
+      grouping="journal">
+      <sheetref sheet="journal"/>
+      </dossier_sheet>
+    </dossier>
+
+  <!-- Complete character output
+        This dossier allows the user to output everything associated with the
+        character via a single operation. It combines the standard character sheet
+        and the journal output into the single dossier.
+  -->
+  <dossier
+    id="complete"
+    name="Standard Character Sheet &amp; Journal">
+    <dossier_sheet
+      grouping="last">
+      <sheetref sheet="standard1"/>
+      <sheetref sheet="standard2"/>
+      <sheetref sheet="journal"/>
+      </dossier_sheet>
+    </dossier>
+
+  </document>

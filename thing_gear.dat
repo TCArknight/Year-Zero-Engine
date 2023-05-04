@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of miscellaneous gear/equipment for the game
+      system. Most gear is just mundane items, but a few confer special benefits via
+      scripts. There are also a few that can be used as generic entries that users can
+      customize without having to add new entries via the Editor.
+
+      The behaviors of each piece of gear are controlled via a combination of field
+      values, tags, and XML attributes. A brief summary of the most important of these
+      is provided below:
+
+      "stacking" attribute: controls the behavior of multiple pieces of the gear with
+          respect to merging separate pieces or always keeping them distinct
+      "private" attribute: controls whether the gear is made visible to the user within
+          the Editor when creating a new piece of gear as a copy of an existing thing
+      "isunique" attribute: controls whether the user can only ever add a single
+          instance of the thing to an actor versus adding multiple instances
+      "Equipment" tags: The "Helper.CustomItem" tag indicates gear that the user can
+          modify the name for
+      "thing" tags: The "thing.holder" tag indicates gear that can both be held within
+          other holders and can hold other gear, while the "thing.holder_top" tag
+          indicates gear that can only hold other (but cannot be held); omitting both
+          of these tags implies the gear can only be held by suitably flagged holders
+      "UserName" field: If the "Helper.CustomItem" tag is assigned, this field
+          provides the default name for the item until the user changes it
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Customizable Gear gear -->
+  <thing
+    id="eqCustom"
+    name=" – Custom Gear –"
+    compset="Equipment"
+    stacking="new"
+    isprivate="yes"
+    description="This item can be customized to represent whatever you want.">
+    <fieldval field="UserName" value="New Gear"/>
+    <tag group="Helper" tag="CustomItem"/>
+    </thing>
+
+  <!-- Customizable Top-Holder gear -->
+  <thing
+    id="eqCustTop"
+    name=" – Custom Location –"
+    compset="Equipment"
+    stacking="never"
+    isprivate="yes"
+    holdable="no"
+    description="Use this item to represent a place to store your gear - for example, a house, or as buried treasure somewhere.">
+    <fieldval field="UserName" value="New Location"/>
+    <tag group="Helper" tag="CustomItem"/>
+    <tag group="thing" tag="holder_top"/>
+    </thing>
+
+  <!-- Customizable Holder gear -->
+  <thing
+    id="eqCustHold"
+    name=" – Custom Container –"
+    compset="Equipment"
+    stacking="solo"
+    isprivate="yes"
+    description="Use this item to represent a bag or other container in which gear can be carried around.">
+    <fieldval field="UserName" value="New Container"/>
+    <tag group="Helper" tag="CustomItem"/>
+    <tag group="thing" tag="holder"/>
+    </thing>
+
+
+  <!-- Sample Simple gear -->
+  <thing
+    id="eqSimple"
+    name="Sample Simple"
+    compset="Equipment"
+    description="Description goes here">
+    <fieldval field="grCost" value="100"/>
+    <fieldval field="grWeight" value="1"/>
+    <!-- Define any script needed to confer the effects of the gear
+    <eval value="1" phase="PreTraits" priority="5000">
+      <before name="Calc trtFinal"/><![CDATA[
+      ~#traitbonus[attrAgi] += 1
+      ]]></eval>
+    -->
+    </thing>
+
+  <!-- Sample Ammunition gear -->
+  <thing
+    id="eqAmmo"
+    name="Sample Ammo"
+    compset="Ammunition"
+    lotsize="20"
+    stacking="merge"
+    description="Description goes here.">
+    <fieldval field="grCost" value=".5"/>
+    <fieldval field="grWeight" value=".1"/>
+    </thing>
+
+  <!-- Sample Container gear -->
+  <thing
+    id="eqContain"
+    name="Sample Container"
+    compset="Equipment"
+    description="Description goes here.">
+    <fieldval field="grCost" value="5"/>
+    <fieldval field="grWeight" value="1"/>
+    <tag group="thing" tag="holder"/>
+    </thing>
+
+  <!-- Sample Stackable gear -->
+  <thing
+    id="eqStack"
+    name="Sample Stackable"
+    compset="Equipment"
+    stacking="merge"
+    description="Description goes here.">
+    <fieldval field="grCost" value="1"/>
+    <fieldval field="grWeight" value="1"/>
+    </thing>
+
+  <!-- Dropped to Ground location - automatically bootstrapped to every hero -->
+  <thing
+    id="eqGround"
+    name="Dropped to Ground"
+    compset="Equipment"
+    isprivate="yes"
+    uniqueness="unique"
+    description="Any equipment dropped to the ground is held in this container.{br}You can move an item from one container to another by clicking the &quot;Gear&quot; button beside its info button.">
+    <tag group="Helper" tag="Bootstrap"/>
+    <tag group="thing" tag="holder_top"/>
+    <tag group="Print" tag="NoPrint"/>
+    </thing>
+
+
+  </document>

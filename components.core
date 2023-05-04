@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of assorted components that are utilized by
+      multiple component sets. Since the component sets require that all referenced
+      components must already be defined, and we can't control the compilation order
+      of files with the same filename extension, these shared components are placed in
+      a file with a ".core" extension to ensure they are processed before the various
+      ".pri" and ".aug" files.
+-->
+
+<document signature="Hero Lab Structure">
+
+  <!-- Tracker component
+        For managing user-controlled resource pools such as power points, etc. One
+        field tracks the current user-assigned value, the appropriate bounds for the
+        user value being dictated by other fields.
+  -->
+  <component
+    id="Tracker"
+    name="Tracker">
+
+    <!-- Minimum value for resource -->
+    <field
+      id="trkMin"
+      name="Minimum Value"
+      type="derived">
+      </field>
+
+    <!-- Maximum value for resource -->
+    <field
+      id="trkMax"
+      name="Maximum Value"
+      type="derived">
+      </field>
+
+    <!-- User value assigned for the quantity spent of the resource -->
+    <field
+      id="trkUser"
+      name="User Value"
+      type="user"
+      usedelta="yes"
+      maxfinal="40">
+      <!-- Value is bounded by the minimum and maximum limits specified -->
+      <bound phase="Render" priority="1000"><![CDATA[
+        if (tagis[Helper.NoMinBound] = 0) then
+          @minimum = field[trkMin].value
+          endif
+        if (tagis[Helper.NoMaxBound] = 0) then
+          @maximum = field[trkMax].value
+          endif
+        ]]></bound>
+      <!-- Final value for display shows the value and the maximum limit -->
+      <finalize><![CDATA[
+        if (tagis[Helper.NoMaxBound] = 0) then
+          @text &= "{size 32}{text clrgrey}/" & field[trkMax].value
+          endif
+        ]]></finalize>
+      </field>
+
+    <!-- Quantity of resource leftover -->
+    <field
+      id="trkLeft"
+      name="Quantity Remaining"
+      type="derived">
+      <!-- Quantity remaining unused is auto-calculated -->
+      <calculate phase="Final" priority="1000" name="Calc trkLeft"><![CDATA[
+        @value = field[trkMax].value - field[trkUser].value
+        ]]></calculate>
+      </field>
+
+    </component>
+
+
+  <!-- Adjustment component
+        Used for managing all types of adjustments (e.g. permanent and in-play). One
+        field tracks whether the adjustment is activated. A user-defined value allows
+        for dynamic adjustments, with suitable bounds being specified for each
+        adjustment, while another field supports a fixed adjustment value. An
+        appropriate name is synthesized for the adjustment based on its nature.
+
+        For menu-based adjustments, one field tracks the choice selected by the user.
+        Another field controls the candidate tagexpr used to determine the valid set
+        of choices, and a third controls whether the menu displays things or picks for
+        the user to choose from.
+  -->
+  <component
+    id="Adjustment"
+    name="In-Play Adjustment"
+    orderfield="adjIndex">
+
+    <!-- Enabled/disabled state of adjustment - we're enabled by default -->
+    <field
+      id="adjEnabled"
+      name="Is Enabled?"
+      type="user"
+      defvalue="1"
+      minvalue="0"
+      maxvalue="1">
+      </field>
+
+    <!-- Minimum value allowed for the adjustment -->
+    <field
+      id="adjMinimum"
+      name="Minimum value"
+      type="static"
+      defvalue="-9">
+      </field>
+
+    <!-- Maximum value allowed for the adjustment -->
+    <field
+      id="adjMaximum"
+      name="Maximum value"
+      type="static"
+      defvalue="9">
+      </field>
+
+    <!-- User-defined adjustment value to apply -->
+    <field
+      id="adjUser"
+      name="Adjust By"
+      type="user"
+      maxfinal="100">
+      <!-- Value is bounded by the minimum and maximum limits specified -->
+      <bound phase="Setup" priority="10000"><![CDATA[
+        @minimum = field[adjMinimum].value
+        @maximum = field[adjMaximum].value
+        ]]></bound>
+      <!-- Final value for display should always be properly signed -->
+      <finalize><![CDATA[
+        ~if we're positive or 0, prepend a + sign
+        if (@value >= 0) then
+          @text = "+" & @text
+          endif
+        ]]></finalize>
+      </field>
+
+    <!-- If this is a fixed adjustment, this is the bonus to apply -->
+    <field
+      id="adjBonus"
+      name="Bonus for Fixed Items"
+      type="derived">
+      </field>
+
+    <!-- Tracks the selection made when a menu choice is required -->
+    <field
+      id="adjChosen"
+      name="Chosen Thing / Pick"
+      type="user"
+      style="menu">
+      </field>
+
+    <!--  Allow the user to annotate the source of the adjustment -->
+    <field
+      id="adjSource"
+      name="Adjustment Source"
+      type="user"
+      maxlength="100">
+      </field>
+
+    <!-- Allow the user to annotate the duration of the adjustment -->
+    <field
+      id="adjLasts"
+      name="Adjustment Duration"
+      type="user"
+      maxlength="100">
+      </field>
+
+    <!-- Modified name to be displayed (synthesized via an eval script below) -->
+    <field
+      id="adjName"
+      name="Name for Output"
+      type="derived"
+      maxlength="100">
+      </field>
+
+    <!-- Shortened name to be used on the TacCon -->
+    <field
+      id="adjShort"
+      name="Short Name for TacCon"
+      type="derived"
+      maxlength="25">
+      </field>
+
+    <!-- Long name for use in other situations -->
+    <field
+      id="adjLong"
+      name="Long Display Name"
+      type="derived"
+      maxlength="100">
+      </field>
+
+    <!-- Whether to use picks (or things) in the displayed menu -->
+    <field
+      id="adjUsePick"
+      name="Use Picks in Menu"
+      type="derived"
+      defvalue="1">
+      </field>
+
+    <!-- Candidate tagexpr used to determine which picks/things are shown in the menu -->
+    <field
+      id="adjCandid"
+      name="Include Candidate TagExpr"
+      type="derived"
+      maxlength="500"
+      defvalue="component.Attribute">
+      </field>
+
+    <!-- Setup an identity tag group to identify all adjustments -->
+    <identity group="Adjustment"/>
+
+    <!-- Setup an identity tag group to track all activated abilities and adjustments -->
+    <identity group="Activated"/>
+
+    <!-- Fixed adjustments always start out unchecked -->
+    <creation><![CDATA[
+      if (tagis[Adjustment.Fixed] <> 0) then
+        field[adjEnabled].value = 0
+        endif
+      ]]></creation>
+
+    <!-- If the adjustment is activated, designate it appropriately -->
+    <eval index="1" phase="Setup" priority="100"><![CDATA[
+      ~if we're not a true adjustment, we don't qualify, so get out
+      doneif (tagis[Adjustment.?] + tagis[Helper.UserAdjust] = 0)
+
+      ~if we require menu selection, bail out if we don't have our selection yet
+      if (tagis[AdjustShow.Menu] <> 0) then
+        doneif (field[adjChosen].ischosen = 0)
+        endif
+
+      ~if we've been specifically hidden, bail out
+      doneif (tagis[Hide.InPlay] <> 0)
+
+      ~if we've been activated by the user, mark ourselves as activated; if this
+      ~is NOT a permanent adjustment, forward our identity tag to our parent actor;
+      ~this allows the actor to know when temporary in-play adjustments are active
+      if (field[adjEnabled].value <> 0) then
+        perform assign[Helper.Activated]
+        if (tagis[InPlay.Permanent] = 0) then
+          perform forward[Activated.?]
+          endif
+        endif
+      ]]></eval>
+
+    <!-- Synthesize our name for printouts and mouse info
+          NOTE! We must schedule this AFTER the "shortname" field is set at Render/100.
+    -->
+    <eval index="2" phase="Render" priority="1000"><![CDATA[
+      ~if we require menu selection, bail out if we don't have our selection yet
+      if (tagis[AdjustShow.Menu] <> 0) then
+        doneif (field[adjChosen].ischosen = 0)
+        endif
+
+      ~if we've been specifically hidden, bail out
+      doneif (tagis[Hide.InPlay] <> 0)
+
+      ~if we have a menu, append the name of the menu selection, else use our direct name;
+      ~build a short version of the name at the same time
+      var name as string
+      var short as string
+      if (tagis[AdjustShow.Menu] <> 0) then
+        perform field[adjChosen].chosen.setfocus
+        name &= focus.field[name].text
+        if (focus.tagis[component.shortname] <> 0) then
+          short = focus.field[shortname].text
+          endif
+      else
+        name &= field[name].text
+        if (tagis[component.shortname] <> 0) then
+          short = field[shortname].text
+          endif
+        endif
+
+      ~if we don't have a short name, just use the regular name
+      if (empty(short) <> 0) then
+        short = name
+        endif
+
+      ~if we're adjustable, determine the adjustment value, else get any fixed bonus
+      var bonus as number
+      bonus = -999999
+      if (tagis[Adjustment.Fixed] <> 0) then
+        if (field[adjBonus].value <> 0) then
+          bonus = field[adjBonus].value
+          endif
+      elseif (tagis[AdjustShow.Increment] <> 0) then
+        bonus = field[adjUser].value
+        endif
+
+      ~append any adjustment value, including a suitable "+" if positive or zero
+      if (bonus <> -999999) then
+        name &= " " & signed(bonus)
+        short &= " " & signed(bonus)
+        endif
+
+      ~save our synthesized names
+      field[adjName].text = name
+      field[adjShort].text = short
+      ]]></eval>
+
+    <!-- Report a validation error if no selection has been made for a menu selection -->
+    <evalrule phase="Validate" priority="10000" message="Choose an option!" summary="Choose!"><![CDATA[
+      ~if no choice is needed, we're valid
+      validif (tagis[AdjustShow.Menu] = 0)
+
+      ~if the user has chosen something, we're valid
+      validif (field[adjChosen].ischosen <> 0)
+
+      ~report an error
+      @message = "You must choose an option."
+      if (tagis[InPlay.Permanent] <> 0) then
+        container.panelvalid[personal] = 0
+      else
+        container.panelvalid[inplay] = 0
+        endif
+      ]]></evalrule>
+
+    </component>
+
+
+  <!-- UserSelect component
+        Used for things that require the presentation of user selection options to
+        customize a pick within a table. For example, a special ability that requires
+        the user to select an attribute to be associated would use the menus offered
+        by this component to easily add the capability. You can use the "UserSelect"
+        template in the file "visual.dat" to manage the pick within a table or adapt
+        the mechanisms therein for your own needs.
+  -->
+  <component
+    id="UserSelect"
+    name="User Selection"
+    ispublic="no">
+
+    <!-- Text to display with the checkbox
+          NOTE! If this field is empty, it means NO checkbox is shown for the pick.
+    -->
+    <field
+      id="usrChkText"
+      name="Checkbox Text"
+      type="derived"
+      maxlength="100">
+      </field>
+
+    <!-- Indicates whether the checkbox is selected is not -->
+    <field
+      id="usrIsCheck"
+      name="Checked?"
+      type="user"
+      minvalue="0"
+      maxvalue="1">
+      </field>
+
+    <!--  Label associated with the first thing-based menu -->
+    <field
+      id="usrLabel1"
+      name="Thing Menu Label #1"
+      type="static"
+      maxlength="50">
+      </field>
+
+    <!-- Tracks the first selection made when a menu choice is required -->
+    <field
+      id="usrChosen1"
+      name="Chosen Thing / Pick #1"
+      type="user"
+      style="menu">
+      </field>
+
+    <!-- Candidate tagexpr used to determine which picks/things are shown in menu #1
+          NOTE! If this field is empty, it means NO first menu is shown for the pick.
+    -->
+    <field
+      id="usrCandid1"
+      name="Candidate TagExpr for Menu #1"
+      type="derived"
+      maxlength="1000"
+      defvalue="">
+      </field>
+
+    <!-- Source to pull choices from within menu #1 -->
+    <field
+      id="usrSource1"
+      name="Source for Menu #1 Choices"
+      type="derived">
+      <!-- Determine the source to choose from based on the tag, defaulting to "Hero" -->
+      <calculate phase="Render" priority="10000"><![CDATA[
+        if (tagis[ChooseSrc1.Thing] <> 0) then
+          @value = 0
+        elseif (tagis[ChooseSrc1.Container] <> 0) then
+          @value = 1
+        elseif (tagis[ChooseSrc1.Hero] <> 0) then
+          @value = 2
+        else
+          @value = 2
+          endif
+        ]]></calculate>
+      </field>
+
+    <!--  Label associated with the second thing-based menu -->
+    <field
+      id="usrLabel2"
+      name="Thing Menu Label #2"
+      type="static"
+      maxlength="50">
+      </field>
+
+    <!-- Tracks the second selection made when a menu choice is required -->
+    <field
+      id="usrChosen2"
+      name="Chosen Thing / Pick #2"
+      type="user"
+      style="menu">
+      </field>
+
+    <!-- Candidate tagexpr used to determine which picks/things are shown in menu #2
+          NOTE! If this field is empty, it means NO second menu is shown for the pick.
+    -->
+    <field
+      id="usrCandid2"
+      name="Candidate TagExpr for Menu #2"
+      type="derived"
+      maxlength="1000"
+      defvalue="">
+      </field>
+
+    <!-- Source to pull choices from within menu #2 -->
+    <field
+      id="usrSource2"
+      name="Source for Menu #2 Choices"
+      type="derived">
+      <!-- Determine the source to choose from based on the tag, defaulting to "Hero" -->
+      <calculate phase="Render" priority="10000"><![CDATA[
+        if (tagis[ChooseSrc2.Thing] <> 0) then
+          @value = 0
+        elseif (tagis[ChooseSrc2.Container] <> 0) then
+          @value = 1
+        elseif (tagis[ChooseSrc2.Hero] <> 0) then
+          @value = 2
+        else
+          @value = 2
+          endif
+        ]]></calculate>
+      </field>
+
+    <!--  Label associated with the array-based menu -->
+    <field
+      id="usrLabelAr"
+      name="Array Menu Label"
+      type="static"
+      maxlength="50">
+      </field>
+
+    <!-- Array of text items user can select from
+          NOTE! If the 0th element is empty, it means NO menu is shown for the pick.
+    -->
+    <field
+      id="usrArray"
+      name="Array of Items to Choose"
+      type="derived"
+      style="array"
+      arrayrows="10"
+      maxlength="30">
+      </field>
+
+    <!-- Item selected from the array -->
+    <field
+      id="usrSelect"
+      name="Selected Item in Array"
+      type="user"
+      maxlength="30">
+      </field>
+
+    <!-- Initialize the current array-based selection from the array if not defined -->
+    <creation><![CDATA[
+      if (empty(field[usrArray].arraytext[0]) = 0) then
+        if (field[usrSelect].isempty <> 0) then
+          field[usrSelect].text = field[usrArray].arraytext[0]
+          endif
+        endif
+      ]]></creation>
+
+    <!-- Integrate the various user selections into the name of the pick
+          NOTE! Must be scheduled after the "shortname" field is synthesized at Render/100.
+    -->
+    <eval index="1" phase="Render" priority="500"><![CDATA[
+      ~if we're not supposed to auto-amend the name for this pick, we're done
+      doneif (tagis[User.NoAutoName] <> 0)
+
+      ~if we have thing-based menus, determine the text to append to the name
+      var choices as string
+      if (field[usrCandid1].isempty = 0) then
+        if (field[usrChosen1].ischosen <> 0) then
+          choices = field[usrChosen1].chosen.field[name].text
+        else
+          choices = "-Choose-"
+          endif
+        if (field[usrChosen2].ischosen <> 0) then
+          choices &= ", " & field[usrChosen2].chosen.field[name].text
+          endif
+
+      ~if we have an array-based menu, determine the text to append
+      elseif (empty(field[usrArray].arraytext[0]) = 0) then
+        choices = field[usrSelect].text
+
+      ~if we have a selected checkbox, determine the text to append
+      elseif (field[usrChkText].isempty = 0) then
+        if (field[usrIsCheck].value <> 0) then
+          choices = field[usrChkText].text
+          endif
+        endif
+
+      ~if we have no text to append, we're done
+      doneif (empty(choices) <> 0)
+
+      ~add the selection to both the livename and shortname (if present) fields
+      field[livename].text = field[name].text & ": " & choices
+      if (tagis[component.shortname] <> 0) then
+        field[shortname].text &= " (" & choices & ")"
+        endif
+      ]]></eval>
+
+    <!-- Report a validation error if no selection has been made for a menu selection -->
+    <evalrule phase="Validate" priority="10000" message="You must choose an option" summary="Choose!"><![CDATA[
+      ~determine the number of menus that NEED selection
+      ~Note: Remember that a non-empty tagexpr field indicates menu selection is used.
+      var needed as number
+      needed = !field[usrCandid1].isempty + !field[usrCandid2].isempty
+      needed += !empty(field[usrArray].arraytext[0])
+
+      ~determine the number of menus that HAVE selections
+      var actual as number
+      if (field[usrCandid1].isempty = 0) then
+        actual += field[usrChosen1].ischosen
+        endif
+      if (field[usrCandid2].isempty = 0) then
+        actual += field[usrChosen2].ischosen
+        endif
+      if (field[usrSelect].isempty = 0) then
+        actual += 1
+        endif
+
+      ~if the user has chosen something whenever required, we're valid
+      validif (actual >= needed)
+
+      ~mark any associated tab as invalid
+      if (ispanel <> 0) then
+        linkvalid = 0
+        endif
+      ]]></evalrule>
+
+    </component>
+
+
+  <!-- SpecialTab component
+        Used for anything that must appear on the "Special" tab. A field controls
+        whether the user designated the entry for promotion to the top of the list.
+        Another provides a customized name for display, which can be generated for
+        certain things, as needed.
+  -->
+  <component
+    id="SpecialTab"
+    name="Special Tab Entry"
+    ispublic="no">
+
+    <!-- Whether entry has been promoted to the top -->
+    <field
+      id="spcPromote"
+      name="Promoted"
+      type="user">
+      </field>
+
+    <!-- Custom name for display on the tab (if needed) -->
+    <field
+      id="spcName"
+      name="Special Name"
+      type="derived"
+      maxlength="100">
+      </field>
+
+    <!-- Every thing that is shown on the Special tab also gets shown on the Dashboard/TacCon -->
+    <tag group="DashTacCon" tag="Special"/>
+
+    <!-- Assign an appropriate ordering tag if we don't have one yet -->
+    <eval index="1" phase="Initialize" priority="10000" name="Assign SpecialTab">
+      if (tagis[SpecialTab.?] = 0) then
+        perform assign[SpecialTab.Unknown]
+        endif
+      </eval>
+
+    <!-- If the "promote" field is non-zero, assign ourselves the "Promote.Top" tag -->
+    <eval index="2" phase="Setup" priority="9000"><![CDATA[
+      if (field[spcPromote].value <> 0) then
+        perform assign[Promote.Top]
+        endif
+      ]]></eval>
+
+    </component>
+
+
+  <!-- Domain component
+        Anything that uses a domain derives from this component
+  -->
+  <component
+    id="Domain"
+    name="Domain"
+    autocompset="no"
+    ispublic="no">
+
+    <!-- Domain details for something that has a particular focus (e.g. knowledge skills) -->
+    <field
+      id="domDomain"
+      name="Domain"
+      maxlength="50"
+      type="user">
+      </field>
+
+    <!-- Integrate the domain into the name of the pick
+          NOTE! Must be scheduled after the "shortname" field is synthesized at Render/100.
+    -->
+    <eval index="1" phase="Render" priority="500"><![CDATA[
+      ~if we don't need a domain, there's nothing to do
+      doneif (tagis[User.NeedDomain] = 0)
+
+      ~if we're not supposed to auto-amend the name for this pick, we're done
+      doneif (tagis[User.NoAutoName] <> 0)
+
+      ~if we don't have a domain, use a placeholder for it
+      var domain as string
+      if (field[domDomain].isempty = 0) then
+        domain = field[domDomain].text
+      else
+        domain = "????"
+        endif
+
+      ~add the domain to both the livename and shortname (if present) fields
+      field[livename].text = field[name].text & ": " & domain
+      if (tagis[component.shortname] <> 0) then
+        field[shortname].text &= " (" & domain & ")"
+        endif
+      ]]></eval>
+
+    <!-- If the domain is required and not defined, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="9000" message="????"><![CDATA[
+      ~if no domain is needed or the domain is specified, we're valid
+      validif (tagis[User.NeedDomain] = 0)
+      validif (field[domDomain].isempty = 0)
+
+      ~if we have a basis linkage, then we already have domain on that pick
+      validif (islinkage[basis] <> 0)
+
+      ~if we have a linked panel, flag it as invalid
+      if (ispanel <> 0) then
+        linkvalid = 0
+        endif
+
+      ~synthesize an appropriate message using the correct domain term
+      var term as string
+      term = tagnames[DomainTerm.?]
+      if (empty(term) <> 0) then
+        term = "Domain"
+        endif
+      @message = term & " must be specified"
+      ]]></evalrule>
+
+    </component>
+
+
+  <!-- Custom component
+        Can be added to any other component to allow creation of a "custom
+        thing" with a user-definable name, for example with Custom Gear.
+  -->
+  <component
+    id="Custom"
+    name="Custom">
+
+    <!-- Manage an optional user-assigned name for custom things -->
+    <field
+      id="UserName"
+      name="User Name"
+      maxlength="100"
+      type="user">
+      </field>
+
+    <!-- If we have a user-assigned name, copy that into the live name -->
+    <eval index="1" phase="Setup" priority="10000"><![CDATA[
+      if (field[UserName].isempty = 0) then
+        field[livename].text = field[UserName].text
+        endif
+      ]]></eval>
+
+    </component>
+
+
+  <!-- Define various component sets associated with the components defined above.
+  -->
+
+  <!-- The "Tracker" compset is auto-defined for the component -->
+  <!-- The "Adjustment" compset is auto-defined for the component -->
+  <!-- The "UserSelect" compset is auto-defined for the component -->
+  <!-- The "SpecialTab" compset is auto-defined for the component -->
+  <!-- The "Custom" compset is auto-defined for the component -->
+
+
+  </document>

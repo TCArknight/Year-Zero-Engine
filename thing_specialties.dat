@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of special abilities for the game system.
+      Abilities confer their effects through scripts that apply the necessary changes
+      to the appropriate traits.
+
+      Abilities influence traits, so all adjustments must be applied prior to when the
+      final trait value is calculated. The script timing used below (PreTraits/5000)
+      ensures that we satisfy this requirement. All abilities should be designated as
+      "unique" so that they can only be selected a single time by the user.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Sample Ability 
+  <thing
+    id="spcSample"
+    name="Sample"
+    compset="Specialty"
+    isunique="yes"
+    description="Description goes here"> -->
+
+    <!-- If checkbox selection is needed, make sure the compset includes "UserSelect"
+          component and define this field appropriately.
+    <fieldval field="usrChkText" value="Menu1"/>
+    -->
+
+    <!-- If thing-based menu selection is needed, make sure the compset includes
+          "UserSelect" component and define these fields and tags as appropriate.
+    <fieldval field="usrLabel1" value="Menu1"/>
+    <fieldval field="usrCandid1" value="component.Attribute"/>
+    <fieldval field="usrLabel2" value="Menu2"/>
+    <fieldval field="usrCandid2" value="component.Skill"/>
+    <tag group="ChooseSrc1" tag="Hero"/>
+    <tag group="ChooseSrc2" tag="Thing"/>
+    -->
+
+    <!-- If array-based menu selection is needed, make sure the compset includes
+          "UserSelect" component and define these fields as appropriate.
+    <fieldval field="usrLabelAr" value="Menu1"/>
+    <arrayval field="usrArray" index="0" value="Choice #1"/>
+    <arrayval field="usrArray" index="1" value="Choice #2"/>
+    <arrayval field="usrArray" index="2" value="Choice #3"/>
+    -->
+
+    <!-- If the ability can only be selected at character creation, assign this tag
+    <tag group="User" tag="CreateOnly"/>
+    -->
+
+    <!-- If the ability should not appear for normal selection, assign this tag
+    <tag group="Hide" tag="Ability"/>
+    -->
+
+    <!-- If the ability can be activated by the user to apply its effects, assign this tag
+    <tag group="User" tag="Activation"/>
+    -->
+
+    <!-- Define any script needed to apply changes to other traits
+    <eval value="1" phase="PreTraits" priority="5000">
+      <before name="Calc trtFinal"/><![CDATA[
+      ~if we haven't been activated, just get out (only needed for user-activated abilities)
+      doneif (field[abilActive].value = 0)
+
+      ~apply whatever adjustment(s) are needed here
+      ~#traitbonus[trDefense] += 1
+      ]]></eval>
+    -->
+
+    <!-- Define any appropriate pre-requisites for the ability
+    <exprreq iserror="yes" message="Strength 5 required."><![CDATA[#trait[attrStr] >= 5]]></exprreq>
+    
+
+    </thing> -->
+
+  <thing
+    id="spcBodyguard"
+    name="Bodyguard"
+    compset="Specialty"
+    description="If someone within Short range of you is hit by an attack, you can dive in to take the hit. Roll for Mobility. It doesn’t count as an action in combat. If you roll one or more successes, you take the hit instead of your friend. You can push the roll.">
+    <usesource source="OGLSpec" parent="Settings" name="Use OGL Specialties"/>
+    <usesource source="OGL_Dice" />
+    <usesource source="OGL_Step" />
+    <tag group="SpecCat" tag="General"/>
+    </thing> 
+
+  <thing
+    id="spcCompassion"
+    name="Compassion"
+    compset="Specialty"
+    description="You can push any skill roll based on Empathy twice, not just once like other characters.">
+    <usesource source="OGLSpec" parent="Settings" name="Use OGL Specialties"/>
+    <usesource source="OGL_Dice" />
+    <usesource source="OGL_Step" />
+    <tag group="SpecCat" tag="General"/>
+    </thing> 
+
+  <thing
+    id="spcFastRef"
+    name="Fast Reflexes"
+    compset="Specialty"
+    description="You can draw two initiative cards instead of one during the initiative draw. Choose the one you want to use.">
+    <usesource source="OGLSpec" parent="Settings" name="Use OGL Specialties"/>
+    <usesource source="OGL_Dice" />
+    <usesource source="OGL_Step" />
+    <tag group="SpecCat" tag="General"/>
+    </thing> 
+
+  <thing
+    id="spcFieldSurgeon"
+    name="Field Surgeon"
+    compset="Specialty"
+    description="You know the delicate art of stopping a wound from bleeding or treating grave injuries. You get a +1 modifier to Healing when treating someone who is about to die from a critical injury.">
+    <usesource source="OGLSpec" parent="Settings" name="Use OGL Specialties"/>
+    <usesource source="OGL_Dice" />
+    <usesource source="OGL_Step" />
+    <tag group="SpecCat" tag="General"/>
+    </thing> 
+	
+  </document>

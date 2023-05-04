@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of all tag groups and tags that are used
+      throughout the Skeleton data files. These elements relied upon by numerous
+      other facets of the data files and must be processed first during compilation,
+      so they are placed in a file with a ".1st" extension.
+-->
+
+<document signature="Hero Lab Structure">
+
+
+
+  <!-- SettingFlag group - used for to control core functions for YZE.
+  -->
+  <group
+    id="SettingFlag">
+    <value id="DicePool" />
+    <value id="StepDice" />
+    <value id="UseHealth" />
+    <value id="UseHealthStrOnly" />
+    <value id="UseResolve" />
+    <value id="UseStress" />
+    <value id="AttributeDamage" />
+    <value id="Conditions" />
+    <value id="AgeAdjust" />
+    <value id="DirectSkill" />
+    <value id="UsePride" />
+    <value id="UseWeakness" />
+    <value id="UseDarkSecret" />
+    <value id="UseBigDream" />
+    <value id="UseRelationship" />
+    <value id="UseBuddy" />
+    <value id="UseRival" />
+    <value id="UseHowMet" />
+    <value id="UseAgenda" />
+    <value id="UseMoralCode" />
+    <value id="EncumStandard" />
+    <value id="EncumBackpack" />
+    <value id="EncumWeapHand" />
+    <value id="EncumNone" />
+    <value id="DiceStart2" />
+    <value id="StepStart3" />
+    <value id="StepStart4" />
+    <value id="ConsumableTrack" />
+    <value id="ConsumableRating" />
+    <value id="UseKeyAttributes" />
+    <value id="UseKeySkills" />
+    <value id="ArchtypePriReq"/>  		<!-- Indicates that a primary archetype is required for the hero -->
+    <value id="ArchtypeSecReq"/>  		<!-- Indicates that a secondary archetype is required for the hero -->
+    <value id="UseArchetypePri"/>  		<!-- Indicates that a primary archetype should be shown for the hero -->
+    <value id="UseArchetypeSec"/>  		<!-- Indicates that a secondary archetype should be shown for the hero -->
+    </group>
+
+  <group
+    id="AttrCat"
+    visible="yes">
+    <value id="Hero" name="Hero"/>
+    <value id="Vehicle" name="Vehicles"/>
+    </group>	
+	
+  <group
+    id="TraitValue">
+    <value id="StartValue0" />
+    <value id="StartValue1" />
+    <value id="StartValue2" />
+    <value id="StartValue3" />
+    <value id="StartValue4" />
+    <value id="StartValue5" />
+    <value id="StartValue6" />
+    <value id="MinimumValue0" />
+    <value id="MinimumValue1" />
+    <value id="MinimumValue2" />
+    <value id="MinimumValue3" />
+    <value id="MinimumValue4" />
+    <value id="MinimumValue5" />
+    <value id="MinimumValue6" />
+    <value id="MaximumValue0" />
+    <value id="MaximumValue1" />
+    <value id="MaximumValue2" />
+    <value id="MaximumValue3" />
+    <value id="MaximumValue4" />
+    <value id="MaximumValue5" />
+    <value id="MaximumValue6" />
+    </group>
+	
+  <!-- The "group" elements define tag groups that consist of an assortment of tags.
+        These tags can be assigned throughout the data files and referenced via scripts
+        and tag expressions to orchestrate all the behaviors you need.
+  -->
+
+  <!-- Helper group - general helper tags used internally only
+        This group is where you can put a variety of tags that don't really belong in
+        any other group - it's kind of a "miscellaneous" group. The key requirement is
+        that tags in this group should never be intended for access by the user, as
+        they are for internal use only. Another important detail is that you cannot
+        ever establish any ordering of things based on Helper tags, since any number
+        of Helper tags can be assigned to any particular thing.
+  -->
+  <group
+    id="Helper">
+    <value id="Bootstrap"/>   <!-- Identifies a pick that must be bootstrapped for every hero -->
+    <value id="Displace"/>    <!-- Pick should be displaced if it is designated for displacement -->
+    <value id="Shadow"/>      <!-- Pick should be shadowed if it is designated for displacement -->
+    <value id="Maximum"/>     <!-- Ability has reached its maximum level and cannot be improved -->
+    <value id="Minimum"/>     <!-- Ability has reached its minimum level and cannot be decreased -->
+    <value id="NoDelete"/>    <!-- Indicates the pick cannot be deleted because another selection precludes it -->
+    <value id="Activated"/>   <!-- Indicates an in-play adjustment or ability that has been activated -->
+    <value id="NoMove"/>      <!-- Identifies gear that cannot be transferred between actors -->
+    <value id="UserAdjust"/>  <!-- Identifies a user-added adjustment -->
+    <value id="BadStrReq"/>   <!-- Identifies a weapon that has failed its minimum strength requirement -->
+    <value id="ResetMax"/>    <!-- Tracker reset value is the maximum instead of the minimum -->
+    <value id="NoReset"/>     <!-- Tracker value does not possess a reset button -->
+    <value id="NoMaxBound"/>  <!-- Tracker user value is not bounded at the maximum end -->
+    <value id="NoMinBound"/>  <!-- Tracker user value is not bounded at the minimum end -->
+    <value id="NoMinimum"/>   <!-- Resource does NOT need to be fully spent to avoid reporting a warning -->
+    <value id="CustomItem"/>  <!-- Identifies a thing that has a user customizable name -->
+    <value id="NoPersText"/>  <!-- User entered no background text -->
+    <value id="DisplayAlpha"/>  <!-- Identifies a trait that should display as A-F -->
+    <value id="NoValue"/>     	<!-- Identifies a user-added adjustment -->
+    <value id="NoCost"/>     	<!-- Identifies a user-added adjustment -->
+    <value id="KeyAttribute"/>  <!-- Identifies a user-added adjustment -->
+    <value id="KeySkill"/>  <!-- Identifies a user-added adjustment -->
+    <value id="RangedWpnSkill"/>  <!-- Identifies a user-added adjustment -->
+    <value id="MeleeWpnSkill"/>  <!-- Identifies a user-added adjustment -->
+    <value id="SpecChosen"/>     <!-- Identifies a chosen specialty -->
+    <value id="FirstCopy"/>   <!-- This pick is the first copy of the trait -->
+    <value id="OnlyCopy"/>   <!-- This pick is the only copy of the component -->
+    <value id="MultiCopy"/>   <!-- This pick is one of multiple of the component -->
+    <value id="SpecUp"/>      <!-- This pick is an additional copy of the same trait -->
+    <value id="MasterSkill"/>       <!-- This Skill pick is the master (on the hero) of any added through gizmos -->
+    <value id="MagicSpecialty"/>       <!-- This Skill pick is the master (on the hero) of any added through gizmos -->
+    <value id="InBackpack"/>      <!-- This pick is an additional copy of the same trait -->
+    <value id="IsBackpack"/>      <!-- This pick is an additional copy of the same trait -->
+    <value id="HasBackpack"/>      <!-- This pick is an additional copy of the same trait -->
+    </group>
+
+  <!-- User group - general helper tags that can be assigned by users via the Editor
+        Any tags that you would normally put in the Helper group, but that you also
+        want to make visible to the user within the Editor, should be placed here.
+        This group has the same limitation as the Helper group in that you can never
+        user this group for ordering within a sortset.
+  -->
+  <group
+    id="User">
+    <value id="CreateOnly"/>  <!-- Whether an ability is selectable only during creation -->
+    <value id="Activation"/>  <!-- Whether an ability can be activated to invoke dynamic changes -->
+    <value id="NeedDomain"/>  <!-- Whether an ability requires the user to specify a domain -->
+    <value id="NoAutoName"/>  <!-- Whether to not automatically amend the naming of a pick with selections -->
+    <value id="Resistance"/>  <!-- Identifies a resistance trait -->
+    <value id="Power"/>       <!-- Identifies a power trait -->
+    <value id="Combat"/>      <!-- Identifies a combat trait -->
+    </group>
+
+  <!-- Hero group - Helper tags assigned exclusively to the hero/actor
+        Sometimes you'll have tags that need to be assigned to hero instead of to
+        individual things. Those tags should be kept distinct from normal Helper or
+        User tags and defined as Hero tags. The benefit of doing this is that tags
+        are immediately obvious as to their role based on the group they belong to.
+  -->
+  <group
+    id="Hero">
+    <value id="Dead"/>        			<!-- Indicates hero is dead or otherwise out of combat -->
+    <value id="NoDamage"/>   			<!-- Indicates no damage history exists for the hero -->
+    <value id="Hand"/>        			<!-- Each tag indicates one hand worth of weapons equipped -->
+    <value id="RerollInit"/>  			<!-- Indicates that the hero can re-roll initiative values -->
+    <value id="FixedRace"/>        		<!-- Indicates hero is a specific race -->
+    <value id="Minion"/>           		<!-- Indicates hero is a minion -->
+    </group>
+
+  <!-- DashTacCon group - behaviors associated with the Dashboard and/or Tactical Console
+        All tags that control behaviors relating to the Dashboard or TacCon should be
+        defined in this group.
+  -->
+  <group
+    id="DashTacCon">
+    <value id="Special"/>     <!-- Whether to show pick within the "Special" mouse-over -->
+    <value id="Rolls"/>       <!-- Whether to show pick within the "Rolls" mouse-over -->
+    <value id="Combat"/>      <!-- Whether to show pick within the "Combat" mouse-over -->
+    <value id="NonCombat"/>   <!-- Whether to show pick within the list of "NonCombat" information on the TacCon -->
+    <value id="Traits"/>      <!-- Whether to show pick in the "traits" column on the TacCon -->
+    </group>
+
+  <!-- Equipment group - helper tags specific to equipment
+        Any tags associated with equipment of all varieties should be defined in
+        this group.
+  -->
+  <group
+    id="Equipment">
+    <value id="Hand" name="Requires one or more hands"/>          <!-- Identifies equipment that requires hands to use -->
+    <value id="NoHands" name="Doesn't require hands"/>          <!-- Identifies equipment that requires hands to use -->
+    <value id="TwoHand" name="Requires two hands"/>               <!-- Identifies equipment that is two-handed -->
+    <value id="StartEquip" name="Gear starts out equipped"/>      <!-- Identifies equipment that is equipped by default -->
+    <value id="AutoEquip" name="Gear is auto-equipped"/>          <!-- Identifies equipment that is automatically equipped (e.g. natural attacks) -->
+    <value id="TinyItem" name="Tiny weapon/armor/etc."/>        <!-- Identifies equipment that is a natural form and exempt from various behaviors -->
+    <value id="Natural" name="Natural weapon/armor/etc."/>        <!-- Identifies equipment that is a natural form and exempt from various behaviors -->
+    <value id="InMagazine" name="Located In Magazine."/>          <!-- Identifies equipment that is a natural form and exempt from various behaviors -->
+    </group>
+
+  <!-- Weapon group - helper tags for weapon special abilities
+        If a tag is used to indicate a special ability for a weapon, it should be
+        defined in this group.
+  -->
+  <group
+    id="Weapon">
+    <value id="SpecRange" name="Range is special"/>               <!-- Identifies a weapon with a special range -->
+    </group>
+
+  <group
+    id="WeaponType"
+    dynamic="yes">
+    <value id="Melee" name="Melee"/>  
+    <value id="Ranged" name="Ranged"/>  
+    </group>
+
+  <group
+    id="WeaponGrip">
+    <value id="OneHand" name="1H"/>  
+    <value id="TwoHand" name="2H"/>  
+    </group>
+	
+  <group
+    id="WeaponRange"
+    dynamic="yes">
+    <value id="ArmLength" name="Arm's Length" abbrev="Arm" /> 
+    <value id="Near" name="Near" abbrev="Near" />
+    <value id="Engaged" name="Engaged"/> 
+    <value id="Personal" name="Personal"/>
+    <value id="Short" name="Short"/>
+    <value id="Medium" name="Medium"/>
+    <value id="Long" name="Long"/>
+    <value id="Extreme" name="Extreme"/>
+    </group>
+	
+  <group
+    id="WeaponFeature">
+    <value id="Light" name="Light"/>
+    <value id="Pointed" name="Pointed"/>
+    <value id="Edged" name="Edged"/>
+    <value id="Blunt" name="Blunt"/>
+    <value id="Heavy" name="Heavy"/>
+    <value id="Hook" name="Hook"/>
+    <value id="Parrying" name="Parrying"/>
+    <value id="LoadSlow" name="Loading is slow action"/>
+    <value id="ArmorPiercing" name="Armor Piercing"/>
+    <value id="DoubleArmor" name="Armor Doubled"/>
+    <value id="FullAuto" name="Full Auto"/>
+    <value id="GrenadeLauncher" name="Grenade Launcher"/>
+    <value id="SingleShot" name="Single Shot"/>
+    <value id="Stun" name="Stun Effect (-2)"/>
+    </group>
+	
+  <group
+    id="DefenseFeature"
+    visible="no"
+    inherit="WeaponFeature">
+    <value id="HalfArmorStabs" name="Half Armor value against arrows and Stabs"/>
+    </group>
+	
+  <!-- ArmorLoc group - helper tags specific to armor location coverage
+        Each piece of armor should have at least one of these tags assigned.
+  -->
+  <group
+    id="ArmorLoc">
+    <value id="Body" abbrev="B"/>
+    <value id="Head" abbrev="H"/>
+    <value id="Arms" abbrev="A"/>
+    <value id="Legs" abbrev="L"/>
+    <value id="Horse" abbrev="Hr"/>
+    </group>	
+  <!-- InPlay group - tags used to control behaviors associated with in-play effects
+        Behaviors that govern in-play adjustments, permanenent adjustments, or other
+        in-play effects belong in the group.
+  -->
+  <group
+    id="InPlay">
+    <value id="PermOK"/>      <!-- Identifies an in-play adjustment that *can* be permanent -->
+    <value id="TempOK"/>      <!-- Identifies an in-play adjustment that *can* be temporary -->
+    <value id="Permanent"/>   <!-- Identifies a permanent in-play adjustment -->
+    <value id="Temporary"/>   <!-- Identifies a temporary in-play adjustment -->
+    </group>
+
+  <!-- Print group - tags used to control printed output
+        There will typically be a variety of print-centric tags once your data files
+        are fleshed out with multiple dossiers and sophisticated character sheets.
+        All such tags should be defined in this group.
+  -->
+  <group
+    id="Print">
+    <value id="NoPrint"/>     <!-- Indicates the pick should not be included in printouts -->
+    </group>
+
+  <!-- HideTab group - controls which tabs are visible for the character
+        Every tab and summary panel has a "live" tagexpr that tests for the tag that
+        corresponds to the panel. Consequently, every such panel should have a tag
+        defined for it below. You can then assign the proper tags to the hero so that
+        the matching panels are hidden for the hero. This can really extremely useful
+        in game systems like World of Darkness, where you can have multiple typs of
+        heroes (e.g. vampires, ghosts, mortals) and different tabs should appear for
+        each type.
+  -->
+  <group
+    id="HideTab">
+    <value id="basics"/>
+    <value id="abilities"/>
+    <value id="specialties"/>
+    <value id="personalities"/>
+    <value id="armory"/>
+    <value id="gear"/>
+    <value id="advances"/>
+    <value id="personal"/>
+    <value id="combat"/>
+    <value id="journal"/>
+    <value id="inplay"/>
+    <value id="special"/>
+    <value id="smBasics"/>
+    <value id="smAbility"/>
+    <value id="smArmory"/>
+    <value id="smStatbl"/>
+    </group>
+
+  <!-- Hide group - controls whether things are hidden in certain contexts
+        In the same way that the HideTab group controls which panels are made visible
+        for a given character, the Hide group controls the visibiliy of individual
+        things based on particular character types and/or settings. When a thing must
+        be hidden in a particular context, define a tag for that context here and test
+        for it within that context. Then simply assign the tag to the any thing that
+        must be hidden.
+  -->
+  <group
+    id="Hide">
+    <value id="Attribute"/>       <!-- Indicates an attribute that is not user selectable -->
+    <value id="Specialty"/>       <!-- Indicates an attribute that is not user selectable -->
+    <value id="Relationship"/>       <!-- Indicates an attribute that is not user selectable -->
+    <value id="Trait"/>           <!-- Indicates a trait that is not user selectable -->
+    <value id="Skill"/>           <!-- Indicates a skill that is not user selectable -->
+    <value id="InPlay"/>          <!-- Indicates an in-play adjustment that is hidden from view -->
+    <value id="Ability"/>         <!-- Indicates an ability that is not user selectable (i.e. conferred by race or similar mechanism) -->
+    <value id="Special"/>         <!-- Indicates a trait that is hidden from the Special tab -->
+    <value id="Tracker"/>         <!-- Indicates a tracker that is hidden from the In-Play tab (and likely shown somewhere else) -->
+    </group>
+
+  <!-- Show group - controls whether things are shown in certain contexts
+        This group is the analog of the Hide group. Normally, things will always be
+        visible except in certain situations, in which case the Hide group is ideal.
+        In the rare situation where things must be hidden except in certain cases,
+        the Show group comes in handy.
+  -->
+  <group
+    id="Show">
+    <value id="dummy"/>   <!-- replace this tag when you define a real context -->
+    </group>
+
+  <!-- Promote group - controls whether an item is promoted to the top
+        This group should only ever have the one tag. If the tag is assigned to a
+        thing, it has been promoted to the top of the list. By having this tag in its
+        own group, the group can be readily used within a sortset so that promoted
+        items are shown first.
+  -->
+  <group
+    id="Promote">
+    <value id="Top"/>
+    </group>
+
+  <!-- Armory group - controls order in which armor and weapons are shown
+        Each type of weapon/armor must be assigned one of these tags to dictate its
+        basic nature (this is done by via the components). Once assigned, this group
+        can be used within a sortset to sequence the equipment in a consistent order.
+
+        Since this group is used for sorting and the different equipment types don't
+        lend themselves to a natural sort order based on their names, we assign an
+        explicit sort order value to each tag and designate the entire group as
+        having an "explicit" sequencing behavior.
+  -->
+  <group
+    id="Armory"
+    sequence="explicit">
+    <value id="Armor" order="1"/>
+    <value id="Shield" order="2"/>
+    <value id="Range" order="3"/>
+    <value id="Melee" order="4"/>
+    </group>
+
+  <!-- Equipped group - used for sorting equipped weapons first
+        This group should only ever have the one tag. If the tag is assigned to a
+        thing, it has been equipped by the actor. By having this tag in its own
+        group, the group can be readily used within a sortset so that equipped items
+        are shown first.
+  -->
+  <group
+    id="Equipped">
+    <value id="Equipped"/>    <!-- Identifies weapons and armor that are equipped -->
+    </group>
+
+  <!-- AdjustShow group - tags associated with display of in-play adjustments
+        Different adjustments can be configured by the user in different ways, and
+        there is one AdjustShow tag for each such way. Each adjustment must be
+        assigned tags corresponding to the different customizations that the user
+        can apply to that adjustment.
+  -->
+  <group
+    id="AdjustShow">
+    <value id="Increment"/>   <!-- adjustment has an incrementer -->
+    <value id="Info"/>        <!-- adjustment has an info button -->
+    <value id="Menu"/>        <!-- adjustment has a required menu selection -->
+    </group>
+
+  <!-- Adjustment group - type of adjustment being applied
+        Adjustments have an identity tag and there is the shared 'Fixed' tag. If you
+        need categories of adjustments, you can define appropriate tags here.
+  -->
+  <group
+    id="Adjustment"
+    dynamic="yes">
+    <value id="Fixed"/>       <!-- identifies a fixed value adjustment that the user can't modify -->
+    </group>
+
+  <!-- DomainTerm group - tags defining the term to use for "domain" for a given thing
+        The "Domain" component is designed to be generic. As such, it needs to be able
+        to be adapted, and these tags dictate the term use for a "domain" within a
+        particular thing. You can assign the tag to a component to change the term for
+        all things based on that component. If not tag is assigned, "Domain" is used.
+  -->
+  <group
+    id="DomainTerm"
+    dynamic="yes">
+    <value id="Domain"/>      <!-- default term use for a domain -->
+    </group>
+
+  <!-- SimpleItem group - tags associated with use of the SimpleItem template
+        The "SimpleItem" template is designed to be generic. As such, it needs to be
+        able to be adapted by an author in reasonable ways, and these tags allow for
+        that customization.
+  -->
+  <group
+    id="SimpleItem"
+    dynamic="yes">
+    <value id="width0"/>      <!-- use default width behavior for showing things when choosing -->
+    <value id="CenterName"/>  <!-- center the name, instead of left-aligning it -->
+    </group>
+
+  <!-- ChooseSrc1 and ChooseSrc2 - tags used for menu selection behaviors
+        The "UserSelect" component and "UserSelect" template orchestrate the handling
+        of menu selections for individual picks within a table. The menu choices can
+        be pulled from a list of things, picks on the current container, or picks on
+        the hero. These tag groups allow the source to be specified for each of the
+        two separate menus supported by the mechanism.
+        NOTE! Omitting a tag defaults to the "Hero" behavior.
+  -->
+  <group
+    id="ChooseSrc1"
+    visible="no">
+    <value id="Thing" name="All Things"/>
+    <value id="Container" name="All Picks on Container"/>
+    <value id="Hero" name="All Picks on Hero"/>
+    </group>
+  <group
+    id="ChooseSrc2"
+    visible="no"
+    inherit="ChooseSrc1">
+    </group>
+
+  <!-- SpecialTab group - used for sort order control on Special tab
+        Every type of thing that is reported on the Special tab needs to be assigned
+        a unique sort order so that all of the information shown on the Special tab
+        is organized consistently for the user. This group provides an appropriate
+        set of tags for that purpose.
+
+        Since this group is used for sorting and the different types of things don't
+        lend themselves to a natural sort order based on their names, we assign an
+        explicit sort order value to each tag and designate the entire group as
+        having an "explicit" sequencing behavior.
+  -->
+  <group
+    id="SpecialTab"
+    sequence="explicit">
+    <value id="Ability" order="10"/>
+    <value id="Specialty" order="10"/>
+    <value id="Personality" order="70"/>
+    <value id="Unknown" order="80"/>
+    </group>
+	
+  <group
+    id="CharType"
+    dynamic="yes">
+    <value id="Vehicle"/>
+    </group>
+
+  <group
+    id="MinionSet"
+    visible="no">
+    <value id="Critter" name="Creature"/>
+    <value id="Vehicle" name="Vehicles"/>
+    </group>
+
+  <group
+    id="Settings"
+    dynamic="yes">
+    <value id="Dummy"/>
+    </group>
+
+  <group
+    id="Stage"
+    ispublic="yes"
+    issingular="yes">
+    <value id="Partial"/>
+    <value id="Privileged"/>
+    <value id="Capsule"/>
+    <value id="Minimal"/>
+    </group>
+	
+  <group
+    id="CharacterType">
+    <value id="PC" name="PC"/>
+    <value id="PCStandIn" name="Stand-In PC"/>
+    <value id="NPC" name="NPC"/>
+    <value id="Vehicle" name="Vehicle"/>
+    <value id="NPCCritter" name="Critter"/>
+    </group>
+
+  <!-- Archetype-related Tag groups -->	
+  <group
+    id="ArchetypeCat"
+    dynamic="yes">
+    <value id="Primary"/>     <!-- Indicates that an archetype is primary -->
+    <value id="Secondary"/>   <!-- Indicates that an archetype is secondary -->
+    <value id="Other"/>   <!-- Indicates that an archetype is secondary -->
+    </group>
+	
+  <group
+    id="ArchetypeNamePri"
+    dynamic="yes">
+    <value id="Archetype" name="Archetype"/>
+    <value id="Career" name="Career"/>
+    <value id="Kin" name="Kin"/>
+    <value id="Profession" name="Profession"/>
+    <value id="Role" name="Role"/>
+    </group>
+	
+  <group
+    id="ArchetypeNameSec"
+    dynamic="yes"
+    inherit="ArchetypeNamePri">
+    </group>
+	
+  <group
+    id="SkillUse">
+    <value id="Melee" name="Melee Combat"/>
+    <value id="Ranged" name="Ranged Combat"/>
+    <value id="Thrown" name="Thrown Weapons"/>
+    </group>
+
+  <group
+    id="SpecCat"
+    dynamic="yes"
+    inherit="ArchetypeNamePri">
+    <value id="General" />     <!-- Talent is available for anyone -->
+    </group>
+	
+  <group
+    id="SpecRank">
+    <value id="Ranked"/>   <!-- Talent is not a Ranked talent  -->
+    <value id="Maximum"/>     <!-- Talent is at maximum rank -->
+    <value id="Rank1" name="Rank 1"/>       <!-- Rank 1 -->
+    <value id="Rank2" name="Rank 2"/>       <!-- Rank 2 -->
+    <value id="Rank3" name="Rank 3"/>       <!-- Rank 3 -->
+    <value id="Rank4" name="Rank 4"/>       <!-- Rank 4 -->
+    <value id="Rank5" name="Rank 5"/>       <!-- Rank 5 -->
+    </group>	
+	
+  <group
+    id="Relationship"
+	dynamic="yes">
+    <value id="Buddy"/>
+    <value id="Rival"/>
+    <value id="Other"/>
+    </group>
+
+  <group
+    id="Magic"
+    dynamic="yes">
+    <value id="CanUseMagic" /> 
+    </group>
+	
+  <group
+    id="MagicRank">
+    <value id="Rank1" name="Rank 1"/>       <!-- Rank 1 -->
+    <value id="Rank2" name="Rank 2"/>       <!-- Rank 2 -->
+    <value id="Rank3" name="Rank 3"/>       <!-- Rank 3 -->
+    <value id="Rank4" name="Rank 4"/>       <!-- Rank 4 -->
+    <value id="Rank5" name="Rank 5"/>       <!-- Rank 5 -->
+    </group>
+	
+  <group
+    id="HasMagic"
+    dynamic="yes">
+    <value id="dummy" /> 
+    </group>
+	
+  <group
+    id="MagicRange"
+    dynamic="yes"
+    inherit="WeaponRange">
+    </group>
+	
+  <group
+    id="MagicDuration"
+    dynamic="yes">
+    <value id="Personal" name="Personal"/> 
+    <value id="QuarterDay" name="Quarter Day"/> 
+    <value id="Immediate" name="Immediate"/> 
+    <value id="Turn15" name="One Turn (15 minutes)"/> 
+    </group>
+	
+  <group
+    id="GearWeight"
+    dynamic="yes">
+    <value id="Tiny" />		<!-- Tiny items have no weight -->
+    <value id="Light" />	<!-- Light items count as half an item -->
+    <value id="Normal" />	<!-- Normal items are a full item -->
+    <value id="Heavy" />	<!-- Heavy items count as two items -->
+    </group>
+	
+  </document>

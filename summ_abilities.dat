@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Abilities" summary panel. This panel
+      contains the list of special abilities and all skills for the character.
+
+      Since all of the tables shown within this summary panel should fit within the
+      available vertical space, no scroller is required, so we turn off the scroller
+      for each table so that Hero Lab doesn't leave space for one.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- smAbility portal - table of special abilities
+  -->
+  <portal
+    id="smAbility"
+    style="tblInvisSm">
+    <table_fixed
+      component="Ability"
+      showtemplate="smAbility"
+      scrollable="no">
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & " Abilities " & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+  <!-- smSpecialties portal - table of special abilities
+  -->
+  <portal
+    id="smSpecialty"
+    style="tblInvisSm">
+    <table_fixed
+      component="Specialty"
+      showtemplate="smSpecialty"
+      scrollable="no">
+      <list>Helper.FirstCopy &amp; !Hide.Specialty</list>
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & herofield[acSpecialtyTermP].text & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+  <!-- smSkill portal
+        Table of skills, using the "smTrait" template defined in "summ_basics.dat".
+  -->
+  <portal
+    id="smSkill"
+    style="tblInvisSm">
+    <table_fixed
+      component="Skill"
+      showtemplate="smTrait"
+      scrollable="no">
+      <list>!Hide.Skill</list>
+      <headertitle><![CDATA[
+      @text = #summtitle_decoration[] & " Skills " & #summtitle_decoration[]
+      ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- smAbility template
+        This template shows the names of each special ability ability, providing
+        mouse-over behavior to show the details of each ability.
+  -->
+  <template
+    id="smAbility"
+    name="Summary Ability Pick"
+    compset="Ability">
+
+    <portal
+      id="name"
+      style="lblSummary">
+      <label
+        field="name">
+        </label>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[name].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~the name is the only portal to position
+      portal[name].left = 0
+      portal[name].top = 0
+      ]]></position>
+    </template>
+	
+  <template
+    id="smSpecialty"
+    name="Summary Specialty Pick"
+    compset="Specialty">
+
+    <portal
+      id="name"
+      style="lblSummary">
+      <label
+        field="spcName">
+        </label>
+      <mouseinfo/>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[name].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~the name is the only portal to position
+      portal[name].left = 0
+      portal[name].top = 0
+      ]]></position>
+    </template>
+
+  <!-- smAbility layout
+        This layout contains both the table of special abilities and the table of
+        skills for the actor.
+  -->
+  <layout
+    id="smAbility">
+    <portalref portal="smAbility"/>
+    <portalref portal="smSpecialty"/>
+    <portalref portal="smSkill"/>
+
+    <position><![CDATA[
+      ~position and size the tables to span the full layout
+      perform portal[smAbility].autoplace
+      perform portal[smSpecialty].autoplace
+      perform portal[smSkill].autoplace[20]
+      ]]></position>
+
+    </layout>
+
+
+  <!-- smAbility panel
+        This panel is designated as a summary panel and given an order that positions
+        it properly amongst the other defined summary panels. We setup a small margin
+        to indent the layout from the edges of the panel.
+
+        The panel is assigned a "live" tagexpr so that its visibility can be
+        controlled for different types of characters. While not really useful in the
+        sample data files, this approach can be quite useful when the data files
+        expand to govern creation of widely varying characters, such as vampires vs.
+        ghosts vs. mortals in the World of Darkness game system.
+  -->
+  <panel
+    id="smAbility"
+    name="Abilities"
+    order="10020"
+    marginhorz="2"
+    marginvert="2"
+    issummary="yes">
+    <live>!HideTab.smAbility</live>
+    <layoutref layout="smAbility"/>
+
+    <position><![CDATA[
+      ]]></position>
+
+    </panel>
+
+
+  </document>

@@ -1,0 +1,852 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of how the Editor should handle all the
+      various publicly accessible objects (i.e. component sets) within the game
+      system. A separate "editthing" elemenet is defined for each component set,
+      along with the appropriate details for how to configure each facet via
+      "inputthing" elements.
+-->
+
+<document signature="Hero Lab Data">
+  <!-- Inputthing groups -->
+  <inputthinggroup
+    id="SourceInfo">
+	<inputthing
+      name="Source Info"
+      helptext="Entries related to the source material are below.">
+      <it_separator/>
+      </inputthing>
+    </inputthinggroup>
+	
+  <inputthinggroup
+    id="ChooseGrp1">
+    <inputthing
+      name="Selections"
+      helptext="User Selections">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Menu #1 Label"
+      helptext="Specify the label used to identify choices for display in the first menu. If empty, no first label is shown.">
+      <it_field field="usrLabel1"/>
+      </inputthing>
+    <inputthing
+      name="Menu #1 Source"
+      helptext="Specify the source from which to retrieve choices for display in the first menu.">
+      <it_tagpick group="ChooseSrc1" tag="?"/>
+      </inputthing>
+    <inputthing
+      name="Menu #1 Tag Expression"
+      helptext="Specify the tag expression used to identify choices for display in the first menu. If empty, no first menu is shown.">
+      <it_field field="usrCandid1"/>
+      </inputthing>
+    <inputthing
+      name="Menu #2 Label"
+      helptext="Specify the label used to identify choices for display in the second menu. If empty, no second label is shown.">
+      <it_field field="usrLabel2"/>
+      </inputthing>
+    <inputthing
+      name="Menu #2 Source"
+      helptext="Specify the source from which to retrieve choices for display in the second menu.">
+      <it_tagpick group="ChooseSrc2" tag="?"/>
+      </inputthing>
+    <inputthing
+      name="Menu #2 Tag Expression"
+      helptext="Specify the tag expression used to identify choices for display in the second menu. If empty, no second menu is shown.">
+      <it_field field="usrCandid2"/>
+      </inputthing>
+	</inputthinggroup>
+
+  <inputthinggroup
+    id="BaseGear">
+    <inputthing
+      name="Cost"
+      helptext="Specify the standard cost of the item, with a value of 0 meaning it is free.">
+      <it_field field="grCost"/>
+      </inputthing>
+    <inputthing
+      name="Lot Cost"
+      helptext="Specify the cost of a full 'lot' of the item, where the lot size is given on the right. The 'lot cost' overrides any individual cost given above.">
+      <it_field field="grLotCost"/>
+      </inputthing>
+    <inputthing
+      name="Tiny Item?"
+      helptext="Is the item of negligible weight? Leave the weight below blank and check this box.">
+      <it_tagcheck group="Equipment" tag="TinyItem" />
+      </inputthing>
+    <inputthing
+      name="Weight tag?"
+      helptext="Specify the tag to describe the weight of an item (sometimes used instead of specific weights).">
+      <it_taglist group="GearWeight" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Weight"
+      helptext="Specify the weight of the item.">
+      <it_field field="grWeight"/>
+      </inputthing>
+    </inputthinggroup>
+	
+  <inputthinggroup
+    id="BaseWeapon">
+    <inputthing
+      name="Weapon Grip"
+      helptext="How the weapon is gripped.">
+      <it_separator/>
+      </inputthing>	 
+    <inputthing
+      name="Natural Attack?"
+      helptext="Specify whether this weapon should be treated as a natural attack.">
+      <it_tagcheck group="Equipment" tag="Natural"/>
+      </inputthing>
+    <inputthing
+      name="One-Handed?"
+      helptext="Specify whether this weapon is one-handed.">
+      <it_tagcheck group="WeaponGrip" tag="OneHand"/>
+      </inputthing>
+    <inputthing
+      name="Two-Handed ?"
+      helptext="Specify whether this weapon is two-handed.">
+      <it_tagcheck group="WeaponGrip" tag="TwoHand"/>
+      </inputthing>
+    <inputthing
+      name="Combat"
+      helptext="Combat/Damage-related fields">
+      <it_separator/>
+      </inputthing>	 
+    <inputthing
+      name="Weapon Bonus (Gear Dice)"
+      helptext="Specify the bonus Gear Dice of the weapon.">
+      <it_field field="grBonus"/>
+      </inputthing>
+    <inputthing
+      name="Weapon Damage"
+      helptext="Specify the damage rating of the weapon.">
+      <it_field field="wpDamage"/>
+      </inputthing>
+    <inputthing
+      name="Range"
+      helptext="Maximum Range for the weapon?">
+      <it_tagpick group="WeaponRange" tag="?" require="yes" deftag="ArmLength" />
+      </inputthing>
+    <inputthing
+      name="Features"
+      helptext="What features does it have?">
+      <it_taglist group="WeaponFeature" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Special Behaviors"
+      helptext="Specify any special behaviors for the weapon of which the user should be reminded.">
+      <it_field field="wpSpecial"/>
+      </inputthing>
+    </inputthinggroup>
+
+  <inputthinggroup
+    id="BaseDefense">
+	
+    <inputthing
+      name="Defense"
+      helptext="...">
+      <it_separator/>
+      </inputthing>	 
+    <inputthing
+      name="Defense Rating"
+      helptext="Specify the Defense rating of the armor against attacks.">
+      <it_field field="defArmorRating"/>
+      </inputthing>
+    <inputthing
+      name="Body Part"
+      helptext="What part of the body does it cover?">
+      <it_taglist group="ArmorLoc" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Features"
+      helptext="What features does it have?">
+      <it_taglist group="DefenseFeature" tag="?" />
+      </inputthing>
+    </inputthinggroup>
+	
+  <!-- Attribute editthing -->
+  <editthing
+    compset="Attribute"
+    name="Attribute"
+    prefix="attr"
+    description="Attributes are incredibly simple. They have a minimum and maximum value.{br}They also have an optional short name and/or abbreviation."
+    summary="Defines an Attribute upon which starting CPs can be spent by a character.">
+    <inputthing
+      name="Minimum Value"
+      helptext="Specify the minimum rating for the attribute (default is 0).">
+      <it_field field="trtMinimum"/>
+      </inputthing>
+    <inputthing
+      name="Maximum Value"
+      helptext="Specify the maximum rating for the attribute (default is 10).">
+      <it_field field="trtMaximum"/>
+      </inputthing>
+    <inputthing
+      name="Abbreviation"
+      helptext="Specify a very short abbreviation for use in displaying the attribute via its abbreviation (max 5 characters).">
+      <it_field field="trtAbbrev"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+
+  <!-- Skill editthing -->
+  <editthing
+    compset="Skill"
+    name="Skill"
+    prefix="sk"
+    description="As basic traits, Skills have a minimum and maximum value, as well as{br}an optional short name and/or abbreviation."
+    summary="Defines a Skill upon which starting CPs can be spent by a character.">
+    <inputthing
+      name="Counts as skill?"
+      helptext="Specify ...">
+      <it_tagpick group="CountsAsSkill" tag="?"/>
+      </inputthing>
+    <inputthing
+      name="Melee Combat?"
+      helptext="Specify ...">
+      <it_tagcheck group="Helper" tag="MeleeWpnSkill"/>
+      </inputthing>
+    <inputthing
+      name="Ranged Combat?"
+      helptext="Specify ...">
+      <it_tagcheck group="Helper" tag="RangedWpnSkill"/>
+      </inputthing>
+    <inputthing
+      name="Minimum Value"
+      helptext="Specify the minimum rating for the skill (default is 0).">
+      <it_field field="trtMinimum"/>
+      </inputthing>
+    <inputthing
+      name="Maximum Value"
+      helptext="Specify the maximum rating for the skill(default is 10).">
+      <it_field field="trtMaximum"/>
+      </inputthing>
+    <inputthing
+      name="Abbreviation"
+      helptext="Specify a very short abbreviation for use in displaying the skill via its abbreviation (max 5 characters).">
+      <it_field field="trtAbbrev"/>
+      </inputthing>
+    <inputthing
+      name="Linked Attribute for Skill"
+      helptext="Select the attribute used to calculate the dice pool for this skill.">
+      <it_linkage compset="Attribute" linkage="attribute"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+
+  <!-- Ability editthing -->
+  <editthing
+    compset="Ability"
+    name="Abilities"
+    prefix="ab"
+    description="As basic traits, special abilities have various characteristics that are not currently used.{br}They also have an optional custom name for display on the Special tab."
+    summary="Defines a Special Ability upon which starting CPs can be spent by a character.">
+    <inputthing
+      name="Name for Special Tab"
+      helptext="Specify an optional custom name to be used on the Special tab.">
+      <it_field field="spcName"/>
+      </inputthing>
+    <inputthing
+      name="Hide from User?"
+      helptext="Specify whether this special ability is hidden from direct user selection (e.g. Flight is only conferred by the Avian race).">
+      <it_tagcheck group="Hide" tag="Ability"/>
+      </inputthing>
+    <inputthing
+      name="Activated by User?"
+      helptext="Specify whether this special ability can be activated by the user via the In-Play tab.">
+      <it_tagcheck group="User" tag="Activation"/>
+      </inputthing>
+    <inputthing
+      name="Creation Only?"
+      helptext="Specify whether this special ability can only be selected for a character during creation.">
+      <it_tagcheck group="User" tag="CreateOnly"/>
+      </inputthing>
+<!-- These facets of special abilities are not currently used for anything so they are commented out.
+    <inputthing
+      name="Minimum Value"
+      helptext="Specify the minimum rating for the special ability (default is 0).">
+      <it_field field="trtMinimum"/>
+      </inputthing>
+    <inputthing
+      name="Maximum Value"
+      helptext="Specify the maximum rating for the skill(default is 10).">
+      <it_field field="trtMaximum"/>
+      </inputthing>
+    <inputthing
+      name="Abbreviation"
+      helptext="Specify a very short abbreviation for use in displaying the skill via its abbreviation (max 5 characters).">
+      <it_field field="trtAbbrev"/>
+      </inputthing>
+-->
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+
+  <!-- Equipment editthing - for basic gear -->
+  <editthing
+    compset="Equipment"
+    name="Equipment"
+    prefix="eq"
+    description="Weapons, armor, and vehicles all have their own tabs for creating objects of those types."
+    summary="Defines a simple piece of equipment that can be selected on the Gear tab.">
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+    <inputthing
+      name="Container Behavior"
+      helptext="Specify whether this piece of equipment can contain other equipment. If this equipment can contain other equipment AND be contained within other equipment, select 'Holder'. If the equipment can only contain other equipment, select 'Top Holder'. If the equipment can only be contained by other equipment, do not select anything.">
+      <it_tagpick group="thing" tag="holder?" />
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+
+  <!-- Ammunition editthing - for ammunition -->
+  <editthing
+    compset="Ammunition"
+    name="Ammunition"
+    prefix="eq"
+    description="Weapons, armor, and vehicles all have their own tabs for creating objects of those types."
+    summary="Defines a type of weapon ammunition that can be selected on the Gear tab.">
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+
+  <!-- Melee editthing - for melee weapons -->
+  <editthing
+    compset="Melee"
+    name="Melee Weapon"
+    prefix="wp"
+    description="Armor, vehicles, and simple equipment all have their own tabs for creating objects of those types."
+    summary="Defines a melee weapon that can be selected on the Armory tab.">
+
+    <inputthing>
+      <it_groupref id="BaseWeapon"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Ranged editthing - for ranged weapons -->
+  <editthing
+    compset="Ranged"
+    name="Ranged Weapon"
+    prefix="wp"
+    description="Armor, vehicles, and simple equipment all have their own tabs for creating objects of those types."
+    summary="Defines a ranged weapon that can be selected on the Armory tab.">
+
+    <inputthing>
+      <it_groupref id="BaseWeapon"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Armor editthing -->
+  <editthing
+    compset="Armor"
+    name="Armor"
+    prefix="arm"
+    description="Weapons, vehicles, and simple equipment all have their own tabs for creating objects of those types."
+    summary="Defines armor that can be selected on the Armory tab.">
+    <inputthing>
+      <it_groupref id="BaseDefense"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Shield editthing -->
+  <editthing
+    compset="Shield"
+    name="Shield"
+    prefix="shd"
+    description="Weapons, vehicles, and simple equipment all have their own tabs for creating objects of those types."
+    summary="Defines a shield that can be selected on the Armory tab.">
+    <inputthing>
+      <it_groupref id="BaseDefense"/>
+      </inputthing>
+    <inputthing>
+      <it_groupref id="BaseGear"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Magic editthing -->
+  <editthing
+    compset="Magic"
+    name="Magic Type"
+    prefix="mag"
+    description="..."
+    summary="Defines a type of magic used by the hero.">
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+	
+  <!-- Spell editthing -->
+  <editthing
+    compset="Spell"
+    name="Magic Spell"
+    prefix="spl"
+    description="..."
+    summary="Defines a magic spell to be used by the hero.">
+    <inputthing
+      name="Magic Type"
+      helptext="What type of magic is it? ">
+      <it_tagpick group="Magic" tag="mag?" />
+      </inputthing>
+    <inputthing
+      name="Magic Rank"
+      helptext="What rank of spell is it? ">
+      <it_tagpick group="MagicRank" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Magic Range"
+      helptext="What is the range of the spell? ">
+      <it_tagpick group="MagicRange" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Magic Duration"
+      helptext="What is the duration of the spell? ">
+      <it_tagpick group="MagicDuration" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Magic Ingredients?"
+      helptext="What ingredients are required for the spell?">
+      <it_field field="splIngredients"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+	
+  <!-- Mechanics editthing -->
+  <editthing
+    compset="Mechanics"
+    name="Mechanic"
+    description="A mechanics thing will be automatically added to every character to apply its effects. There is no built-in logic for mechanics,{br}as they provide a means for the user to customize everything to work as he chooses. As such, there are no fields and{br}everything is assumed to be done through scripts."
+    summary="Defines a set of custom behaviors that are defined by the user and applied to each character.">
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Archetype editthing -->
+  <editthing
+    compset="Archetype"
+    name="Archetype"
+    prefix="arc"
+    description="Archetype have no special fields - only a name. If a Archetype confers an ability,{br}create it as a special ability and bootstrap it from the Archetype."
+    summary="Defines an Archetype that can be selected by a character.">
+    <inputthing
+      name="Archetype Type"
+      helptext="What type of Archetype is it? If there are only one kind of archetype in your setting, then select Primary. ">
+      <it_tagpick group="ArchetypeCat" tag="?" />
+      </inputthing>
+	
+    <inputthing
+      name="Key Attributes?"
+      helptext="Specify whether an attibute is considered key.">
+      <it_taglist group="KeyAttribute" tag="?"/>
+      </inputthing>
+    <inputthing
+      name="Key Skills?"
+      helptext="Specify whether a skill is considered key.">
+      <it_taglist group="KeySkill" tag="?"/>
+      </inputthing>
+	<inputthing
+	  name="Aging?">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Max Young Age?"
+      helptext="if this archetype determines the hero's age, then enter the value that is the top or the young range.">
+      <it_field field="arcAgeYoung"/>
+      </inputthing>
+    <inputthing
+      name="Max Adullt Age?"
+      helptext="if this archetype determines the hero's age, then enter the value that is the top or the adult range.">
+      <it_field field="arcAgeAdult"/>
+      </inputthing>
+
+    <inputthing
+      name="Archetype Specialty"
+      helptext="Select any specialties given by the archetype. ">
+        <it_bootlist compset="Specialty" />
+      </inputthing>
+    <inputthing
+      name="Uses Magic?"
+      helptext="Select this if the archetype represents someone who can use magic.">
+      <it_tagcheck group="Magic" tag="CanUseMagic"/>
+      </inputthing>
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+	
+  <!-- Setting editthing -->
+  <editthing
+    compset="Setting"
+    name="Setting"
+    description="A setting thing will set various game=specific options for the hero."
+	summary="Defines a set of custom behaviors that are defined by the user and applied to each character.">
+	
+	<inputthing
+	  name="Dice Method">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Dice Pool"
+      helptext="Specify whether this setting uses Dice Pool Method.">
+      <it_tagcheck group="SettingFlag" tag="DicePool"/>
+      </inputthing>
+    <inputthing
+      name="Dice Steps"
+      helptext="Specify whether this setting uses Dice Pool Method.">
+      <it_tagcheck group="SettingFlag" tag="StepDice"/>
+      </inputthing>
+	  
+	<inputthing
+	  name="Damage Method">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Health (Avg Str+Agi)"
+      helptext="Specify whether this setting uses a health damage method.">
+      <it_tagcheck group="SettingFlag" tag="UseHealth"/>
+      </inputthing>
+    <inputthing
+      name="Use Health (Str Only)"
+      helptext="Specify whether this setting uses a health damage method with Str only.">
+      <it_tagcheck group="SettingFlag" tag="UseHealthStrOnly"/>
+      </inputthing>
+    <inputthing
+      name="Use Resolve"
+      helptext="Specify whether this setting uses a resolve damage method.">
+      <it_tagcheck group="SettingFlag" tag="UseResolve"/>
+      </inputthing>
+    <inputthing
+      name="Use Stress"
+      helptext="Specify whether this setting uses a stress damage method.">
+      <it_tagcheck group="SettingFlag" tag="UseStress"/>
+      </inputthing>
+    <inputthing
+      name="Use Attribute Damage"
+      helptext="Specify whether this setting uses an attribute damage method.">
+      <it_tagcheck group="SettingFlag" tag="AttributeDamage"/>
+      </inputthing>
+	  
+	<inputthing
+	  name="Specialties">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Beginning Specialties"
+      helptext="The number of typical beginning specialties for an adult in the setting (Default = 1).">
+      <it_field field="setNumSpecialties"/>
+      </inputthing>
+    <inputthing
+      name="Specialty Term"
+      helptext="The term used for a specialty in the setting (Default = Specialty).">
+      <it_field field="setSpecialtyTerm"/>
+      </inputthing>
+    <inputthing
+      name="Specialty Term (Plural)"
+      helptext="The term used for multiple specialties in the setting (Default = Specialties).">
+      <it_field field="setSpecialtyTermP"/>
+      </inputthing>
+	<inputthing
+	  name="Setting Skills">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Purchase Skill Steps?"
+      helptext="Select this if you can spend starting points for Skill Steps.">
+      <it_tagcheck group="SettingFlag" tag="DirectSkill"/>
+      </inputthing>
+    <inputthing
+      name="Skills"
+      helptext="Specify what skills exist in this setting.">
+      <it_taglist group="SettingSkill" tag="?"/>
+      </inputthing>
+	  
+	<inputthing
+	  name="Key Attributes/Key Skills">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Key Attributes?"
+      helptext="Specify whether this setting uses Key Attributes.">
+      <it_tagcheck group="SettingFlag" tag="UseKeyAttributes"/>
+      </inputthing>
+    <inputthing
+      name="Use Key Skills?"
+      helptext="Specify whether this setting uses Key Skills.">
+      <it_tagcheck group="SettingFlag" tag="UseKeySkills"/>
+      </inputthing>
+	  
+	<inputthing
+	  name="Archetypes">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Archetypes (Primary)?"
+      helptext="Specify whether this weapon is two-handed.">
+      <it_tagcheck group="SettingFlag" tag="UseArchetypePri"/>
+      </inputthing>
+    <inputthing
+      name="Archetypes (Primary) Required?"
+      helptext="Specify whether this setting uses primary archetypes">
+      <it_tagcheck group="SettingFlag" tag="ArchtypePriReq"/>
+      </inputthing>
+    <inputthing
+      name="Archetype Name (Primary)"
+      helptext="What are primary archetypes called in the setting?">
+      <it_tagpick group="ArchetypeNamePri" tag="?" />
+      </inputthing>
+    <inputthing
+      name="Use Archetypes (Secondary)?"
+      helptext="Specify whether this setting uses secondary archetypes.">
+      <it_tagcheck group="SettingFlag" tag="UseArchetypeSec"/>
+      </inputthing>
+    <inputthing
+      name="Archetypes (Secondary) Required?"
+      helptext="Specify whether this weapon is two-handed.">
+      <it_tagcheck group="SettingFlag" tag="ArchtypeSecReq"/>
+      </inputthing>
+    <inputthing
+      name="Archetype Name (Secondary)"
+      helptext="What are secondary archetypes called in the setting?">
+      <it_tagpick group="ArchetypeNameSec" tag="?" />
+      </inputthing>
+	<inputthing
+	  name="Aging">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Adjust Attribute/Skill pts for age?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="AgeAdjust"/>
+      </inputthing>
+	<inputthing
+	  name="Personality Traits">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Pride?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UsePride"/>
+      </inputthing>
+    <inputthing
+      name="Use Weakness?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseWeakness"/>
+      </inputthing>
+    <inputthing
+      name="Use Dark Secret?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseDarkSecret"/>
+      </inputthing>
+    <inputthing
+      name="Use Big Dream?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseBigDream"/>
+      </inputthing>
+    <inputthing
+      name="Use Relationships?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseRelationship"/>
+      </inputthing>
+    <inputthing
+      name="Use Buddy?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseBuddy"/>
+      </inputthing>
+    <inputthing
+      name="Use Rival?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseRival"/>
+      </inputthing>
+    <inputthing
+      name="Use How Met Group?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseHowMet"/>
+      </inputthing>
+    <inputthing
+      name="Use Personal Agenda?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseAgenda"/>
+      </inputthing>
+	<inputthing
+	  name="Encumbrance">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Standard Encumbrance?"
+      helptext="Specify ... (2xSTR in weight/items)">
+      <it_tagcheck group="SettingFlag" tag="EncumStandard"/>
+      </inputthing>
+    <inputthing
+      name="Backpack Encumbrance?"
+      helptext="Specify ... (2xSTR in weight/items)">
+      <it_tagcheck group="SettingFlag" tag="EncumBackpack"/>
+      </inputthing>
+	  
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  <!-- Specialty editthing -->
+  <editthing
+    compset="Specialty"
+    name="Specialties"
+    prefix="ab"
+    description="..."
+    summary="Defines a Specialty.">
+    <inputthing
+      name="Specialty Category"
+      helptext="Specify what category this specialty belongs in.">
+      <it_tagpick group="SpecCat" tag="?" deftag="General"/>
+      </inputthing>
+
+    <inputthing
+      name="Magic Casting Specialty?"
+      helptext="Specify whether this specialty is a casting specialty.">
+      <it_tagcheck group="Helper" tag="MagicSpecialty"/>
+      </inputthing>
+    <inputthing
+      name="Magic Type?"
+      helptext="Specify whether this specialty is a casting specialty.">
+      <it_tagpick group="Magic" tag="mag?"/>
+      </inputthing>
+	<inputthing
+	  name="Ranks">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Ranked?"
+      helptext="Specify whether this specialty has multiple ranks.">
+      <it_tagcheck group="SpecRank" tag="Ranked"/>
+      </inputthing>
+    <inputthing
+      name="Max Rank"
+      helptext="Maximum ranks for the specialty.">
+      <it_field field="spcMaxRank"/>
+      </inputthing>
+    <inputthing
+      name="Rank 1 Summary"
+      helptext="The summary for Rank 1.">
+      <it_field field="spcDescRank1"/>
+      </inputthing>
+    <inputthing
+      name="Rank 2 Summary"
+      helptext="The summary for Rank 2.">
+      <it_field field="spcDescRank2"/>
+      </inputthing>
+    <inputthing
+      name="Rank 3 Summary"
+      helptext="The summary for Rank 3.">
+      <it_field field="spcDescRank3"/>
+      </inputthing>
+    <inputthing
+      name="Rank 4 Summary"
+      helptext="The summary for Rank 4.">
+      <it_field field="spcDescRank4"/>
+      </inputthing>
+    <inputthing
+      name="Rank 5 Summary"
+      helptext="The summary for Rank 5.">
+      <it_field field="spcDescRank5"/>
+      </inputthing>
+	<inputthing
+	  name="Other">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Name for Special Tab"
+      helptext="Specify an optional custom name to be used on the Special tab.">
+      <it_field field="spcName"/>
+      </inputthing>
+    <inputthing
+      name="Hide from User?"
+      helptext="Specify whether this special ability is hidden from direct user selection (e.g. Flight is only conferred by the Avian race).">
+      <it_tagcheck group="Hide" tag="Ability"/>
+      </inputthing>
+    <inputthing
+      name="Activated by User?"
+      helptext="Specify whether this special ability can be activated by the user via the In-Play tab.">
+      <it_tagcheck group="User" tag="Activation"/>
+      </inputthing>
+    <inputthing
+      name="Creation Only?"
+      helptext="Specify whether this special ability can only be selected for a character during creation.">
+      <it_tagcheck group="User" tag="CreateOnly"/>
+      </inputthing>
+<!-- These facets of special abilities are not currently used for anything so they are commented out.
+    <inputthing
+      name="Minimum Value"
+      helptext="Specify the minimum rating for the special ability (default is 0).">
+      <it_field field="trtMinimum"/>
+      </inputthing>
+    <inputthing
+      name="Maximum Value"
+      helptext="Specify the maximum rating for the skill(default is 10).">
+      <it_field field="trtMaximum"/>
+      </inputthing>
+    <inputthing
+      name="Abbreviation"
+      helptext="Specify a very short abbreviation for use in displaying the skill via its abbreviation (max 5 characters).">
+      <it_field field="trtAbbrev"/>
+      </inputthing>
+-->
+
+    <inputthing>
+      <it_groupref id="SourceInfo"/>
+      </inputthing>
+    </editthing>
+
+  </document>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is the definition file that provides the basis for everything else. All of
+      the Skeleton data files contain examples of the most common behaviors you'll
+      need and can be readily adapted to the game system you want to support. You'll
+      find inline comments throughout all of the Skeleton data files that describe
+      what is being done, as well as external documentation that outlines how
+      everything is structured and how all the pieces fit together. A detailed
+      example is also provided that outlines how to adapt these Skeleton data files
+      for use with the Savage Worlds game system.
+-->
+
+<document signature="Hero Lab Definition">
+
+  <!-- The "game" element is where you'll define the basics for the game system.
+  -->
+
+  <game
+    game="Year Zero Engine"
+    publisher="TBD"
+    website="http://www.domain.com/"
+    copyright="TBD"
+    legaloutput="TBD">
+    </game>
+
+  <!-- The "author" element is where you'll provide details about yourself as the
+        author of the data files.
+  -->
+
+  <author
+    author="TBD"
+    email="name@domain.com"
+    website="www.domain.com">
+    </author>
+
+  <!-- The "release" element specifies the details for each new revision of the data
+        files that you make available to others. This makes it easy to track the
+        version of the data files in which problems occur and ensures that other
+        users can verify that they update to new versions when you publish them.
+  -->
+
+  <release
+    major="0"
+    minor="2"
+    required="8.6"
+    summary="HLExport will use this text automatically"><![CDATA[{b}{text clrglow}Skeleton data files for Hero Lab{text clrreset}{/b}
+
+These data files provide a starting framework for implementing support for any game system of your choice. Adapt these data files as necessary. A detailed example is provided for adapting these files to the Savage Worlds game system.
+]]>
+    </release>
+
+  <!-- The "structure" element defines special structural details about the data files
+        and how Hero Lab should manage them.
+  -->
+
+  <structure
+    folder="YearZeroEngine">
+    </structure>
+
+  <!-- The "behavior" element specifies assorted behavioral aspects of the data files
+        that reflect the nuances of both the game system and the data files your create.
+  -->
+
+  <behavior>
+
+    <!-- Configure how the integrated dice roller should behave for this game system. -->
+
+    <diceroller mode="totals" dietype="6" quantity="1"/>
+
+    <!-- Define how each lead is displayed to the user when importing from a portfolio. -->
+
+    <leadsummary><![CDATA[
+      ~start with the race
+      var txt as string
+      txt = hero.findchild[Archetype].field[name].text
+      if (empty(txt) <> 0) then
+        txt = "No Archetype"
+        endif
+      @text &= txt
+
+      ~append the CP rating of the character
+      @text &= " - CP: " & hero.child[resCP].field[resMax].text
+      ]]></leadsummary>
+
+    <!-- Handle the start of a new combat -->
+
+    <newcombat><![CDATA[
+      ~reset the abandon state in case it's still set from the previous combat
+      herofield[acAbandon].value = 0
+      ]]></newcombat>
+
+    <!-- Define how the initiative is auto-calculated by the Tactical Console. -->
+
+    <initiative><![CDATA[
+      ~calculate the primary initiative rating
+      @initiative = random(10) + 1
+      ~calculate the tiebreaker initiative rating
+      @tiebreaker = 0
+      ]]></initiative>
+
+    </behavior>
+
+
+  <!-- Define an assortment of macros that will make writing scripts faster and easier. -->
+
+  <scriptmacro
+    name="trait"
+    param1="trait"
+    result="hero.child[#trait].field[trtFinal].value"/>
+  <scriptmacro
+    name="traitfound"
+    param1="trait"
+    result="hero.childfound[#trait].field[trtFinal].value"/>
+  <scriptmacro
+    name="traitbonus"
+    param1="trait"
+    result="hero.child[#trait].field[trtBonus].value"/>
+  <scriptmacro
+    name="traitinplay"
+    param1="trait"
+    result="hero.child[#trait].field[trtInPlay].value"/>
+  <scriptmacro
+    name="traituser"
+    param1="trait"
+    result="hero.child[#trait].field[trtUser].value"/>
+  <scriptmacro
+    name="childname"
+    param1="child"
+    result="hero.childfound[#child].field[name].text"/>
+  <scriptmacro
+    name="resmax"
+    param1="resource"
+    result="hero.child[#resource].field[resMax].value"/>
+  <scriptmacro
+    name="resspent"
+    param1="resource"
+    result="hero.child[#resource].field[resSpent].value"/>
+  <scriptmacro
+    name="resleft"
+    param1="resource"
+    result="hero.child[#resource].field[resLeft].value"/>
+  <scriptmacro
+    name="resextra"
+    param1="resource"
+    result="hero.child[#resource].field[resExtra].value"/>
+  <scriptmacro
+    name="trkmax"
+    param1="tracker"
+    result="hero.child[#tracker].field[trkMax].value"/>
+
+  <!-- Decoration character used in summary panel headertitle scripts -->
+  <scriptmacro
+    name="summtitle_decoration" result="chr(150)"/>
+
+  <!-- The "advancement" element controls whether serialized advancement logic is enabled
+        and how the advancement mechanisms should behave for the game system.
+  -->
+
+  <advancement
+    enable="yes">
+
+    <!-- Verify that the character can be transitioned to advancement mode -->
+
+    <canadvance><![CDATA[
+      var bullet as string
+      bullet = "{bmp bullet_red}{horz 4}"
+      @message = ""
+
+      ~perform tests to assure all starting resources have been assigned
+      if (#resleft[resCP] <> 0) then
+        @message &= bullet & "Character points must be assigned for the character.{br}"
+        endif
+      if (#resleft[resAbility] <> 0) then
+        @message &= bullet & "Ability slots must be assigned for the character.{br}"
+        endif
+      ]]></canadvance>
+
+    <!-- Handle the transition to/from advancement mode -->
+
+    <transition><![CDATA[
+      if (state.iscreate <> 0) then
+        @message = "{b}{text clrprompt}Creation Phase{text clrreset}{/b}"
+        @message &= "{br}{br}"
+        @message &= "{align left}You have unlocked your character, thereby exiting the Character Advancement phase and moving back to the Character Creation phase. "
+        @message &= "{br}{br}"
+        @message &= "While unlocked, traits defined during character creation can be adjusted, as long as those traits have not yet been altered on the Advances tab. "
+        @message &= "Traits that already have advancements applied to them will remain locked unless those advancements are deleted. "
+        @message &= "{br}{br}"
+        @message &= "Lock your character and remove any advancements on a trait if you wish to revise the rating that trait was given during character creation. "
+      else
+        @message = "{b}{text clrprompt}Advancement Phase{text clrreset}{/b}"
+        @message &= "{br}{br}"
+        @message &= "{align left}You have locked your character creation traits. "
+        @message &= "{br}{br}"
+        @message &= "By locking your character creation traits, you have begun the Character Advancement phase of play. "
+        @message &= "While locked, you cannot alter traits defined during character creation. "
+        @message &= "Use the Advances tab while the character is locked to allocate advances to new abilities or to increase existing traits. "
+        @message &= "{br}{br}"
+        @message &= "Unlock the character to go back to the Character Creation phase. "
+        endif
+      ]]></transition>
+
+    </advancement>
+
+
+  <!-- The "phase" elements define the various evaluation stages that all processing of
+        scripts will be channeled through. Each phase identifies a stage, with the list
+        of phases being processed in the order specified below. Within each phase, the
+        priority value assigned controls the processing order.
+  -->
+
+  <phase
+    id="Initialize"
+    name="Initialization"
+    description="Anything that has to happen before everything else">
+    </phase>
+
+  <phase
+    id="Setup"
+    name="Setup"
+    description="Anything that has to be processed before normal processing gets underway">
+    </phase>
+
+  <phase
+    id="Effects"
+    name="Effects"
+    description="Apply derived effects that influence equipment modifiers and the like">
+    </phase>
+
+  <phase
+    id="PreTraits"
+    name="Pre-Traits"
+    description="Adjustments to traits before they are finalized">
+    </phase>
+
+  <!-- NOTE! All Health calculations are assumed to occur within the 5000-5999 priority range during this phase. -->
+  <phase
+    id="Traits"
+    name="Traits"
+    description="Finalization of trait values">
+    </phase>
+
+  <phase
+    id="Final"
+    name="Final"
+    description="Any last-minute processing that must happen after everything else">
+    </phase>
+
+  <phase
+    id="Validate"
+    name="Validation"
+    description="Validation tests that occur after all evaluation processing">
+    </phase>
+
+  <phase
+    id="Render"
+    name="Render"
+    description="Any processing that simply renders values for use by the UI or processes last-minute validation - no calculations">
+    </phase>
+
+
+  </document>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the assortment of attributes possessed by every actor for the
+      game system. The display order of attributes is controlled via the assignment of
+      an "explicit" tag with the relative position of each.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- Strength Attribute
+        NOTE! We include the Strength attribute because the minimum strength
+              requirement mechanisms for weapons and armor rely upon it.
+  -->
+  <thing
+    id="attrStr"
+    name="Strength"
+    compset="Attribute"
+    isunique="yes"
+    description="Raw muscle power and brawn">
+    <fieldval field="trtAbbrev" value="Str"/>
+    <tag group="explicit" tag="1"/>
+    <tag group="SettingFlag" tag="StepStart4"/>
+
+	<!-- Accrue the total value of this item, as appropriate -->
+    <eval index="12" phase="Traits" priority="5000" name="Set Base Carry"><![CDATA[
+      ~ Combat Carry max is the die size of Strength
+      herofield[acCarryCombatMax].value += field[trtFinal].value * 2
+	  
+	  doneif (hero.tagis[SettingFlag.EncumBackpack] = 0)
+	  
+	  if (hero.tagis[Helper.HasBackpack] <> 0) then
+        herofield[acCarryBackMax].value += field[trtFinal].value * 2
+		endif
+	  
+      ]]></eval>
+    </thing>
+	
+  <!-- Agility Attribute
+  -->
+  <thing
+    id="attrAgi"
+    name="Agility"
+    compset="Attribute"
+    isunique="yes"
+    description="Body control, speed, and motor skills">
+    <fieldval field="trtAbbrev" value="Agi"/>
+    <tag group="explicit" tag="2"/>
+    </thing>
+	
+  <!-- Strength Attribute
+        NOTE! We include the Strength attribute because the minimum strength
+              requirement mechanisms for weapons and armor rely upon it.
+  -->
+  <thing
+    id="attrWit"
+    name="Wits"
+    compset="Attribute"
+    isunique="yes"
+    description="Sensory perception, intelligence, and sanity">
+    <fieldval field="trtAbbrev" value="Wit"/>
+    <tag group="explicit" tag="3"/>
+    </thing>  <!-- Strength Attribute
+        NOTE! We include the Strength attribute because the minimum strength
+              requirement mechanisms for weapons and armor rely upon it.
+  -->
+  <thing
+    id="attrEmp"
+    name="Empathy"
+    compset="Attribute"
+    isunique="yes"
+    description="Personal charisma and ability to manipulate others">
+    <fieldval field="trtAbbrev" value="Emp"/>
+    <tag group="explicit" tag="4"/>
+    </thing>
+  </document>

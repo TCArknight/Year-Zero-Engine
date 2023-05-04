@@ -1,0 +1,1557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the first page of the standard character
+      sheet for output. The character sheet has been carved into a simple two-column
+      presentation that is used by many game systems, with some information on the
+      left and other material on the right. You can use whatever overall layout you
+      prefer, using this sample as a guideline.
+
+      A variety of display techniques have been used on this one character sheet to
+      provide examples of how to present information in different ways. You will
+      likely choose one or two of these methods and use them exclusively within your
+      own data files, but this gives you various styles to choose from.
+
+      The second page of the character sheet will be found in "sheet_standard2.dat".
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Hero Lab & Game System Logos
+        NOTE! These could be easily wrapped inside a template or used directly within
+              a layout, as we do here. Both methods are perfectly reasonable.
+  -->
+
+  <!-- oHLLogo portal - Hero Lab logo -->
+  <portal
+    id="oHLLogo"
+    style="outNormal">
+    <output_image
+      image="sheet_hllogo.bmp">
+      </output_image>
+    </portal>
+
+  <!-- oGameLogo portal - game system logo -->
+  <portal
+    id="oGameLogo"
+    style="outNormal"
+    width="0"
+    height="0">
+    <output_image
+      image="sheet_gamelogo.bmp">
+      </output_image>
+    </portal>
+
+
+  <!-- Hero and Player Info
+        NOTE! These could be easily wrapped inside a template or used directly within
+              a layout, as we do here. Both methods are perfectly reasonable.
+  -->
+
+  <!-- oHeroName portal - name of the actor -->
+  <portal
+    id="oHeroName"
+    style="outHeroNam">
+    <output_label>
+      <labeltext><![CDATA[
+        @text = hero.actorname
+        if (empty(@text) <> 0) then
+          @text = "- Unnamed Hero -"
+          endif
+        ]]></labeltext>
+      </output_label>
+    </portal>
+
+  <!-- oHeroInfo portal - details about the actor -->
+  <portal
+    id="oHeroInfo"
+    style="outNormal">
+    <output_label>
+      <labeltext><![CDATA[
+        var temp as string
+        if (empty(hero.playername) = 0) then
+          @text = "Player: " & hero.playername & "{br}"
+          endif
+        @text &= "{size 36}Character Points: " & #resmax[resCP]
+        if (#resleft[resCP] <> 0) then
+          @text &= " (" & #resleft[resCP] & " left)"
+          endif
+        @text &= "{br}{align left}{/b}"
+        temp = hero.findchild[Archetype].field[name].text
+        if (empty(temp) <> 0) then
+          temp = "Unknown"
+          endif
+        @text &= "Archetype: " & temp
+        @text &= "; " & hero.child[mscPerson].field[perGender].text
+        @text &= "; Age: " & hero.child[mscPerson].field[perAge].text
+        @text &= "; Height: " & hero.child[mscPerson].field[perHeight].text
+        @text &= "; Weight: " & hero.child[mscPerson].field[perWeight].text
+        if (hero.child[mscPerson].field[perHair].isempty = 0) then
+          @text &= "; Hair: " & hero.child[mscPerson].field[perHair].text
+          endif
+        if (hero.child[mscPerson].field[perEyes].isempty = 0) then
+          @text &= "; Eyes: " & hero.child[mscPerson].field[perEyes].text
+          endif
+        if (hero.child[mscPerson].field[perSkin].isempty = 0) then
+          @text &= "; Skin: " & hero.child[mscPerson].field[perSkin].text
+          endif
+        ]]></labeltext>
+      </output_label>
+    </portal>
+
+
+  <!-- oAttribute portal
+        This is a table of Attributes for the actor. Attributes use the same template
+        for both the contents and the header across the top. See the template for
+        more details on this.
+  -->
+  <portal
+    id="oAttribute"
+    style="outNormal">
+    <output_table
+      component="Attribute"
+      showtemplate="oAttrPick"
+      headertemplate="oAttrPick"
+      showsortset="explicit">
+      </output_table>
+    </portal>
+
+
+  <!-- oDerived portal
+        This is a table of Derived Traits for the actor. Only resistance and combat
+        traits are included in the list of derived traits within the character sheet.
+  -->
+  <portal
+    id="oDerived"
+    style="outTblGrid">
+    <output_table
+      component="Trait"
+      showtemplate="oDerivPick"
+      showsortset="explicit">
+      <list><![CDATA[
+        User.Resistance | User.Combat
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Derived Traits"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oPower portal
+        This is a table of the Health and Power traits for the actor. Only traits
+        with the "Power" tag are included in this table.
+  -->
+  <portal
+    id="oPower"
+    style="outNormal">
+    <output_table
+      component="Trait"
+      showtemplate="oPowerPick"
+      showsortset="explicit">
+      <list><![CDATA[
+        User.Power
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Health and Power"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oAbility portal
+        This is a table of all Special Abilities for the actor.
+  -->
+  <portal
+    id="oAbility"
+    style="outNormal">
+    <output_table
+      component="Ability"
+      showtemplate="oAbilPick">
+      <list><![CDATA[
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Special Abilities"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oSkills portal
+        This is a table of all Skills for the actor.
+  -->
+  <portal
+    id="oSkills"
+    style="outNormal">
+    <output_table
+      component="Skill"
+      showtemplate="oSkillPick">
+      <list><![CDATA[
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Skills"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oGear portal
+        This is a table of all Gear carried by the actor. The gear list needs to
+        exclude weapons and armor, since those are already listed in the separate
+        sections for those item types.
+  -->
+  <portal
+    id="oGear"
+    style="outNormal">
+    <output_table
+      component="Gear"
+      showtemplate="oGearPick">
+      <list><![CDATA[
+        !component.WeaponBase & !component.Defense & !Print.NoPrint
+        ]]></list>
+      <headertitle><![CDATA[
+        var moneyvalue as number
+        var money as string
+        moneyvalue = herofield[acCashNet].value
+        call Money
+        @text = "Gear  (Cash: " & money & ")"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oArmor portal
+        This is a table of all Armor and Shields carried by the actor.
+  -->
+  <portal
+    id="oArmor"
+    style="outNormal">
+    <output_table
+      component="Defense"
+      showtemplate="oArmorPick"
+      showsortset="Armory">
+      <list><![CDATA[
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Armor"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oWeapon portal
+        This is a table of all Weapons carried by the actor. Weapons use the same
+        template for both the contents and the header across the top. See the
+        template for more details on this.
+  -->
+  <portal
+    id="oWeapon"
+    style="outNormal">
+    <output_table
+      component="WeaponBase"
+      showtemplate="oWeapPick"
+      headertemplate="oWeapPick"
+      showsortset="Armory">
+      <list><![CDATA[
+        ]]></list>
+      </output_table>
+    </portal>
+
+
+  <!-- oAdjust portal
+        This is a table of all Activated Adjustments applied to the actor, which
+        includes all permanent adjustments, all activated abilities, and all activated
+        temporary adjustments. We use a two-column table layout for compactness.
+  -->
+  <portal
+    id="oAdjust"
+    style="outNormal">
+    <output_table
+      component="Adjustment"
+      showtemplate="oAdjPick"
+      columns="2">
+      <list><![CDATA[
+        Helper.Activated
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Activated Adjustments"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oPersonal portal
+        This is a table in which we output the personal details (background) of the
+        character. We use a table so we can put the info on the first page if there
+        is room and easily spill it onto the second page if not.
+  -->
+  <portal
+    id="oPersonal"
+    style="outNormal">
+    <output_table
+      component="Personal"
+      showtemplate="oPersonal"
+      varyheight="yes">
+      <list><![CDATA[
+        !Helper.NoPersText & hero#source.ShowDetail
+        ]]></list>
+      <headertitle><![CDATA[
+        @text = "Background & Personal Details"
+        ]]></headertitle>
+      </output_table>
+    </portal>
+
+
+  <!-- oAttrPick template
+        This template presents the contents of each attribute. Each attribute has its
+        total value, base value, and any adjustments shown separately.
+
+        The template is also used as a header for the table. As such, the template
+        includes additional portals that are only used as part of the header (i.e.
+        they are designated by the "isheader" attribute). All header portals are
+        positioned via the "header" script, which is invoked AFTER the normal "position"
+        script. Header portals can therefore be positioned relative to non-header
+        portals, making it easy to align the header portals based on the actual content
+        portals.
+
+        NOTE! We CANNOT use a non-zero "marginhorz" attribute for the template to
+        apply an indent on each side. The titlebar inherits the same margin restriction
+        as the contents area, so the title would not span the full width. Consequently,
+        we manually indent everything on either side within the "position" script.
+  -->
+  <template
+    id="oAttrPick"
+    name="Output Attributes Table"
+    compset="Attribute"
+    marginvert="10">
+
+    <portal
+      id="name"
+      style="outNameLg">
+      <output_label
+        field="name">
+        </output_label>
+      </portal>
+
+    <portal
+      id="total"
+      style="outValBox">
+      <output_label
+        field="trtFinal">
+        </output_label>
+      </portal>
+
+    <portal
+      id="equal"
+      style="outNameLg">
+      <output_label
+        text="=">
+        </output_label>
+      </portal>
+
+    <portal
+      id="base"
+      style="outGreyBox">
+      <output_label
+        field="trtUser">
+        </output_label>
+      </portal>
+
+    <portal
+      id="plus"
+      style="outNameLg">
+      <output_label
+        text="+">
+        </output_label>
+      </portal>
+
+    <portal
+      id="bonus"
+      style="outGreyBox">
+      <output_label>
+        <labeltext><![CDATA[
+          var bonus as number
+          bonus = field[trtBonus].value + field[trtInPlay].value
+          @text = bonus
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <!-- Portals used as the header -->
+    <portal
+      id="hdrtitle"
+      style="outTitle"
+      isheader="yes">
+      <output_label
+        text="Attributes">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrtotal"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Total">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrbase"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Base">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrbonus"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Bonus">
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is driven by the tallest portal (they're all the same)
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~setup appropriate widths for the various value portals
+      portal[total].width = 110
+      portal[base].width = 110
+      portal[bonus].width = 110
+
+      ~center everything vertically within the template
+      perform portal[name].centervert
+      perform portal[total].centervert
+      perform portal[base].centervert
+      perform portal[bonus].centervert
+      perform portal[equal].centervert
+      perform portal[plus].centervert
+
+      ~position everything horizontally, indenting 125 pixels on each side
+      portal[name].left = 125
+      perform portal[bonus].alignedge[right,-125]
+      perform portal[plus].alignrel[rtol,bonus,-20]
+      perform portal[base].alignrel[rtol,plus,-20]
+      perform portal[equal].alignrel[rtol,base,-20]
+      perform portal[total].alignrel[rtol,equal,-20]
+      ]]></position>
+
+    <header><![CDATA[
+      ~our header height is the title plus a gap plus the header text
+      height = portal[hdrtitle].height + 10 + portal[hdrtotal].height
+      doneif (issizing <> 0)
+
+      ~our title spans the full width of the template
+      portal[hdrtitle].width = width
+
+      ~each of our header labels has the same width as the corresponding data beneath
+      portal[hdrtotal].width = portal[total].width
+      portal[hdrbase].width = portal[base].width
+      portal[hdrbonus].width = portal[bonus].width
+
+      ~center each header label on the corresponding data beneath
+      perform portal[hdrtotal].centeron[horz,total]
+      perform portal[hdrbase].centeron[horz,base]
+      perform portal[hdrbonus].centeron[horz,bonus]
+
+      ~align all header labels at the bottom of the header region
+      perform portal[hdrtotal].alignedge[bottom,0]
+      perform portal[hdrbase].alignedge[bottom,0]
+      perform portal[hdrbonus].alignedge[bottom,0]
+      ]]></header>
+
+    </template>
+
+
+  <!-- oDerivPick template
+        This template presents the various derived traits. Derived traits simply list
+        the name and final value for each. We use margins around the template to get
+        a large indent on either side and insert a little bit of vertical spacing.
+  -->
+  <template
+    id="oDerivPick"
+    name="Output Derived Traits Table"
+    compset="Trait"
+    marginhorz="200"
+    marginvert="5">
+
+    <portal
+      id="name"
+      style="outNameLg">
+      <output_label
+        field="name">
+        </output_label>
+      </portal>
+
+    <portal
+      id="value"
+      style="outValueLg">
+      <output_label
+        field="trtFinal">
+        </output_label>
+      </portal>
+
+    <portal
+      id="dots"
+      style="outDots">
+      <output_dots>
+        </output_dots>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is based on the tallest portal
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~center everything vertically
+      perform portal[name].centervert
+      perform portal[value].centervert
+      perform portal[dots].centervert
+
+      ~position the value at the rightmost edge
+      perform portal[value].alignedge[right,0]
+
+      ~extend the dots from the right of the name across to the value on the right
+      perform portal[dots].alignrel[ltor,name,5]
+      portal[dots].width = portal[value].left - 5 - portal[dots].left
+      ]]></position>
+
+    </template>
+
+
+  <!-- oPowerPick template
+        This template presents the Health and Power traits, along with empty boxes
+        that can be checked off during play to track damage and the use of power. We
+        use margins around the template to indent a little on either side and insert
+        some vertical spacing between each entry.
+  -->
+  <template
+    id="oPowerPick"
+    name="Output Health/Power Table"
+    compset="Trait"
+    marginhorz="25"
+    marginvert="5">
+
+    <portal
+      id="name"
+      style="outNameLg">
+      <output_label
+        field="name">
+        </output_label>
+      </portal>
+
+    <portal
+      id="value"
+      style="outValueLg">
+      <output_label
+        field="trtFinal">
+        </output_label>
+      </portal>
+
+    <portal
+      id="boxes"
+      style="outNameLg">
+      <output_label>
+        <labeltext><![CDATA[
+          ~output empty boxes for each point, with a gap every 5; we fit a maximum
+          ~of 15 boxes on a line, splitting additional boxes onto extra lines
+          var i as number
+          var last as number
+          last = field[trtFinal].value - 1
+          for i = 0 to last
+            if (i % 5 = 0) then
+              if (i <> 0) then
+                if (i % 15 = 0) then
+                  @text &= "{br}"
+                  endif
+                endif
+              @text &= "{horz 15}"
+              endif
+            @text &= "{bmpscale 3 output_box}"
+            next
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the tallest portal within (which is the name if we have no boxes)
+      height = maximum(portal[name].height,portal[boxes].textheight)
+      doneif (issizing <> 0)
+
+      ~pick a suitable fixed width for the name
+      portal[name].width = 180
+
+      ~pick a suitable fixed width for the value and position it next to the name
+      perform portal[value].alignrel[ltor,name,5]
+      portal[value].width = 70
+
+      ~position the boxes in the remaining space on the right of the value
+      perform portal[boxes].alignrel[ltor,value,40]
+      portal[boxes].width = width - portal[boxes].left
+
+      ~center all portals vertically
+      perform portal[name].centervert
+      perform portal[value].centervert
+      perform portal[boxes].centervert
+
+      ~shift the boxes downward a little bit; this is because the boxes are only
+      ~bitmaps, which are never drawn within the descender portion of the text, and
+      ~that causes them to appear higher than we want them
+      portal[boxes].top += 3
+      ]]></position>
+
+    </template>
+
+
+  <!-- oAbilPick template
+        This template presents the Special Abilities, consisting of the prominent
+        name and the summary text in small letters next to it. We use a small margin
+        for vertical spacing between abilities.
+  -->
+  <template
+    id="oAbilPick"
+    name="Output Special Abilities Table"
+    compset="Ability"
+    marginvert="2">
+
+    <portal
+      id="details"
+      style="outNameLg">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = field[name].text & "{/b}  {size 32}" & field[summary].text
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our details width spans the entire template width
+      portal[details].width = width
+
+      ~limit our portal height to a single line of output
+      portal[details].lineheight = 1
+
+      ~our height is the height of our portal
+      height = portal[details].bottom
+      ]]></position>
+    </template>
+
+
+  <!-- oSkillPick template
+        This template presents the list of Skills, showing just the name and value.
+        We use a large horizontal margin to center the skills nicely and a small
+        vertical margin to insert spacing between each skill.
+  -->
+  <template
+    id="oSkillPick"
+    name="Output Skills Table"
+    compset="Trait"
+    marginhorz="200"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="outNameLg">
+      <output_label
+        field="name">
+        </output_label>
+      </portal>
+
+    <portal
+      id="value"
+      style="outValueLg">
+      <output_label
+        field="trtFinal">
+        </output_label>
+      </portal>
+
+    <portal
+      id="dots"
+      style="outDots">
+      <output_dots>
+        </output_dots>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the height of the tallest portal
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~position the value at the right edge
+      perform portal[value].alignedge[right,0]
+
+      ~size the name to fit the available space
+      portal[name].width = portal[value].left - 10
+      perform portal[name].sizetofit[40]
+      perform portal[name].autoheight
+
+      ~the dots should span the region between the name and the value
+      perform portal[dots].alignrel[ltor,name,5]
+      portal[dots].width = portal[value].left - 5 - portal[dots].left
+
+      ~center all portals vertically
+      perform portal[name].centervert
+      perform portal[value].centervert
+      perform portal[dots].centervert
+      ]]></position>
+
+    </template>
+
+
+  <!-- oGearPick template
+        This template presents the basic gear possessed. Gear that is in quantities
+        other than one has the proper quantity listed next to it. We use a small
+        horizontal margin to indent everything slightly.
+  -->
+  <template
+    id="oGearPick"
+    name="Output Gear Table"
+    compset="Equipment"
+    marginhorz="25">
+
+    <portal
+      id="value"
+      style="outNormRt">
+      <output_label>
+        <labeltext><![CDATA[
+          if (stackable = 0) then
+            @text = ""
+          elseif (field[stackQty].value = 1) then
+            @text = ""
+          else
+            @text = field[stackQty].text & "x"
+            endif
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="name"
+      style="outNormLt">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = field[name].text
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the height of the tallest portal
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~assign a fixed width to the value and position the name to the right
+      portal[value].width = 100
+      perform portal[name].alignrel[ltor,value,20]
+
+      ~size the name to fit the available space
+      portal[name].width = width - portal[name].left
+      perform portal[name].sizetofit[36]
+      perform portal[name].autoheight
+
+      ~center all portals vertically
+      perform portal[value].centervert
+      perform portal[name].centervert
+      ]]></position>
+
+    </template>
+
+
+  <!-- oArmorPick template
+        This template presents the armor possessed, flagging equipped armor with a
+        suitable bitmap and armor that doesn't meet the minimum strength requirement
+        with a different bitmap.
+  -->
+  <template
+    id="oArmorPick"
+    name="Output Armor Table"
+    compset="Equipment"
+    marginvert="2"
+    marginhorz="5">
+
+    <portal
+      id="equipped"
+      style="outNameMed">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = "{bmpscale 3 output_armor}"
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="badstr"
+      style="outNameMed">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = "{font Webdings}" & chr(120)
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="name"
+      style="outNameMed">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = field[name].text & " (Def: " & field[defArmorRating].text & ")"
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the height of the tallest portal
+      height = maximum(portal[name].height,portal[equipped].height)
+      doneif (issizing <> 0)
+
+      ~if the armor satisfies the strength requirement, hide the bitmap
+      if (tagis[Helper.BadStrReq] = 0) then
+        portal[badstr].visible = 0
+        endif
+
+      ~if the armor is not equipped, hide the bitmap
+      if (tagis[Equipped.Equipped] = 0) then
+        portal[equipped].visible = 0
+        endif
+
+      ~align everything horizontally
+      perform portal[badstr].alignrel[ltor,equipped,5]
+      perform portal[name].alignrel[ltor,badstr,5]
+
+      ~size the name to fit the available space
+      portal[name].width = width - portal[name].left
+      perform portal[name].sizetofit[36]
+      perform portal[name].autoheight
+
+      ~center all portals vertically
+      perform portal[badstr].centervert
+      perform portal[equipped].centervert
+      perform portal[name].centervert
+
+      ~shift the "equipped" bitmap downward a little bit; this is because it is a
+      ~lone bitmap drawn via encoded text, and bitmaps are never drawn within the
+      ~descender portion of the text, which causes it to appear higher than we want it
+      portal[equipped].top += 4
+      ]]></position>
+
+    </template>
+
+
+  <!-- oWeapPick template
+        This template presents the weapons possessed by the character. Each weapon
+        lists its net attack value and damage, with ranged weapons including the
+        range details. Any weapon that doesn't satisfy the minimum strength requirement
+        is flagged with a suitable bitmap.
+
+        The template is also used as a header for the table. As such, the template
+        includes additional portals that are only used as part of the header (i.e.
+        they are designated by the "isheader" attribute). All header portals are
+        positioned via the "header" script, which is invoked AFTER the normal "position"
+        script. Header portals can therefore be positioned relative to non-header
+        portals, making it easy to align the header portals based on the actual content
+        portals.
+
+        NOTE! We CANNOT use a non-zero "marginhorz" attribute for the template to
+        apply an indent on each side. The titlebar inherits the same margin restriction
+        as the contents area, so the title would not span the full width. Consequently,
+        we manually indent everything on either side within the "position" script.
+  -->
+  <template
+    id="oWeapPick"
+    name="Output Weapon Table"
+    compset="Weapon"
+    marginvert="2">
+
+    <portal
+      id="badstr"
+      style="outNameMed">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = "{font Webdings}" & chr(120)
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="name"
+      style="outNameMed">
+      <output_label
+        field="shortname">
+        </output_label>
+      </portal>
+
+    <portal
+      id="attack"
+      style="outNameMed">
+      <output_label
+        field="wpNetAtk">
+        </output_label>
+      </portal>
+
+    <portal
+      id="damage"
+      style="outNameMed">
+      <output_label
+        field="wpDamage">
+        </output_label>
+      </portal>
+
+    <portal
+      id="range"
+      style="outPlain">
+      <output_label>
+        <labeltext><![CDATA[
+          if (tagis[component.WeapRange] <> 0) then
+            @text = field[wpRange].text
+            endif
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="dots"
+      style="outDots">
+      <output_dots>
+        </output_dots>
+      </portal>
+
+    <!-- Portals used as the header -->
+    <portal
+      id="hdrtitle"
+      style="outTitle"
+      isheader="yes">
+      <output_label
+        text="Weapons">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrattack"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Atk">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrdamage"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Dmg">
+        </output_label>
+      </portal>
+
+    <portal
+      id="hdrrange"
+      style="outHeader"
+      isheader="yes">
+      <output_label
+        text="Range">
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is based on the tallest portal within
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~if the weapon satisfies the minimum strength requirement, hide the bitmap
+      if (tagis[Helper.BadStrReq] = 0) then
+        portal[badstr].visible = 0
+        endif
+
+      ~center all portals vertically
+      perform portal[badstr].centervert
+      perform portal[name].centervert
+      perform portal[attack].centervert
+      perform portal[damage].centervert
+      perform portal[dots].centervert
+
+      ~position the range with the same baseline as the rest of the text; since it
+      ~uses a smaller font, it will have a smaller height, so centering it will have
+      ~it appear to float up relative to the other text
+      perform portal[range].alignrel[btob,name,0]
+
+      ~establish suitable fixed widths for the various columns of data
+      portal[damage].width = 120
+      portal[attack].width = 70
+      portal[range].width = 260
+
+      ~position everything horizontally, leaving a margin on both sides appropriately
+      portal[badstr].left = 5
+      perform portal[damage].alignedge[right,-5]
+      perform portal[name].alignrel[ltor,badstr,5]
+      perform portal[attack].alignrel[rtol,damage,-10]
+      perform portal[range].alignrel[rtol,attack,-10]
+
+      ~if this is a ranged weapon, limit the name to the space up to the range details;
+      ~otherwise, let the name extend over to the attack value
+      var limit as number
+      if (tagis[component.WeapRange] <> 0) then
+        limit = portal[range].left
+      else
+        limit = portal[attack].left
+        endif
+
+      ~limit the name to the extent determined above
+      if (portal[name].right > limit - 5) then
+        portal[name].width = limit - portal[name].left - 5
+        endif
+
+      ~size the name to fit the available space
+      perform portal[name].sizetofit[36]
+      perform portal[name].autoheight
+      perform portal[name].centervert
+
+      ~extend the dots from the right of the name across to the value on the right
+      if (portal[name].right > limit - 10) then
+        portal[dots].visible = 0
+      else
+        perform portal[dots].alignrel[ltor,name,5]
+        portal[dots].width = limit - 5 - portal[dots].left
+        endif
+      ]]></position>
+
+    <header><![CDATA[
+      ~our header height is the title plus a gap plus the header text
+      height = portal[hdrtitle].height + 10 + portal[hdrattack].height
+      doneif (issizing <> 0)
+
+      ~our title spans the entire width of the template
+      portal[hdrtitle].width = width
+
+      ~each of our header labels has the same width as the corresponding data beneath
+      portal[hdrattack].width = portal[attack].width
+      portal[hdrdamage].width = portal[damage].width
+      portal[hdrrange].width = portal[range].width
+
+      ~center each header label on the corresponding data beneath
+      perform portal[hdrattack].centeron[horz,attack]
+      perform portal[hdrdamage].centeron[horz,damage]
+      perform portal[hdrrange].centeron[horz,range]
+
+      ~align all header labels at the bottom of the header region
+      perform portal[hdrattack].alignedge[bottom,0]
+      perform portal[hdrdamage].alignedge[bottom,0]
+      perform portal[hdrrange].alignedge[bottom,0]
+      ]]></header>
+
+    </template>
+
+
+  <!-- oAdjPick template
+        This template presents the activated adjustments for the character.
+  -->
+  <template
+    id="oAdjPick"
+    name="Output Adjustments Table"
+    compset="Adjustment"
+    marginhorz="10">
+
+    <portal
+      id="name"
+      style="outNormLt">
+      <output_label
+        field="adjName">
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the vertical extent of our portals
+      height = portal[name].height
+      doneif (issizing <> 0)
+
+      ~size the name to fit the available space
+      portal[name].width = width
+      perform portal[name].sizetofit[36]
+      perform portal[name].autoheight
+      perform portal[name].centervert
+      ]]></position>
+
+    </template>
+
+
+  <!-- oPortrait template
+        This template presents the character portrait, showing the first portrait
+        assigned to the character.
+  -->
+  <template
+    id="oPortrait"
+    name="Output Image"
+    compset="Actor">
+
+    <portal
+      id="image"
+      style="outNormal">
+      <output_image
+        field="acTacImage">
+        </output_image>
+      </portal>
+
+    <portal
+      id="imgBorder"
+      style="outCharImg">
+      <output_label
+        text=" ">
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~if we don't have an image or character images are not included, set our
+      ~height to 0, hide the image, and get out
+      if (!hero.tagis[source.ShowImage] + !portal[image].isimage > 0) then
+        height = 0
+        portal[image].visible = 0
+        portal[imgBorder].visible = 0
+        done
+        endif
+
+      ~leave a margin of one pixel around all edges to draw our border
+      var margin as number
+      margin = 1
+      portal[image].left = margin
+      portal[image].top = margin
+      portal[image].width = width - margin * 2
+      portal[image].height = height - margin * 2
+
+      ~cap our height at a maximum of three inches
+      portal[image].height = minimum(portal[image].height,900)
+
+      ~optimally fit the image to the region available
+      perform portal[image].imagefit
+
+      ~center the image if it's narrower than the available width
+      perform portal[image].centerhorz
+
+      ~our full height is the bottom of the image plus our margin
+      height = portal[image].bottom + margin
+
+      ~set the border to span our full dimensions
+      portal[imgBorder].width = width
+      portal[imgBorder].height = height
+      ]]></position>
+
+    </template>
+
+
+  <!-- oValidate template
+        This template presents the validation report at the bottom of the sheet.
+  -->
+  <template
+    id="oValidate"
+    name="Output Validation"
+    compset="Actor">
+
+    <portal
+      id="border"
+      style="outValBox">
+      <output_label
+        text=" ">
+        </output_label>
+      </portal>
+
+    <portal
+      id="validate"
+      style="outValid">
+      <output_label>
+        <labeltext><![CDATA[
+
+          ~start with an opening that lists the number of issues
+          @text = "Validation Report (" & hero.errorcount & " issues):"
+
+          ~turn off bold and reduce the font size slightly
+          @text &= "{/b}{size 34} "
+
+          ~first we've got the validation report stream; if there's nothing to
+          ~report, indicate that fact
+          if (hero.errorcount = 0) then
+            @text &= "Nothing identified"
+          else
+            @text &= hero.errorlist
+            endif
+
+          ~if there are any activated abilities, report them
+          var active as string
+          foreach pick in hero from Ability where "User.Activation & Helper.Activated & !Hide.InPlay"
+            active = splice(active,eachpick.field[name].text,", ")
+            nexteach
+
+          ~append any active abilities to the report
+          if (empty(active) = 0) then
+            @text &= "; {b}Active:{/b} " & active
+            endif
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~limit the report to a maximum of 4 lines of details; if there are more than
+      ~4 lines, we assume the GM will be reviewing the character by hand
+      var maxlines as number
+      maxlines = 4
+
+      ~leave bit of a margin on the left and right sides for a gap from the border
+      portal[validate].width = width - 20
+
+      ~calculate the height of the validation report, limiting it appropriately
+      perform portal[validate].autoheight
+      if (portal[validate].height > portal[validate].fontheight * maxlines) then
+        portal[validate].lineheight = maxlines
+        endif
+
+      ~the border is the full width of the template and includes some padding at the
+      ~top and bottom for a vertical gap from the border
+      portal[border].width = width
+      portal[border].height = portal[validate].height + 12
+
+      ~our overall height is the height of the border
+      height = portal[border].height
+
+      ~center the validation report text within the template
+      perform portal[validate].centerhorz
+      perform portal[validate].centervert
+      ]]></position>
+    </template>
+
+
+  <!-- oPersonal template
+        This template presents the background and personal details for the character.
+  -->
+  <template
+    id="oPersonal"
+    name="Output Personal Details Table"
+    compset="Personal">
+
+    <portal
+      id="info"
+      style="outPlainLt">
+      <output_label
+        field="perInfo">
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~size the name to fit the available space
+      portal[info].width = width
+      perform portal[info].autoheight
+
+      ~our height is the vertical extent of our portal
+      height = portal[info].textheight
+      ]]></position>
+
+    </template>
+
+
+  <!-- oLogos layout
+        This layout sizes and positions the Hero Lab and game system logos. The logos
+        can be either stacked or shown side-by-side, based on the global variable set
+        within the sheet script.
+  -->
+  <layout
+    id="oLogos">
+    <portalref portal="oHLLogo"/>
+    <portalref portal="oGameLogo"/>
+    <position><![CDATA[
+      var temp as number
+      var logogap as number
+      var scale as number
+
+      ~if our logos are stacked, scale them for stacked orientation
+      if (scenevalue[stacklogos] <> 0) then
+        logogap = 20
+        scale = 1.8
+
+      ~otherwise, scale our logos for side by side orientation
+      else
+        logogap = 40
+        temp = portal[oGameLogo].width + portal[oHLLogo].width
+        scale = (width - logogap) / temp
+        if (scale > 2.0) then
+          scale = 2.0
+          endif
+        endif
+
+      ~scale both logos appropriately
+      portal[oGameLogo].width *= scale
+      portal[oGameLogo].height *= scale
+      portal[oHLLogo].width *= scale
+      portal[oHLLogo].height *= scale
+
+      ~if our logos are stacked, position them properly
+      if (scenevalue[stacklogos] <> 0) then
+
+        ~position the logos horizontally
+        perform portal[oGameLogo].centerhorz
+        perform portal[oHLLogo].centerhorz
+
+        ~position the Hero Lab logo beneath the game system logo
+        perform portal[oHLLogo].alignrel[ttob,oGameLogo,logogap]
+
+        ~our total height is the bottom of the lower logo
+        height = portal[oHLLogo].bottom
+
+      ~ Otherwise, position them side by side
+      else
+
+        ~position the logos horizontally, centering them together in the space
+        temp = portal[oGameLogo].width + portal[oHLLogo].width
+        temp = (width - temp - logogap) / 2
+        portal[oGameLogo].left = temp
+        perform portal[oHLLogo].alignrel[ltor,oGameLogo,logogap]
+
+        ~our total height is the bottom of the tallest logo
+        height = maximum(portal[oHLLogo].height,portal[oGameLogo].height)
+
+        ~center the logos vertically
+        perform portal[oGameLogo].centervert
+        perform portal[oHLLogo].centervert
+        endif
+      ]]></position>
+    </layout>
+
+
+  <!-- oLeftSide layout
+        This layout is rendered down the left side of the sheet and contains the
+        name and description details for the character, as well as the table of
+        table of attributes, table of health/powers, and table of derived traits.
+  -->
+  <layout
+    id="oLeftSide">
+    <portalref portal="oHeroName"/>
+    <portalref portal="oHeroInfo"/>
+    <portalref portal="oAttribute"/>
+    <portalref portal="oPower"/>
+    <portalref portal="oDerived"/>
+    <position><![CDATA[
+      ~position the hero name at the top with the hero details beneath the name
+      perform portal[oHeroName].autoplace[0]
+      perform portal[oHeroInfo].autoplace[15]
+
+      ~position the tables next
+      perform portal[oAttribute].autoplace
+      perform portal[oPower].autoplace
+      perform portal[oDerived].autoplace
+
+      ~our layout height is the extent of the elements within
+      height = autoextent
+      ]]></position>
+    </layout>
+
+
+  <!-- oArmory layout
+        This layout contains the tables of armor and weapons that appear in the
+        lefthand column of the character sheet. If the two tables are too large to
+        fit in the available space, they are truncated intelligently, with the
+        remaining gear appearing on a second spillover sheet.
+  -->
+  <layout
+    id="oArmory">
+    <portalref portal="oArmor"/>
+    <portalref portal="oWeapon"/>
+    <position><![CDATA[
+      ~position the armor table at the top and the weapon table beneath it
+      perform portal[oArmor].autoplace
+      perform portal[oWeapon].autoplace
+
+      ~if all equipment was shown, everything fits, so update height and we're done
+      if (portal[oWeapon].itemsleft + portal[oArmor].itemsleft = 0) then
+        height = autoextent
+        done
+        endif
+
+      ~if we got here, then there is more gear than will fit within the space, so
+      ~calculate the space that the two tables can use, including the gap between
+      var remain as number
+      remain = height - scenevalue[sectiongap]
+
+      ~if the height of both tables exceeds the available space, we need to divvy
+      ~up that space between the two tables
+      if (portal[oArmor].height + portal[oWeapon].height > remain) then
+
+        ~if the armor table is less than half the space, limit the weapon table
+        ~to whatever space is leftover
+        if (portal[oArmor].height < remain / 2) then
+          portal[oWeapon].height = remain - portal[oArmor].height
+
+        ~if the weapon table is less than half the space, limit the armor table
+        ~to whatever space is leftover
+        elseif (portal[oWeapon].height < remain / 2) then
+          portal[oArmor].height = remain - portal[oWeapon].height
+
+        ~otherwise, both tables are larger than half the space, so we need to limit
+        ~the height of both of them
+        ~NOTE! If we just divide the remaining amount by two and set both tables to
+        ~that height, we could end up with both tables being truncated by more than
+        ~a half item, with the combined height being a full item short of taking up
+        ~the full space. So we have to set the height of one table to half the
+        ~remaining space, then subtract that table's final height from our remaining
+        ~space, and finally set that as the height for the second table.
+        else
+          portal[oWeapon].height = remain / 2
+          portal[oArmor].height = remain - portal[oWeapon].height
+          endif
+        endif
+
+      ~position the weapon table beneath the armor; if no armor, omit it
+      if (portal[oArmor].itemsshown = 0) then
+        portal[oArmor].visible = 0
+      else
+        portal[oWeapon].top = portal[oArmor].bottom + scenevalue[sectiongap]
+        endif
+
+      ~our layout height is the extent of the bottommost portal
+      height = portal[oWeapon].bottom
+      ]]></position>
+    </layout>
+
+
+  <!-- oAdjust layout
+        This layout contains the list of activated adjustments for the character.
+  -->
+  <layout
+    id="oAdjust">
+    <portalref portal="oAdjust"/>
+    <position><![CDATA[
+      ~if there are no adjustments, then make sure our height is zero
+      if (portal[oAdjust].itemsshown = 0) then
+        portal[oAdjust].visible = 0
+        height = 0
+        done
+        endif
+
+      ~otherwise, position the adjustment table at the top and our layout height
+      ~is the extent of the elements within
+      perform portal[oAdjust].autoplace
+      height = autoextent
+      ]]></position>
+    </layout>
+
+
+  <!-- oRightSide layout
+        This layout is rendered down the right side of the sheet and contains the
+        character portrait, table of special abilities, table of skills, and table
+        of gear. As much gear as will fit is output, with any excess being truncated
+        on this sheet and being included on the spillover sheet.
+  -->
+  <layout
+    id="oRightSide">
+    <portalref portal="oAbility"/>
+    <portalref portal="oSkills"/>
+    <portalref portal="oGear"/>
+    <portalref portal="oPersonal"/>
+    <templateref template="oPortrait" thing="actor"/>
+    <position><![CDATA[
+      ~position the character portrait at the top and the various tables beneath
+      perform template[oPortrait].autoplace
+      perform portal[oAbility].autoplace
+      perform portal[oSkills].autoplace
+      perform portal[oGear].autoplace
+      perform portal[oPersonal].autoplace
+
+      ~our layout height is the extent of the elements within
+      height = autoextent
+      ]]></position>
+    </layout>
+
+
+  <!-- oValidate layout
+        This layout contains the validation report at the bottom of the sheet.
+  -->
+  <layout
+    id="oValidate">
+    <templateref template="oValidate" thing="actor"/>
+    <position><![CDATA[
+      ~position the validation template at the top
+      perform template[oValidate].autoplace
+
+      ~the height of the layout is the bottommost extent of the elements within
+      height = autoextent
+      ]]></position>
+    </layout>
+
+
+  <!-- standard1 sheet
+        This is the first page of the stanard character sheet, which coordinates the
+        output of a whole bunch of layouts containing different pieces of information
+        for the character. Layouts are estimated to perform whatever calculations are
+        necessary within that layout, such as its overall dimensions. Once estimated,
+        the dimensions of the layout can be used to properly position and size any
+        subsequent layouts that depend on it. So the overall process is to process
+        layouts in an order that progressively fills the sheet with aligned material.
+  -->
+  <sheet
+    id="standard1"
+    name="Standard character sheet, page #1">
+    <layoutref layout="oLogos"/>
+    <layoutref layout="oLeftSide"/>
+    <layoutref layout="oRightSide"/>
+    <layoutref layout="oAdjust"/>
+    <layoutref layout="oArmory"/>
+    <layoutref layout="oValidate"/>
+    <position><![CDATA[
+      ~set this global variable to 1 if you want the logos to be stacked; a value
+      ~of zero places them side-by-side
+      scenevalue[stacklogos] = 0
+
+      ~setup the gap to be used between the various sections of the character sheet
+      autogap = 40
+      scenevalue[sectiongap] = autogap
+
+      ~calculate the width of the two columns of the character sheet, leaving a
+      ~suitable center gap between them
+      var colwidth as number
+      colwidth = (width - 50) / 2
+
+      ~if the user wants to omit the validation report, the hide it and allow the
+      ~rest of the sheet to fill that space; otherwise, output the layout and the
+      ~top of the validation report establishes the bottom for all other output
+      var extent as number
+      if (hero.tagis[source.Validation] = 0) then
+        layout[oValidate].visible = 0
+        extent = height
+      else
+        layout[oValidate].width = width
+        perform layout[oValidate].render
+        layout[oValidate].top = height - layout[oValidate].height
+        extent = layout[oValidate].top - autogap
+        endif
+
+      ~position the leftside layout in the upper left corner
+      layout[oLeftSide].width = colwidth
+      layout[oLeftSide].height = extent - layout[oLeftSide].top
+      perform layout[oLeftSide].render
+
+      ~position the activated adjustments at the bottom on the left; this will
+      ~establish the remaining space available on the left for armor and weapons
+      layout[oAdjust].width = colwidth
+      perform layout[oAdjust].render
+      layout[oAdjust].top = extent - layout[oAdjust].height
+
+      ~position the armory layout within the remaining space on the left
+      layout[oArmory].width = colwidth
+      layout[oArmory].top = layout[oLeftSide].bottom + autogap
+      layout[oArmory].height = layout[oAdjust].top - autogap - layout[oArmory].top
+      perform layout[oArmory].render
+
+      ~position the logos layout in the upper right corner
+      layout[oLogos].width = colwidth
+      perform layout[oLogos].render
+      layout[oLogos].left = width - colwidth
+
+      ~position the rightside layout in the remaining space on the right
+      layout[oRightSide].width = colwidth
+      layout[oRightSide].top = layout[oLogos].bottom + autogap
+      layout[oRightSide].left = layout[oLogos].left
+      layout[oRightSide].height = extent - layout[oRightSide].top
+      perform layout[oRightSide].render
+      ]]></position>
+    </sheet>
+
+
+  </document>

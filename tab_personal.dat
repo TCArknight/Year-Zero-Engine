@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Personal" tab panel. This tab is where
+      the user manages all the physical characteristics and background details for
+      the character.
+
+      All public visual elements used with this tab panel start with the prefix "pe"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- peImages portal
+        Displays the table of character images.
+
+        Since the table only contains images, we define it to auto-add a new empty
+        image instead of prompting the user to select something from a list.
+
+        We use a "headertitle" script to place a suitable title above the table.
+
+        We use an "additem" script to simply prompt the user to add new images,
+        along with a little bit of extra vertical spacing around it.
+   -->
+  <portal
+    id="peImages"
+    style="tblNormal">
+    <table_auto
+      component="UserImage"
+      showtemplate="peImage"
+      autothing="mscUserImg"
+      allowuserorder="yes"
+      showsortset="_CompSeq_">
+      <headertitle><![CDATA[
+        @text = "Gallery"
+        ]]></headertitle>
+      <additem><![CDATA[
+        @text = "Add Another Image"
+        ]]></additem>
+      </table_auto>
+    </portal>
+
+
+  <!-- peAdjust portal
+        Displays the table of permanent adjustments applied to the character. A
+        two-column display is used for space efficiency.
+
+        We use the "LargeItem" template for selecting the adjustments, since all we
+        need is basic information. We use a custom template for showing the selected
+        adjustments.
+
+        The "userorder" attribute enables user-ordering of the adjustments via the
+        right-click menu. The "_CompSeq_" sortset makes it possible for user-ordering
+        to be properly tracked and displayed. The "Adjustment" component specifies
+        the "adjIndex" field for tracking user-order behavior, and "_CompSeq_" tells
+        HL to hook into the component-specified field for sorting.
+
+        The "candidate" tagexpr limits the adjustments that can be selected to only
+        include those that are user-adjustable and that can be treated as "permanent",
+        as indicated by the "InPlay.PermOK" tag.
+
+        Each adjustment that is added via this table is auto-assigned the tag
+        "InPlay.Permanent".
+
+        The "list" tagexpr limits the adjustments displayed to only include those
+        that are user-adjustable and that have been added via this table, as indicated
+        by the auto-assigned "InPlay.Permanent" tag.
+
+        We set a larger width for the description details when choosing an adjustment
+        via the "descwidth" attribute.
+
+        We use a "headertitle" script to place a suitable title above the table.
+
+        We use an "additem" script to simply prompt the user to add new adjustments,
+        along with a little bit of extra vertical spacing around it.
+   -->
+  <portal
+    id="peAdjust"
+    style="tblNormal">
+    <table_dynamic
+      component="Adjustment"
+      showtemplate="peAdjust"
+      choosetemplate="LargeItem"
+      showsortset="_CompSeq_"
+      columns="2"
+      allowuserorder="yes"
+      descwidth="325">
+      <list>Helper.UserAdjust &amp; InPlay.Permanent</list>
+      <candidate>Helper.UserAdjust &amp; InPlay.PermOK</candidate>
+      <autotag group="InPlay" tag="Permanent"/>
+      <titlebar><![CDATA[
+        @text = "Select a Permanent Adjustment from the List Below"
+        ]]></titlebar>
+      <headertitle><![CDATA[
+        @text = "Permanent Adjustments (Always Active)"
+        ]]></headertitle>
+      <additem><![CDATA[
+        @text = "Add Permanent Adjustments"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- peImage template
+        This template shows a user-added character image. The height is calculated
+        based on the width such that a relatively symmetric image space is provided.
+  -->
+  <template
+    id="peImage"
+    name="User Image"
+    compset="UserImage"
+    marginhorz="8"
+    marginvert="3">
+
+    <portal
+      id="image"
+      style="imgNormal">
+      <image_user
+        field="uimgImage">
+        </image_user>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~position the delete portal appropriately
+      perform portal[delete].alignedge[right,0]
+      portal[delete].top = 5
+
+      ~use the remaining width for the image portal and use a symmetric height
+      portal[image].left = 0
+      portal[image].width = portal[delete].left - portal[image].left - 10
+      portal[image].height = portal[image].width
+
+      ~set our height based on the extent of our contents
+      height = portal[image].bottom
+      ]]></position>
+    </template>
+
+
+  <!-- peAdjust template
+        This template displays a permanent adjustment. When needed, a menu is shown
+        where the user can select which trait is to be adjusted. Each permanent
+        adjustment is always active, so we don't need a checkbox the same way as for
+        temporary adjustments, nor do we need any source or duration information.
+
+        The "menu" portal displays a list of things that is dynamically controlled
+        at run-time. The portal specifies two fields which dictate (a) the tagexpr used
+        to determine which things are shown and (b) whether things or picks are shown
+        for the user to select from. These fields are defined on the adjustment pick
+        itself, allowing separate adjustments to allow the user to select a list of
+        attributes, or a list of skills, or something else entirely.
+  -->
+  <template
+    id="peAdjust"
+    name="Adjustment Pick"
+    compset="Adjustment"
+    marginhorz="5"
+    marginvert="5">
+
+    <portal
+      id="name"
+      style="lblLeft">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="menu"
+      style="menuNormal">
+      <menu_things
+        field="adjChosen"
+        component="none"
+        maxvisible="20"
+        usepicksfield="adjUsePick"
+        candidatefield="adjCandid">
+        </menu_things>
+      </portal>
+
+    <portal
+      id="adjust"
+      style="incrSimple">
+      <incrementer
+        field="adjUser">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on the tallest portal
+      height = portal[adjust].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~center the portals vertically
+      perform portal[adjust].centervert
+      perform portal[name].centervert
+      perform portal[menu].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the adjust portal to the left of the delete portal
+      perform portal[adjust].alignrel[rtol,delete,-8]
+
+      ~hide the adjust portal if not required and determine our alignment edge
+      var edge as number
+      if (tagis[AdjustShow.Increment] <> 0) then
+        edge = portal[adjust].left
+      else
+        portal[adjust].visible = 0
+        edge = portal[delete].left
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = edge - portal[name].left - 12
+
+      ~position the menu in the same location as the name
+      portal[menu].left = portal[name].left
+      portal[menu].width = portal[name].width
+
+      ~hide the name or menu, as appropriate
+      if (tagis[AdjustShow.Menu] = 0) then
+        portal[menu].visible = 0
+      else
+        portal[name].visible = 0
+        endif
+
+      ~if a menu is visible and nothing is chosen yet, flag it in red
+      if (tagis[AdjustShow.Menu] <> 0) then
+        if (field[adjChosen].ischosen = 0) then
+          perform portal[menu].setstyle[menuError]
+          endif
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- peDetails template
+        This template displays all the personal details for the character, such as
+        age, height, weight, etc.
+
+        For the gender, we use a menu with two literal choices. The value is saved
+        in the designated field, and we'll have to convert that field value to the
+        proper text meaning within printouts and the like.
+  -->
+  <template
+    id="peDetails"
+    name="Personal"
+    compset="Personal">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes"
+        text="Personal Information">
+        </label>
+      </portal>
+
+    <portal
+      id="gender"
+      style="menuNormal">
+      <menu_literal
+        field="perGender">
+          <choice value="0" display="Gender: Male"/>
+          <choice value="1" display="Gender: Female"/>
+          <choice value="2" display="Gender: Other"/>
+        </menu_literal>
+      </portal>
+
+    <portal
+      id="lblage"
+      style="lblNormal">
+      <label
+        text="Age:">
+        </label>
+      </portal>
+
+    <portal
+      id="age"
+      style="incrBox">
+      <incrementer
+        field="perAge">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="gendertext"
+      style="editNormal">
+      <edit
+        field="perGenUser"
+        placeholdertext="Specify gender details">
+        </edit>
+      </portal>
+
+    <portal
+      id="lblheight"
+      style="lblNormal">
+      <label
+        text="Height:">
+        </label>
+      </portal>
+
+    <portal
+      id="height"
+      style="incrBox">
+      <incrementer
+        field="perHeight">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="lblweight"
+      style="lblNormal">
+      <label
+        text="Weight:">
+        </label>
+      </portal>
+
+    <portal
+      id="weight"
+      style="incrBox">
+      <incrementer
+        field="perWeight">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="lblhair"
+      style="lblNormal">
+      <label
+        text="Hair:">
+        </label>
+      </portal>
+
+    <portal
+      id="hair"
+      style="editNormal">
+      <edit
+        field="perHair">
+        </edit>
+      </portal>
+
+    <portal
+      id="lbleyes"
+      style="lblNormal">
+      <label
+        text="Eyes:">
+        </label>
+      </portal>
+
+    <portal
+      id="eyes"
+      style="editNormal">
+      <edit
+        field="perEyes">
+        </edit>
+      </portal>
+
+    <portal
+      id="lblskin"
+      style="lblNormal">
+      <label
+        text="Skin:">
+        </label>
+      </portal>
+
+    <portal
+      id="skin"
+      style="editNormal">
+      <edit
+        field="perSkin">
+        </edit>
+      </portal>
+
+    <portal
+      id="separator"
+      style="sepHorz">
+      <separator
+        isvertical="no">
+        </separator>
+      </portal>
+
+    <portal
+      id="lblinfo"
+      style="lblNormal">
+      <label
+        text="Personal Details:">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="editNormal">
+      <edit
+        field="perInfo"
+        ismultiline="yes">
+        </edit>
+      </portal>
+
+    <position><![CDATA[
+      ~position the title to span the full width
+      portal[title].width = width
+
+      ~position the age portals beneath the title in the upper right
+      perform portal[age].alignrel[ttob,title,10]
+      perform portal[age].alignedge[right,-10]
+      perform portal[lblage].centeron[vert,age]
+      perform portal[lblage].alignrel[rtol,age,-7]
+
+      ~position the gender portals in the upper left
+      portal[gender].left = 10
+      perform portal[gender].centeron[vert,age]
+      portal[gender].width = 120
+
+      ~a gender text control goes under it and is shown if needed (which means
+      ~everything else needs to move down)
+      portal[gendertext].left = portal[gender].left
+      portal[gendertext].top = portal[gender].bottom + 7
+      portal[gendertext].width = 200
+      if (field[perGender].value <> 2) then
+        portal[gendertext].visible = 0
+        perform portal[height].alignrel[ttob,age,7]
+      else
+        perform portal[height].alignrel[ttob,gendertext,7]
+        endif
+
+      ~position the height portals beneath the gender portals
+      perform portal[lblheight].centeron[vert,height]
+      portal[lblheight].left = 10
+      perform portal[height].alignrel[ltor,lblheight,7]
+
+      ~position the width portals beneath the age portals
+      portal[lblweight].top = portal[lblheight].top
+      portal[weight].top = portal[height].top
+      perform portal[weight].alignedge[right,-10]
+      perform portal[lblweight].alignrel[rtol,weight,-7]
+
+      ~position the hair/eyes/skin portals beneath the height and weight
+      perform portal[hair].alignrel[ttob,height,8]
+      perform portal[lblhair].centeron[vert,hair]
+      portal[lbleyes].top = portal[lblhair].top
+      portal[eyes].top = portal[hair].top
+      portal[lblskin].top = portal[lblhair].top
+      portal[skin].top = portal[hair].top
+      portal[lblhair].left = 5
+      perform portal[hair].alignrel[ltor,lblhair,5]
+      portal[hair].width = 50
+      perform portal[lbleyes].alignrel[ltor,hair,10]
+      perform portal[eyes].alignrel[ltor,lbleyes,5]
+      portal[eyes].width = 50
+      perform portal[lblskin].alignrel[ltor,eyes,10]
+      perform portal[skin].alignrel[ltor,lblskin,5]
+      portal[skin].width = width - portal[skin].left - portal[lblhair].left
+
+      ~position the separator bar beneath the hair/eyes/skin portals
+      portal[separator].height = 2
+      portal[separator].width = width - 50
+      perform portal[separator].alignrel[ttob,hair,12]
+      perform portal[separator].centerhorz
+
+      ~position the personal details portals beneath the separator bar
+      portal[lblinfo].left = 0
+      perform portal[lblinfo].alignrel[ttob,separator,10]
+      portal[info].left = 0
+      perform portal[info].alignrel[ttob,lblinfo,5]
+      portal[info].width = width
+      portal[info].height = height - portal[info].top
+      ]]></position>
+
+    </template>
+
+
+  <!-- personal layout
+        This layout orchestrates the display of the visual elements that comprise
+        the Personal tab. We put personal details on the left, a table of user-added
+        images on the right, and a table of permanent adjustments at the bottom.
+
+        The logic for this layout is similar to preceeding tabs, so please refer
+        to those tabs for more details.
+  -->
+  <layout
+    id="personal">
+    <portalref portal="peImages" taborder="20"/>
+    <portalref portal="peAdjust" taborder="30"/>
+    <templateref template="peDetails" thing="mscPerson" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~depending on our overall height, allow the permanent adjustments table to
+      ~grow vertically, with a minimum height allowing for at least two items
+      ~Note: We assume a standard height of 460 pixels for the overall tab and grow
+      ~relative to that. We base this height on the minimum size of the HL window.
+      var limit as number
+      limit = 2 + (height - 460) / 40
+      limit = maximum(limit,2)
+      limit = minimum(limit,6)
+      portal[peAdjust].maxrows = limit
+
+      ~position the permanent adjustments table spanning the bottom
+      portal[peAdjust].top = height - portal[peAdjust].height
+      portal[peAdjust].width = width
+
+      ~reserve a width of 185 pixels for the user images table
+      portal[peImages].width = 185
+
+      ~position the images table in the upper right corner
+      portal[peImages].left = width - portal[peImages].width
+      portal[peImages].height = portal[peAdjust].top - portal[peImages].top - 10
+
+      ~allocate the remaining width to the personal details template
+      template[peDetails].width = width - portal[peImages].width - 10
+
+      ~position the details template in the upper left corner
+      template[peDetails].height = portal[peAdjust].top - template[peDetails].top - 10
+      ]]></position>
+
+    </layout>
+
+
+  <!-- personal panel
+        This is the "Personal" panel shown within Hero Lab. Since we want this panel
+        to appear first within the third grouping (details), we assign it an "order"
+        of 310.
+
+        The logic for this panel is similar to the logic for the preceeding panels,
+        so please refer to those panels for more details.
+  -->
+  <panel
+    id="personal"
+    name="Personal"
+    marginhorz="5"
+    marginvert="5"
+    order="310">
+    <live>!HideTab.personal</live>
+    <layoutref layout="personal"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

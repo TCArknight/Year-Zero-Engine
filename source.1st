@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains all specifications pertaining to the operational control of
+      the data files. This includes usage pools, sources, sortsets, and other related
+      mechanisms.
+-->
+
+<document signature="Hero Lab Structure">
+
+  <!-- The "source" elements define the assortment of user-configurable options for
+        each actor and their relative hierarchical structure. Each selectable source
+        automatically defines a "source" tag when enabled by the user, allowing the
+        data files to tailor behavior based on the presence (or not) of that tag.
+  -->
+
+  <source
+    id="Settings"
+    name="Settings"
+    selectable="no"
+    sortorder="0"
+    description="Collection of settings.">
+    </source>
+	
+  <source
+    id="Core"
+    name="Core Options"
+    selectable="no"
+    sortorder="1"
+    description="Options related to the Core YZE rules that can be turned on and off">
+    </source>
+
+    <!-- <source
+    id="RatingMethod"
+    name="Dice Rating Method"
+    parent="Core"
+    selectable="no"
+	minchoices="1"
+	maxchoices="1"
+    description="Controls whether values of attributes, skills, etc. are pooled (1-5) or stepped (A-F).">
+    </source> -->
+
+  <source
+    id="CoreOptions"
+    name="Core Options"
+    parent="Core"
+    sortorder="1"
+    selectable="no"
+    description="Controls various core options.">
+    </source>
+
+  <source
+    id="Encumbrance"
+    name="Encumbrance Options"
+    parent="CoreOptions"
+    sortorder="9"
+    selectable="no"
+	minchoices="1"
+	maxchoices="1"
+    description="Controls various encumbrance options.">
+    </source>
+
+  <source
+    id="Consumables"
+    name="Consumable Options"
+    parent="CoreOptions"
+    sortorder="8"
+    selectable="no"
+	minchoices="1"
+	maxchoices="1"
+    description="Controls various encumbrance options.">
+    </source>
+
+  <source
+    id="ConsumableTrack"
+    name="Track Separately"
+    abbrev="Track"
+    parent="Consumables"
+    default="yes"
+    reportable="no"
+    sortorder="1"
+    description="Track Consumables individually.">
+	<autotag group="SettingFlag" tag="ConsumableTrack"/>
+    </source>
+
+  <source
+    id="ConsumableRating"
+    name="Supply Rating"
+    abbrev="Track"
+    parent="Consumables"
+    default="no"
+    reportable="no"
+    sortorder="2"
+    description="Use a Supply rating for consumables.">
+	<autotag group="SettingFlag" tag="ConsumableRating"/>
+    </source>
+
+  <source
+    id="EncumStandard"
+    name="Standard"
+    abbrev="Standard"
+    parent="Encumbrance"
+    default="yes"
+    reportable="no"
+    sortorder="1"
+    description="Standard method of calculating Encumbrance.">
+	<autotag group="SettingFlag" tag="EncumStandard"/>
+    </source>
+
+  <source
+    id="EncumWeapHand"
+    name="Weapon at Hand"
+    abbrev="Weapon"
+    parent="Encumbrance"
+    default="no"
+    reportable="no"
+    sortorder="2"
+    description="Weapon at Hand method of calculating Encumbrance.">
+	<autotag group="SettingFlag" tag="EncumWeapHand"/>
+    </source>
+
+  <source
+    id="EncumNone"
+    name="No Encumbrance"
+    abbrev="Weapon"
+    parent="Encumbrance"
+    default="no"
+    reportable="no"
+    sortorder="3"
+    description="No Encumbrance method of calculating Encumbrance.">
+	<autotag group="SettingFlag" tag="EncumNone"/>
+    </source>
+
+  <source
+    id="Personality"
+    name="Personality Traits"
+    parent="CoreOptions"
+    sortorder="10"
+    selectable="no"
+    description="Controls various personality traits.">
+    </source>
+
+  <!-- <source
+    id="DicePool"
+    name="Use Dice Pools"
+    abbrev="Dice Pools"
+    parent="RatingMethod"
+    default="no"
+    reportable="no"
+    sortorder="1"
+    description="Values of attributes, skills, etc. are pooled with ratings of 1-5.">
+	<autotag group="SettingFlag" tag="DicePool"/>
+    </source>
+
+  <source
+    id="StepDice"
+    name="Use Stepped Dice"
+    abbrev="Step Dice"
+    parent="RatingMethod"
+    default="no"
+    reportable="no"
+    sortorder="2"
+    description="Values of attributes, skills, etc. are pooled with ratings of A-F.">
+	<autotag group="SettingFlag" tag="StepDice"/>
+    </source> -->
+
+  <source
+    id="UseHealth"
+    name="Use Health"
+    abbrev="Health"
+    parent="CoreOptions"
+    default="yes"
+    reportable="no"
+    sortorder="1"
+    description="Whether Health is available or not.">
+	<autotag group="SettingFlag" tag="UseHealth"/>
+    </source>
+
+  <source
+    id="UseResolve"
+    name="Use Resolve"
+    abbrev="Resolve"
+    parent="CoreOptions"
+    default="yes"
+    reportable="no"
+    sortorder="2"
+    description="Whether Resolve is available or not.">
+	<autotag group="SettingFlag" tag="UseResolve"/>
+    </source>
+
+  <source
+    id="AttributeDmg"
+    name="Attribute Damage"
+    abbrev="Attr. Dmg."
+    parent="CoreOptions"
+    default="no"
+    reportable="no"
+    sortorder="3"
+    description="Attributes take damage.">
+	<autotag group="SettingFlag" tag="AttributeDamage"/>
+    </source>
+
+  <source
+    id="ConditionDmg"
+    name="Conditions Damage"
+    abbrev="Cond. Dmg."
+    parent="CoreOptions"
+    default="no"
+    reportable="no"
+    sortorder="4"
+    description="Use Conditions for damage.">
+	<autotag group="SettingFlag" tag="Conditions"/>
+    </source>
+
+  <source
+    id="SkillAge"
+    name="Age-related Skill Points"
+    abbrev="Age Skills"
+    parent="CoreOptions"
+    default="no"
+    reportable="no"
+    sortorder="5"
+    description="Adjust starting skill points for Age.">
+	<autotag group="SettingFlag" tag="AgeAdjust"/>
+    </source>
+
+  <source
+    id="SkillDirect"
+    name="Direct-buy Skill Points"
+    abbrev="Direct Skills"
+    parent="CoreOptions"
+    default="no"
+    reportable="no"
+    sortorder="6"
+    description="Direct purchase of skill ranks.">
+	<autotag group="SettingFlag" tag="DirectSkill"/>
+    </source>
+<!--
+  <source
+    id="Pride"
+    name="Use Pride"
+    abbrev="Pride"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="1"
+    description="Use Pride personality trait.">
+	<autotag group="SettingFlag" tag="UsePride"/>
+    </source>
+
+  <source
+    id="Weakness"
+    name="Use Weakness"
+    abbrev="Weakness"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="2"
+    description="Use Weakness personality trait.">
+	<autotag group="SettingFlag" tag="UseWeakness"/>
+    </source>
+
+  <source
+    id="DarkSecret"
+    name="Use Dark Secret"
+    abbrev="Dark Secret"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="3"
+    description="Use Dark Secret personality trait.">
+	<autotag group="SettingFlag" tag="UseDarkSecret"/>
+    </source>
+
+  <source
+    id="BigDream"
+    name="Use Big Dream"
+    abbrev="Big Dream"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="4"
+    description="Use Big Dream personality trait.">
+	<autotag group="SettingFlag" tag="UseBigDream"/>
+    </source>
+
+  <source
+    id="Relationship"
+    name="Use Relationships"
+    abbrev="Relationship"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="5"
+    description="Use Relationship personality trait.">
+	<autotag group="SettingFlag" tag="UseRelationship"/>
+    </source>
+
+  <source
+    id="Buddy"
+    name="Use Buddy"
+    abbrev="Buddy"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="6"
+    description="Use Buddy personality trait.">
+	<autotag group="SettingFlag" tag="UseBuddy"/>
+    </source>
+
+  <source
+    id="Rival"
+    name="Use Rival"
+    abbrev="Rival"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="7"
+    description="Use Rival personality trait.">
+	<autotag group="SettingFlag" tag="UseRival"/>
+    </source>
+
+  <source
+    id="Agenda"
+    name="Use Personal Agenda"
+    abbrev="Agenda"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="8"
+    description="Use Personal Agenda personality trait.">
+	<autotag group="SettingFlag" tag="UseAgenda"/>
+    </source>
+
+  <source
+    id="MoralCode"
+    name="Use Moral Code"
+    abbrev="Moral Code"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="9"
+    description="Use Moral Code personality trait.">
+	<autotag group="SettingFlag" tag="UseMoralCode"/>
+    </source>
+
+  <source
+    id="HowMet"
+    name="Use How Met"
+    abbrev="How Met"
+    parent="Personality"
+    default="no"
+    reportable="no"
+    sortorder="10"
+    description="Use How Met personality trait.">
+	<autotag group="SettingFlag" tag="UseHowMet"/>
+    </source>
+	-->
+	
+  </document>

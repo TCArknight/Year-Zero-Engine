@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of a traditional "statblock" output for the
+      game system. The statblock is defined as a dossier and then uses an assortment
+      of procedures to orchestrate the synthesis of the output.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- Procedure sbname
+        Get the character's name, using a suitable default if unnamed. The name is
+        placed in the "name" text variable.
+
+        Outbound parameter: name
+  -->
+  <procedure id="sbname" scripttype="synthesize"><![CDATA[
+    var name as string
+    if (empty(hero.actorname) = 0) then
+      name = hero.actorname
+    else
+      name = "Unnamed Character"
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure sbtraits
+        Output all of the traits that satisfy the provided tag expression, reporting
+        the name and final value for each. The "tagexpr" text variable specifies the
+        constraints that must be satisfied for the list of traits.
+
+        Inbound parameter:  tagexpr
+  -->
+  <procedure id="sbtraits" scripttype="synthesize"><![CDATA[
+    var tagexpr as string
+    var ismore as number
+	
+    ismore = 0
+    foreach pick in hero where tagexpr
+      if (ismore <> 0) then
+        append ", "
+        endif
+      
+	  if (eachpick.tagis[component.Specialty] <> 0) then
+	    append eachpick.field[spcName].text
+	  else
+	    append eachpick.field[name].text
+	    if (hero.tagis[SettingFlag.StepDice] <> 0) then
+		  append " " & eachpick.field[trtAlpha].text
+		else 
+		  append " " & eachpick.field[trtFinal].text
+	      endif
+		endif
+      ismore = 1
+      nexteach
+    append @newline
+    ]]></procedure>
+
+
+  <!-- Procedure sbweapons
+        Output all of the weapons possessed by the character, listing equipped
+        weapons first and including attack values, damage, and ranges for eachpick.
+  -->
+  <procedure id="sbweapons" scripttype="synthesize"><![CDATA[
+    var ismore as number
+    append @boldon & "Weapons/Attacks: " & @boldoff & @newline
+    ~output a list of all weapons (equipped first)
+    ismore = 0
+    foreach pick in hero from WeaponBase sortas Armory
+      ismore = 1
+      append @indent & eachpick.field[wpNetAtk].text & " - " & eachpick.field[name].text
+      append " - " & eachpick.field[wpDamage].text
+      if (eachpick.field[grIsEquip].value <> 0) then
+        append " (Equipped)"
+        endif
+      if (eachpick.tagis[component.WeapRange] <> 0) then
+        append " (Rng: " & eachpick.field[wpShort].text & "/" & eachpick.field[wpMedium].text & "/" & eachpick.field[wpLong].text & ")"
+        endif
+      append @newline
+      nexteach
+    ~if we have no weapons, output that fact
+    if (ismore = 0) then
+      append @indent & "-none-" & @newline
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure sbarmor
+        Output all of the armor possessed by the character, listing equipped gear
+        first and including the defense value for eachpick.
+  -->
+  <procedure id="sbarmor" scripttype="synthesize"><![CDATA[
+    var ismore as number
+    append @boldon & "Armor: " & @boldoff & @newline
+    ~output the details of all armor (equipped first)
+    ismore = 0
+    foreach pick in hero from Defense sortas Armory
+      ismore = 1
+      append @indent & eachpick.field[defArmorRating].text & " - " & eachpick.field[name].text
+      if (eachpick.field[grIsEquip].value <> 0) then
+        append " (Equipped)"
+        endif
+      append @newline
+      nexteach
+    ~if we have no armor, output that fact
+    if (ismore = 0) then
+      append @indent & "-none-" & @newline
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure sbtrackres
+        Output all of the tracked resources possessed by the character, if the
+        right output source is enabled.
+  -->
+  <procedure id="sbtrackres" scripttype="synthesize"><![CDATA[
+    doneif (hero.tagis[source.ShowTrackR] = 0)
+
+    var ismore as number
+    append @boldon & "Tracked Resources: " & @boldoff & @newline
+    ~output the details of all resources
+    ismore = 0
+    foreach pick in hero from Tracker where "!Hide.Tracker"
+      ismore = 1
+      append @indent & eachpick.field[name].text & " - " & eachpick.field[trkUser].text
+      append @newline
+      nexteach
+    ~if we have no resources, output that fact
+    if (ismore = 0) then
+      append @indent & "-none-" & @newline
+      endif
+    ]]></procedure>
+
+
+  <!-- Procedure sbnpcinfo
+        Checks all npc info picks with a certain tag expression and appends
+        their info to the text.
+  -->
+  <procedure id="sbnpcinfo" scripttype="synthesize"><![CDATA[
+    var title as string
+    var tagexpr as string
+
+    ~go through the npc info picks, adding them to the info string
+    var info as string
+    info = ""
+    foreach pick in hero from NPCInfo where tagexpr sortas explicit
+      if (eachpick.field[npcInfo].isempty = 0) then
+        info &= eachpick.field[name].text & ": " & eachpick.field[npcInfo].text & @newline
+        endif
+      nexteach
+
+    ~if we ended up with any text, append it to our output with the
+    ~appropriate title
+    if (empty(info) = 0) then
+      append @newline & "===== " & title & " =====" & @newline
+      append info
+      endif
+    ]]></procedure>
+
+
+  <!-- Define the statblock as a text-based dossier. The "synthesize" script actually
+        generates the output.
+  -->
+  <dossier
+    id="statblock"
+    name="Character Statblock">
+    <dossier_text
+      styles="plain+html+bbcode+wikitext+print"
+      grouping="statblock">
+      <synthesize><![CDATA[
+        var txt as string
+        var tagexpr as string
+
+        ~start by getting our name
+        var name as string
+        call sbname
+
+        ~output our name
+        append @boldon & "Name: " & @boldoff & name & @newline
+
+        ~output any race
+        txt = hero.findchild[Archetype].field[name].text
+        if (empty(txt) <> 0) then
+          txt = "-none-"
+          endif
+        append @boldon & "Archetype: " & @boldoff & txt & @newline
+
+        ~output age
+        append @boldon & "Age: " & @boldoff & hero.child[mscPerson].field[perAge].text & @newline
+
+        ~output attributes
+        append @boldon & "Attributes: " & @boldoff
+        tagexpr = "component.Attribute"
+        call sbtraits
+
+        ~output skills
+        append @boldon & "Skills: " & @boldoff
+        tagexpr = "component.Skill"
+        call sbtraits
+
+        ~output specialties
+        append @boldon & herofield[acSpecialtyTermP].text & ": " & @boldoff
+        tagexpr = "component.Specialty"
+        call sbtraits
+
+        ~output derived traits
+        foreach pick in hero from Derived sortas explicit
+          append @boldon & eachpick.field[name].text & ": " & @boldoff & eachpick.field[trtFinal].text & @newline
+          nexteach
+        
+		~output Carrying Capacity
+		var cbtgear as string
+		var packgear as string
+			
+		append @boldon & "Carrying " & @boldoff & @newline
+		append @boldon & "-- Combat: " & @boldoff & herofield[acCarryCombat].text
+		append " (Max: " & herofield[acCarryCombatMax].text & ")" & @newline
+		
+        		
+		call CombatGear 
+		append cbtgear & @newline
+			
+		if (hero.tagis[Helper.HasBackpack] <> 0) then
+		  append @boldon & "-- Backpack: " & @boldoff & herofield[acCarryBack].text & " (Max: " & herofield[acCarryBackMax].text & ")" & @newline
+		  call BackpackGear 
+		  append packgear & @newline
+		  endif
+		  
+        ~output weapons/attacks
+        call sbweapons
+
+        ~output armor
+        call sbarmor
+
+        ~output tracked resources
+        call sbtrackres
+
+        ~output NPC details if this character is a NPC - if any field for any
+        ~of the three blocks of text is set, output that block
+        doneif (hero.tagis[CharType.typNPC] = 0)
+        var tagexpr as string
+        var title as string
+
+        ~values of up to 15 are basic details only
+        tagexpr = "val:explicit.? <= 15"
+        title = "Basic Details"
+        call sbnpcinfo
+
+        ~values of up to 30 are tactics
+        tagexpr = "val:explicit.? > 15 & val:explicit.? <= 30"
+        title = "Tactics"
+        call sbnpcinfo
+
+        ~values of up to 45 are ecology
+        tagexpr = "val:explicit.? > 30 & val:explicit.? <= 45"
+        title = "Ecology"
+        call sbnpcinfo
+
+        ~anything else is extra
+        tagexpr = "val:explicit.? > 45"
+        title = "Additional Details"
+        call sbnpcinfo
+        ]]></synthesize>
+      </dossier_text>
+    </dossier>
+
+
+  </document>

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Advances" tab panel. This tab is where
+      the user selects and adjusts the advancements for the character.
+
+      All public visual elements used with this tab panel start with the prefix "ad"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- adAdvances portal
+        Presents a dynamic table where the user can add and adjust advances for the
+        character.
+
+        We use the "LargeItem" template for selecting the advances, since all we need
+        is basic information. We use a custom template for showing the selected
+        advances so that we can include an "edit" button to allow modification of the
+        advances.
+
+        We use an "additem" script to highlight whether more advances points can be
+        assigned. This requires that we specify the "addthing" referenced in the
+        script, which is the resource for tracking advances points.
+
+        We use a "titlebar" script to replace the default title on the choose form
+        with something that includes the summary information as helpful feedback to
+        the user.
+
+        We use a "headertitle" script to place a suitable title above the table. The
+        title includes an indication of how many skill points have been utilized and
+        how many remain, with appropriate color highlighting to prompt the user.
+  -->
+  <portal
+    id="adAdvances"
+    style="tblNormal">
+    <table_dynamic
+      component="Advance"
+      showtemplate="adAdvance"
+      choosetemplate="LargeItem"
+      showsortset="_CompRev_"
+      addpick="resAdvance">
+      <titlebar><![CDATA[
+        @text = "Add an Advance - " & hero.child[resAdvance].field[resSummary].text
+        ]]></titlebar>
+      <headertitle><![CDATA[
+        @text = "Advances  -  " & hero.child[resAdvance].field[resSummary].text
+        ]]></headertitle>
+      <additem><![CDATA[
+        ~if we're in creation mode, there's nothing to add
+        if (state.iscreate <> 0) then
+          @text = "{text clrgrey}Lock Character Creation Details to Select Advances"
+          done
+          endif
+
+        ~get the color-highlighted "add" text
+        @text = field[resAddItem].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- adAdvance template
+        Displays the name of the advance, an info button with the basic description
+        text, and a delete button. When appropriate, an edit button is also provided
+        to customize a previously added advance.
+  -->
+  <template
+    id="adAdvance"
+    name="Advance Pick"
+    compset="Advance"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="action"
+      style="lblSecond">
+      <label>
+        <labeltext><![CDATA[
+          @text = "(" & field[advAction].text & ")"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="edit"
+      style="actEdit"
+      tiptext="Click here to edit the advancement entry.">
+      <action
+        action="edit">
+        </action>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <portal
+      id="nodelete"
+      style="actNoDel"
+      tiptext="The target of this advancement entry has been subsequently advanced further, so this entry cannot be deleted.">
+      <action
+        action="trigger">
+        <trigger>
+          notify "The target of this advancement entry has been subsequently advanced further, so this entry cannot be deleted. All subsequent advancement entries targeting this same ability must be deleted before this particular one can be deleted."
+          </trigger>
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~freeze all modifiable portals in creation mode
+      ~Note: All freezing must be done *before* any positioning is performed.
+      if (state.iscreate <> 0) then
+        portal[delete].freeze = 1
+        portal[edit].freeze = 1
+        endif
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[edit].centervert
+      perform portal[delete].centervert
+      perform portal[nodelete].centervert
+      perform portal[action].alignrel[btob,name,0]
+
+      ~position the delete portals on the far right
+      perform portal[delete].alignedge[right,0]
+      portal[nodelete].left = portal[delete].left
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~position the edit portal to the left of the info button
+      perform portal[edit].alignrel[rtol,info,-8]
+
+      ~position the name on the left and the action details on its right
+      portal[name].left = 0
+      perform portal[action].alignrel[ltor,name,8]
+
+      ~show one of the deletion buttons based on whether we can delete the pick
+      if (candelete > 0) then
+        portal[nodelete].visible = 0
+      else
+        portal[delete].visible = 0
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- adLock template
+  -->
+  <template
+    id="adLock"
+    name="Lock"
+    compset="Actor">
+
+    <portal
+      id="title"
+      style="lblTitle">
+      <label
+        istitle="yes"
+        text="Character Advancement">
+        </label>
+      </portal>
+
+    <portal
+      id="lock"
+      style="actLock">
+      <action
+        action="lock">
+        </action>
+      <mouseinfo><![CDATA[
+        @text="{align left}Click here to lock your character creation traits and let Hero Lab know that you’ve entered the Advancement phase, wherein you utilize accrued advances to increase existing traits or purchase new traits. You can unlock the character to return to the Creation phase and make changes later if you wish."
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="lbllock"
+      style="lblNormal">
+      <label
+        text="Lock Character Creation Details To Select Advances">
+        </label>
+      <mouseinfo><![CDATA[
+        @text="{align left}Click here to lock your character creation traits and let Hero Lab know that you’ve entered the Advancement phase, wherein you utilize accrued advances to increase existing traits or purchase new traits. You can unlock the character to return to the Creation phase and make changes later if you wish."
+        ]]></mouseinfo>
+      </portal>
+
+    <position><![CDATA[
+      ~put the title at the top and have it span the full width
+      portal[title].top = 0
+      portal[title].width = width
+
+      ~position the lock portals beneath the title
+      perform portal[lock].alignrel[ttob,title,10]
+      perform portal[lbllock].centeron[vert,lock]
+
+      ~center the lock portals horizontally
+      var span as number
+      span = portal[lock].width + portal[lbllock].width + 10
+      portal[lock].left = (width - span) / 2
+      perform portal[lbllock].alignrel[ltor,lock,10]
+
+      ~our height is the extent of our bottommost portal
+      height = portal[lock].bottom
+      ]]></position>
+
+    </template>
+
+
+  <!-- adUnlock template
+  -->
+  <template
+    id="adUnlock"
+    name="Unlock"
+    compset="Actor">
+
+    <portal
+      id="unlock"
+      style="actUnlock">
+      <action
+        action="unlock">
+        </action>
+      <mouseinfo><![CDATA[
+        @text="{align left}Click here to unlock the character creation traits and leave the Advancement phase to allocate starting resources. Once you've made whatever adjustments are necessary, you can again lock the character to resume advancement."
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="lblunlock"
+      style="lblNormal">
+      <label
+        text="Unlock Character Creation Details To Allocate Starting Resources">
+        </label>
+      <mouseinfo><![CDATA[
+        @text="{align left}Click here to unlock the character creation traits and leave the Advancement phase to allocate starting resources. Once you've made whatever adjustments are necessary, you can again lock the character to resume advancement."
+        ]]></mouseinfo>
+      </portal>
+
+    <position><![CDATA[
+      ~our height is the extent of our tallest portal
+      height = portal[unlock].height
+
+      ~center the unlock label vertically
+      perform portal[lblunlock].centervert
+
+      ~center the lock portals horizontally
+      var span as number
+      span = portal[unlock].width + portal[lblunlock].width + 10
+      portal[unlock].left = (width - span) / 2
+      perform portal[lblunlock].alignrel[ltor,unlock,10]
+      ]]></position>
+
+    </template>
+
+
+  <!-- advances layout
+        This layout orchestrates the display of the visual elements that comprise
+        the Advances tab. This amounts to a title at the top and a dynamic table below
+        where the user can add and adjust the advances he wants.
+
+        The logic for this layout is similar to (albeit much simpler than) the
+        logic for the Basics tab. So please refer to the Basics tab for more details.
+  -->
+  <layout
+    id="advances">
+    <portalref portal="adAdvances" taborder="20"/>
+    <templateref template="adLock" taborder="10"/>
+    <templateref template="adUnlock" taborder="30"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~freeze our advancements table in creation mode
+      if (state.iscreate <> 0) then
+        portal[adAdvances].freeze = 1
+        endif
+
+      ~if we're in advancement mode, hide locking, else hide unlocking
+      if (state.iscreate = 0) then
+        template[adLock].visible = 0
+      else
+        template[adUnlock].visible = 0
+        endif
+
+      ~size everything to span the full layout width
+      portal[adAdvances].width = width
+      template[adLock].width = width
+      template[adUnlock].width = width
+
+      ~render our templates
+      perform template[adLock].render
+      perform template[adUnlock].render
+
+      ~position and size the templates and table based on our mode
+      if (state.iscreate = 0) then
+        template[adUnlock].top = height - template[adUnlock].height
+        portal[adAdvances].height = template[adUnlock].top - portal[adAdvances].top - 10
+      else
+        portal[adAdvances].top = template[adLock].bottom + 10
+        portal[adAdvances].height = height - portal[adAdvances].top
+        endif
+      ]]></position>
+
+    </layout>
+
+
+  <!-- advances panel
+        This is the "Advances" panel shown within Hero Lab. Since we want this panel
+        to appear before everything within the third grouping (details), we assign it
+        an "order" of 300.
+
+        The logic for this panel is similar to the logic for the Basics panel, so
+        please refer to the Basics panel for more details.
+  -->
+  <panel
+    id="advances"
+    name="Advances"
+    marginhorz="5"
+    marginvert="5"
+    order="300">
+    <live>!HideTab.advances</live>
+    <layoutref layout="advances"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+
+
+  </document>

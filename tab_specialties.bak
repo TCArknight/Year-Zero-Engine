@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "Abilities" tab panel. This tab is where
+      the user selects the special abilities for the character.
+
+      All public visual elements used with this tab panel start with the prefix "ab"
+      to associate them with the tab.
+-->
+
+<document signature="Hero Lab Data">
+
+
+  <!-- abSpecialty portal
+        Presents a dynamic table where the user can add special abilities for the
+        character.
+
+        We use the "SimpleItem" template for selecting the special abilities, since
+        all we need is basic information. We use a custom template for showing the
+        selected abilities to highlight auto-added picks based on race selections.
+        In conjunction with this, the "fixedlast" attribute forces all non-deletable
+        picks (i.e. those that are auto-added) to be shown at the bottom of the list.
+
+        We use an "additem" script to highlight whether more abilities need to be
+        selected. This requires that we specify the "addthing" referenced in the
+        script, which is the resource for tracking abilities.
+
+        We use a "candidate" tag expression to limit the choices the user can make.
+        If omitted, all things derived from the "Specialty" component will be shown
+        to the user for selection. Using this tagexpr allows us to omit all abilities
+        that have the "Hide.Specialty" tag. For example, the Flight ability needs to
+        behave as a normal ability, but we only want it available to characters that
+        select the "Avian" race. By assigning it the "Hide.Specialty" tag and using
+        the candidate tagexpr to omit those abilities, Flight cannot be chosen by
+        non-Avian characters but it will also appear in the selected list if the
+        character choosed the Avian race.
+
+        We use a "titlebar" script to replace the default title on the choose form
+        with something more useful. Just like we did on the title portal above, we
+        include the summary information as helpful feedback to the user.
+
+        We use a "description" script to generate the appropriate information for
+        display to the user as a description when choosing special abilities. We
+        call a general procedure for the game system for this purpose.
+
+        We use a "headertitle" script to place a suitable title above the table.
+        The title includes an indication of how many selections have been chosen
+        and how many remain, with appropriate color highlighting to prompt the user.
+  -->
+  <portal
+    id="spcSpecialty"
+    style="tblNormal">
+    <table_dynamic
+      component="Specialty"
+      showtemplate="spcPick"
+      choosetemplate="SimpleItem"
+      showfixedlast="yes"
+      addpick="resSpecialties">
+      <candidate>!Hide.Specialty</candidate>
+      <titlebar><![CDATA[
+        @text = "Add a Special Specialty - " & hero.child[resSpecialties].field[resSummary].text
+        ]]></titlebar>
+      <description/>
+      <headertitle><![CDATA[
+        @text = "Special Abilities: " & hero.child[resSpecialties].field[resSummary].text
+        ]]></headertitle>
+      <additem><![CDATA[
+        ~if we're in advancement mode, we've been frozen, so display accordingly
+        if (state.iscreate = 0) then
+          @text = "{text clrgrey}Add Specialties Via Advances Tab"
+          done
+          endif
+
+        ~set the color based on whether the proper number of slots are allocated
+        if (field[resLeft].value = 0) then
+          @text = "{text clrgrey}"
+        elseif (field[resLeft].value < 0) then
+          @text = "{text clrwarning}"
+          endif
+        @text &= "Add New Specialty"
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+
+
+  <!-- spcPick template
+        Displays the name of the pick/thing and an info button with the basic
+        description text. This is basically the "SimpleItem" template, with one
+        key difference. Auto-added abilities such as those conferred by races are
+        sorted and colored differently to distinguish their nature.
+  -->
+  <template
+    id="spcPick"
+    name="Specialty Pick"
+    compset="Specialty"
+    marginhorz="3"
+    marginvert="2">
+
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,portal[info].left - 5)
+
+      ~if the ability is auto-added, change its font to indicate that fact
+      if (candelete = 0) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- abilities layout
+        This layout orchestrates the display of the visual elements that comprise
+        the Abilities tab. This amounts to a title at the top and a dynamic table
+        below where the user can add the special abilities he wants.
+
+        The logic for this layout is similar to (albeit much simpler than) the
+        logic for the Basics tab. So please refer to the Basics tab for more details.
+  -->
+  <layout
+    id="specialties">
+    <portalref portal="spcSpecialty" taborder="10"/>
+
+    <!-- This script sizes and positions the layout and its child visual elements. -->
+    <position><![CDATA[
+      ~freeze our table in advancement mode to disable adding new choices
+      ~Note: All freezing must be done *before* any positioning is performed.
+      if (state.iscreate = 0) then
+        portal[spcSpecialty].freeze = 1
+        endif
+
+      ~position and size the table to span the full layout; it will only use the
+      ~vertical space that it actually needs
+      perform portal[spcSpecialty].autoplace
+      ]]></position>
+
+    </layout>
+
+
+  <!-- abilities panel
+        This is the "Abilities" panel shown within Hero Lab. Since we want this
+        panel to appear after Basics and within the traits grouping, we assign it
+        an "order" of 120.
+
+        The logic for this panel is similar to the logic for the Basics panel, so
+        please refer to the Basics panel for more details.
+  -->
+  <panel
+    id="specialties"
+    name="Specialties"
+    marginhorz="5"
+    marginvert="5"
+    order="120">
+    <live>!HideTab.specialties</live>
+    <layoutref layout="specialties"/>
+    <position><![CDATA[
+      ]]></position>
+    </panel>
+  </document>

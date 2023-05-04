@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the output sheet used for journal output.
+      The sheet is a spillover sheet, allowing it to be rendered repeatedly until
+      all of the journal entries have been output properly.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- Table of journal entries
+        Make sure that we designate the table as having items of varying height.
+        That way, each journal entry can shrink or expand to contain the full extent
+        of its description text.
+  -->
+  <portal
+    id="oJournTbl"
+    style="outNormal">
+    <output_table
+      component="Journal"
+      showtemplate="oJrnPick"
+      showpicks="yes"
+      varyheight="yes">
+      </output_table>
+    </portal>
+
+
+  <!-- oJrnPick template
+        This template presents the content of each individual journal entry.
+  -->
+  <template
+    id="oJrnPick"
+    name="Output Journal Pick"
+    compset="Journal">
+
+    <portal
+      id="name"
+      style="outTitle">
+      <output_label>
+        <labeltext><![CDATA[
+          @text = field[jrnTitle].text & " - " & hero.actorname
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <portal
+      id="info"
+      style="outNormal">
+      <output_label>
+        <labeltext><![CDATA[
+          var infotext as string
+          var spacing as string
+          spacing = "{vert 20}"
+          call JrnInfo
+          @text = infotext & field[jrnDescr].text
+          ]]></labeltext>
+        </output_label>
+      </portal>
+
+    <position><![CDATA[
+      ~both the name and info should span the full width
+      portal[name].width = width
+      portal[info].width = width
+
+      ~update the height of the info portal based on the new width
+      perform portal[info].autoheight
+
+      ~position the info beneath the name
+      perform portal[info].alignrel[ttob,name,8]
+
+      ~our height is the extent of the bottommost portal
+      height = portal[info].bottom
+      ]]></position>
+    </template>
+
+
+  <!-- oJournal layout
+        This layout contains only the table of journal entries.
+  -->
+  <layout
+    id="oJournal">
+    <portalref portal="oJournTbl"/>
+    <position><![CDATA[
+      ~position and size the table to span the full layout
+      perform portal[oJournTbl].autoplace
+      ]]></position>
+    </layout>
+
+  <!-- journal sheet
+        This sheet is a spillover sheet, so it will continue to be printed as long
+        as there remain journal entries that have not yet been printed. The sheet
+        consists of the single layout that renders the table of journal entries.
+  -->
+  <sheet
+    id="journal"
+    name="Journal"
+    spillover="yes">
+    <layoutref layout="oJournal"/>
+    <position><![CDATA[
+      ]]></position>
+    </sheet>
+
+
+  </document>

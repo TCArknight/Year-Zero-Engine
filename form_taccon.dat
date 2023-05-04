@@ -1,0 +1,1289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definition of the "tactical" form for the game system.
+      The "tactical" form is shown as the Tactical Console, allowing the user to
+      better coordinate the actions of multiple actors during play.
+
+      This form is shown as a form that has a fixed width and has user-adjustable
+      height. The fixed width is dictated by Hero Lab and is roughly 750 pixels.
+
+      All public visual elements used with this form use the unique id "tactical"
+      or use the prefix "tac" to associate them with the form.
+
+      In general, you should be able to use the bulk of this form as-is, only
+      needing to change the "tacPick" template and nothing else. You'll need to
+      adapt the template to the particulars of your game system and display
+      everything as you prefer. This can be quick or long process, depending on
+      what you are trying to accomplish.
+
+      IMPORTANT!
+      The "tacActive" and "tacPending" portals below are REQUIRED to have their
+      respective unique ids. If you change the id of these portals, you will make
+      it impossible for Hero Lab to properly locate and handle those portals,
+      which will negatively impact the Tactical Console behavior.
+
+      In addition, the unique id of the "tactical" form is specially recognized
+      by Hero Lab as the form to be used for the Tactical Console. A form with
+      the id "tactical" is required within your data files.
+-->
+
+<document signature="Hero Lab Data">
+
+  <!-- tactacActive portal
+        Displays the table of actors that are currently integrated.
+
+        The "list" tagexpr is automatically defined by Hero Lab and may not be
+        specified by the author for this portal.
+
+        The "show" sortset is automatically defined by Hero Lab and may not be
+        specified by the author for this portal.
+
+        We use a "headertitle" script to place a suitable title above the table,
+        with the title changing appropriately based on whether we are in combat.
+  -->
+  <portal
+    id="tacActive"
+    style="tblGridLt">
+    <table_fixed
+      component="tactical"
+      showtemplate="tacPick"
+      showpicks="actor">
+      <!-- the "list" tagexpr is auto-defined by Hero Lab -->
+      <headertitle><![CDATA[
+        if (state.iscombat <> 0) then
+          @text = "Combatants"
+        else
+          @text = "Party and NPCs (Non-Allies at Top)"
+          endif
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- tacPending portal
+        Displays the table of actors that still need to be integrated. When not in
+        combat, this portal is hidden by the layout.
+
+        The "list" tagexpr is automatically defined by Hero Lab and may not be
+        specified by the author for this portal.
+
+        The "show" sortset is automatically defined by Hero Lab and may not be
+        specified by the author for this portal.
+
+        We use a "headertitle" script to place a suitable title above the table.
+  -->
+  <portal
+    id="tacPending"
+    style="tblGridLt">
+    <table_fixed
+      component="tactical"
+      showtemplate="tacPick"
+      showpicks="actor">
+      <!-- the "list" tagexpr is auto-defined by Hero Lab -->
+      <headertitle><![CDATA[
+        @text = "Pending Combatants"
+        ]]></headertitle>
+      </table_fixed>
+    </portal>
+
+
+  <!-- tacPick template
+        This template displays an actor within the Tactical Console. The standard
+        contents of the TacCon are presented and managed below for the sample data
+        files, providing an excellent starting point for your own game system. In
+        the interest of providing a consistent experience for users, we highly
+        recommend you adopt a similar structure for your own TacCon design, but
+        there are no hard requirements for how everything is handled.
+
+        In general, this is the only element within this file that you'll need to
+        change. The amount of effort required to do so depends heavily on how much
+        different your game system is from these sample files and/or the extent to
+        which you prefer doing things differently within the TacCon.
+
+        The TacCon includes a good number of action portals (aka buttons) that will
+        trigger built-in processing within Hero Lab to orchestrate the appropriate
+        changes. The TacCon also shares all of the mouse-over icons used on the
+        Dashboard, and these portals simply re-use shared procedures. As a result,
+        a large portion of the TacCon can be readily adapted for use with your game
+        system. The only elements that may require more substantive changes are the
+        few portals that have custom label scripts, since you may wish to present
+        different material for your game system than is presented below.
+  -->
+  <template
+    id="tacPick"
+    name="Tactical Console Pick"
+    compset="Actor">
+
+    <portal
+      id="next"
+      style="actActNow"
+      tiptext="Click to have the character take his action now.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatact
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="delay"
+      style="actDelay"
+      tiptext="Click to have this character delay his action until later in the current turn, changing his initiative order thereafter.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatdefer
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="wait"
+      style="actAband"
+      tiptext="Click to have this character delay his action until the next turn, allowing him to act at any time during the next turn.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          herofield[acAbandon].value = 1
+          perform hero.combatdefer
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="actnow"
+      style="actActNow">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          if (herofield[acAbandon].value = 0) then
+            perform hero.combatmovenow
+          else
+            herofield[acAbandon].value = 0
+            endif
+          perform hero.combatact
+          ]]></trigger>
+        </action>
+      <mouseinfo><![CDATA[
+        @text = "The character takes an action after delaying or waiting. If the character delays and then acts{br}during the same turn, he is permanently moved to the current position in the initiative order."
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="never"
+      style="imgNormal"
+      tiptext="This character has not yet acted in the combat.">
+      <image_literal
+        image="tactical_never.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      </portal>
+
+    <portal
+      id="acted"
+      style="imgNormal"
+      tiptext="This character has already acted this turn.">
+      <image_literal
+        image="tactical_acted.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      </portal>
+
+    <portal
+      id="noncombat"
+      style="imgNormal"
+      tiptext="This character is not in combat.">
+      <image_literal
+        image="tactical_noncombat.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      </portal>
+
+    <portal
+      id="dead"
+      style="imgNormal"
+      tiptext="This character is dead or otherwise out of combat.">
+      <image_literal
+        image="tactical_dead.bmp"
+        isbuiltin="yes"
+        istransparent="yes">
+        </image_literal>
+      </portal>
+
+    <portal
+      id="image"
+      style="imgBorder">
+      <image_reference
+        field="acTacImage">
+        </image_reference>
+      <mouseinfo><![CDATA[
+        call DshBasics
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="name"
+      style="lblSmlLeft">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~generate the name for display, except that no coloring should be performed
+          var isnocolor as number
+          isnocolor = 1
+          call DshName
+
+          ~squeeze inter-line spacing a bit
+          @text = "{leading -2}" & @text
+
+          ~if we've acted, or if we're not in combat, grey the name out
+          if (hero.tagis[combat.acted] + hero.tagis[combat.noncombat] <> 0) then
+            @text = "{text clrdisable}" & @text
+
+          ~if we're next to act, make the name glow
+          elseif (hero.tagis[combat.ready] <> 0) then
+            @text = "{text clrglow}" & @text
+
+          ~if we're an enemy, make the name reddish
+          elseif (hero.tagis[Allegiance.algEnemy] <> 0) then
+            @text = "{text clrenemy}" & @text
+
+          ~if we're neutral, make the name blueish
+          elseif (hero.tagis[Allegiance.algNeutral] <> 0) then
+            @text = "{text clrneutral}" & @text
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="manipulate"
+      style="actDmgGrey"
+      tiptext="Click here to apply and heal damage to the character.">
+      <action
+        action="form"
+        form="tacManip">
+        </action>
+      </portal>
+
+    <portal
+      id="status1"
+      style="lblSmlLeft">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~start with the power points status
+          @text = "{size 30}PP: {size 36}" & #traituser[trPowerPts] & " / " & #trait[trPowerPts]
+
+          ~add the defense rating
+          @text &= "{horz 12}{size 30}Def: {size 36}" & #trait[trDefense]
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="status2"
+      style="lblSmlLeft">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          @text = "{size 30}HP: {size 36}" & field[acHPSumm].text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="load"
+      style="actLoad"
+      tiptext="Click here to make this the active character.">
+      <action
+        action="load">
+        </action>
+      </portal>
+
+    <portal
+      id="lblinit"
+      style="lblTacInfo">
+      <label>
+        <labeltext><![CDATA[
+          @text = "{vert 1}{text clrtacinfo}Init:"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <!-- Incrementer that tracks the total initiative -->
+    <portal
+      id="totalinit"
+      style="incrSimple">
+      <incrementer
+        field="tactInit">
+        </incrementer>
+      </portal>
+
+    <portal
+      id="init"
+      style="lblSmall">
+      <label>
+        <labeltext><![CDATA[
+          @text = "{text clrdisable}(" & #trait[trInit] & "){text clrreset}"
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="reroll"
+      style="actReroll"
+      tiptext="Click here to reroll initiative for this character.">
+      <action
+        action="initreroll">
+        </action>
+      </portal>
+
+    <portal
+      id="special"
+      style="actInfoSpc">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshSpecial
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="rolls"
+      style="actInfoRol">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshRolls
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="combat"
+      style="actInfoCom">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshCombat
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="basics"
+      style="actInfoBas">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshBasics
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="active"
+      style="actInfoAct">
+      <action
+        action="info">
+        </action>
+      <mouseinfo><![CDATA[
+        call DshActive
+        ]]></mouseinfo>
+      </portal>
+
+    <portal
+      id="disable"
+      style="actDisable"
+      tiptext="Click to remove this character from the combat.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          if (hero.combatant <> 0) then
+            hero.combatant = 0
+            endif
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="enable"
+      style="actEnable"
+      tiptext="Click to insert this character into the combat.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          if (hero.combatant = 0) then
+            hero.combatant = 1
+            endif
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="movetop"
+      style="actMoveTop"
+      tiptext="Click to move this character to the first position in the list.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatmove[-99999]
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="moveup"
+      style="actMoveUp"
+      tiptext="Click to move this character up in the list.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatmove[-1]
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="movedown"
+      style="actMoveDn"
+      tiptext="Click to move this character down in the list.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatmove[1]
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="movebottom"
+      style="actMoveBot"
+      tiptext="Click to move this character to the last position in the list.">
+      <action
+        action="trigger">
+        <trigger><![CDATA[
+          perform hero.combatmove[99999]
+          ]]></trigger>
+        </action>
+      </portal>
+
+    <portal
+      id="traits"
+      style="lblTacInfo">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~iterate through all traits that should appear in the "traits" list
+          foreach pick in hero where "DashTacCon.Traits" sortas explicit
+            @text = splice(@text,"{text clrtacinfo}","{br}")
+            @text &= eachpick.field[trtAbbrev].text
+            @text &= ":{text clrreset} {b}" & eachpick.field[trtFinal].text & "{/b}"
+            nexteach
+
+          ~squeeze the lines together a little bit
+          @text = "{leading -1}" & @text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="weapon"
+      style="lblTacInfo">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~iterate through all weapons, with equipped ones appearing first
+          var name as string
+          foreach pick in hero from WeaponBase sortas Armory
+
+            ~get the name, using the short name if one is specified
+            name = eachpick.field[shortname].text
+
+            ~output the weapon entry with attack value and damage
+            @text = splice(@text,"{text clrtacinfo}","{br}")
+            @text &= name & ":{text clrreset} {b}"
+            @text &= eachpick.field[wpNetAtk].text & "{/b} @ " & eachpick.field[wpDamage].text
+            nexteach
+
+          ~squeeze the lines together a little bit
+          @text = "{leading -1}" & @text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="peace"
+      style="lblTacInfo">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~output all traits that have been designated for non-combat inclusion
+          var name as string
+          foreach pick in hero where "DashTacCon.NonCombat" sortas _NameSeq_
+
+            ~use the short name for display, if present
+            name = eachpick.field[shortname].text
+
+            ~format the value to be more prominent than the trait name
+            @text = splice(@text,"{text clrtacinfo}","; ")
+            @text &= name & ":{text clrreset} {b}"
+            @text &= eachpick.field[trtFinal].text & "{/b}"
+            nexteach
+
+          ~shrink the default spacing between lines a tiny amount
+          @text = "{leading -1}" & @text
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="summary"
+      style="lblTacInfo">
+      <label
+        ismultiline="yes">
+        <labeltext><![CDATA[
+          ~start with any activated abilities and conditions
+          if (hero.tagis[Activated.?] <> 0) then
+            foreach pick in hero where "(Adjustment.? | Helper.Activated) & !InPlay.Permanent" sortas _NameSeq_
+              var name as string
+              if (eachpick.tagis[component.Adjustment] <> 0) then
+                name = eachpick.field[adjShort].text
+              elseif (eachpick.tagis[component.shortname] <> 0) then
+                name = eachpick.field[shortname].text
+              else
+                name = eachpick.field[name].text
+                endif
+              @text = splice(@text,name,"; ")
+              nexteach
+            endif
+
+          ~append any tactical console notes at the end
+          @text = splice(@text,herofield[tactNotes].text,"; ")
+
+          ~if we have output, change the color appropriately
+          if (empty(@text) = 0) then
+            @text = "{text clrauto}" & @text
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <!-- Outer Border -->
+    <portal
+      id="border"
+      style="rgnBorder">
+      <region>
+        </region>
+      </portal>
+
+    <position><![CDATA[
+      ~determine the margin to be used between the border for the ready actor and
+      ~the actual contents of the template
+      var margin as number
+      margin = portal[border].bordersize
+
+      ~set up our height; our width is pre-initialized for us
+      ~Note: be sure to include a gap between the various move buttons
+      height = portal[movetop].height + portal[moveup].height
+      height += portal[movedown].height + portal[movebottom].height + 4 * 3 + 2
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~establish a suitable width for the character portraits we'll be showing
+      portal[image].width = 40
+
+      ~draw the border just inside the outer edge of the template
+      portal[border].width = width
+      portal[border].height = height
+
+      ~the border is only visible if the current actor is ready to act
+      portal[border].visible = hero.tagis[combat.ready]
+
+      ~setup the left/right edge we need to use for positioning everything
+      var rightedge as number
+      var leftedge as number
+      leftedge = margin
+      rightedge = width - margin
+
+      ~position the move up/down button portals at the far right
+      portal[movetop].left = rightedge - portal[movetop].width - 1
+      portal[movetop].top = margin + 1
+      portal[moveup].left = portal[movetop].left
+      perform portal[moveup].alignrel[ttob,movetop,2]
+      portal[movedown].left = portal[movetop].left
+      perform portal[movedown].alignrel[ttob,moveup,2]
+      portal[movebottom].left = portal[movetop].left
+      perform portal[movebottom].alignrel[ttob,movedown,2]
+
+      ~enable the move up/down buttons appropriately
+      portal[movetop].enable = hero.ismoveup
+      portal[moveup].enable = hero.ismoveup
+      portal[movedown].enable = hero.ismovedown
+      portal[movebottom].enable = hero.ismovedown
+
+      ~the move buttons are only visible if we're in the tactical table AND in combat
+      var show as number
+      if (intable[tacActive] = 0) then
+        show = 0
+      elseif (state.iscombat = 0) then
+        show = 0
+      else
+        show = 1
+        endif
+      portal[movetop].visible = show
+      portal[moveup].visible = show
+      portal[movedown].visible = show
+      portal[movebottom].visible = show
+
+      ~adjust the right edge based on whether the move buttons are visible
+      if (show <> 0) then
+        rightedge = portal[movetop].left - 2
+        endif
+
+      ~size and position the image portal appropriately; allies on left,
+      ~enemies and neutrals on right
+      portal[image].top = margin
+      portal[image].height = height - margin * 2
+      if (hero.tagis[Allegiance.algAlly] = 0) then
+        portal[image].left = rightedge - portal[image].width
+      else
+        portal[image].left = leftedge
+        endif
+
+      ~update the left/right edge we need to use for positioning everything, giving
+      ~us the space bracketed by the image portal regions on both sides
+      leftedge += portal[image].width + 4
+      rightedge -= portal[image].width + 4
+
+      ~position the "acted" indicator along our adjusted left edge
+      portal[acted].left = leftedge
+      perform portal[acted].centervert
+
+      ~position the "noncombat" indicator in the same location
+      portal[noncombat].left = leftedge
+      perform portal[noncombat].centervert
+
+      ~position the "never acted" indicator in the same location
+      portal[never].left = leftedge
+      perform portal[never].centervert
+
+      ~position the "dead" indicator in the same location
+      portal[dead].left = leftedge
+      perform portal[dead].centervert
+
+      ~hide all of the indicators and we'll pick one to show below (or none)
+      portal[dead].visible = 0
+      portal[acted].visible = 0
+      portal[noncombat].visible = 0
+      portal[never].visible = 0
+
+      ~if we're in combat, handle things appropriately
+      if (state.iscombat <> 0) then
+
+        ~determine which of the above four indicators is actually visible
+        if (hero.tagis[Hero.Dead] <> 0) then
+          portal[dead].visible = 1
+        else
+          portal[never].visible = hero.tagis[combat.never]
+          portal[acted].visible = hero.tagis[combat.acted]
+          portal[noncombat].visible = hero.tagis[combat.noncombat]
+          endif
+
+        ~adjust our left edge rightward past the indicators
+        leftedge += portal[never].width + 4
+        endif
+
+      ~position the "delay" button portal appropriately
+      perform portal[delay].alignedge[bottom,-margin - 1]
+      portal[delay].left = leftedge
+
+      ~position the "wait" button portal to the right of the "delay" portal
+      perform portal[wait].alignrel[ttot,delay,0]
+      perform portal[wait].alignrel[ltor,delay,4]
+
+      ~center the "next" button portal above the delay/wait portals
+      portal[next].left = leftedge + (portal[wait].right - portal[delay].left - portal[actnow].width) / 2
+      portal[next].top = margin
+
+      ~position the "act now" button portal where the "next" portal already is
+      portal[actnow].top = portal[next].top
+      portal[actnow].left = portal[next].left
+
+      ~determine whether the various "act" button portals are visible
+      if (state.iscombat = 0) then
+        show = 0
+      elseif (hero.tagis[combat.acted] + hero.tagis[combat.deferred] + hero.tagis[combat.noncombat] + hero.tagis[combat.unknown] <> 0) then
+        show = 0
+      else
+        show = 1
+        endif
+      portal[delay].visible = show
+      portal[wait].visible = show
+      portal[next].visible = show
+      if (hero.tagis[combat.deferred] + state.iscombat < 2) then
+        portal[actnow].visible = 0
+        endif
+
+      ~if the "act" buttons are in use, shift our left edge to the right
+      if (state.iscombat <> 0) then
+        leftedge = portal[wait].right + 6
+        endif
+
+      ~if the actor is ready to act, show the bright act buttons instead
+      if (hero.tagis[combat.ready] <> 0) then
+        perform portal[next].setstyle[actActNwAc]
+        perform portal[delay].setstyle[actDelayAc]
+        perform portal[wait].setstyle[actAbandAc]
+        endif
+
+      ~position the name in the region to the right of the act buttons
+      portal[name].left = leftedge
+      portal[name].width = 140
+      portal[name].top = margin + 3
+
+      ~assume a single line of text for the name; if the name is too large to fit
+      ~on a single line with the default style, try progressively smaller styles
+      ~to see how we can best fit the text into the available space
+      portal[name].lineheight = 1
+      if (portal[name].textheight > portal[name].height) then
+
+        ~switch to a smaller style to see if we can fit using that instead
+        perform portal[name].setstyle[lblTinyTac]
+
+        ~if the name is still larger than will fit on one line, let it grow
+        if (portal[name].textheight > portal[name].height) then
+
+          ~all the text to grow to span at most two lines
+          portal[name].lineheight = 2
+
+          ~shift the name upwards slightly to improve the vertical fit
+          portal[name].top -= 3
+          endif
+        endif
+
+      ~position the "load" portal to the right of the name
+      portal[load].top = margin + 3
+      perform portal[load].alignrel[ltor,name,5]
+
+      ~position the "manipulate" portal right-aligned with and beneath the "load" portal
+      perform portal[manipulate].alignrel[rtor,load,0]
+      perform portal[manipulate].alignedge[bottom,-3]
+
+      ~position the second status portal at the bottom of the region
+      perform portal[status2].alignedge[bottom,-margin - 2]
+      portal[status2].left = portal[name].left + 3
+
+      ~position the first status portal in the region above the second status portal
+      perform portal[status1].alignrel[btot,status2,-1]
+      portal[status1].left = portal[status2].left
+
+      ~if the status now overlaps the name, shift the status portals downward a
+      ~little bit to make additional space
+      if (portal[status2].top < portal[name].bottom) then
+        var adjust as number
+        adjust = portal[name].bottom - portal[status2].top
+        portal[status2].top += adjust
+        adjust -= 1
+        if (adjust > 1) then
+          adjust -= 1
+          endif
+        portal[status1].top += adjust
+        endif
+
+      ~shift the left edge rightward past the material we positioned above
+      leftedge = portal[manipulate].right + 6
+
+      ~position the portal to remove a character from combat at the far right
+      portal[disable].left = rightedge - portal[disable].width
+      perform portal[disable].centervert
+
+      ~position the portal to re-add a character to combat in the same basic location
+      perform portal[enable].centeron[horz,disable]
+      perform portal[enable].centeron[vert,disable]
+
+      ~determine which of the two buttons (enable/disable) to display
+      if (hero.combatant <> 0) then
+        portal[enable].visible = 0
+        portal[disable].visible = state.iscombat
+      else
+        portal[enable].visible = state.iscombat
+        portal[disable].visible = 0
+        endif
+
+      ~position the info button for activated abilities just left of the combatant
+      ~toggle in combat mode and at the same location outside of combat
+      portal[active].top = margin + 3
+      if (state.iscombat <> 0) then
+        perform portal[active].alignrel[rtol,disable,-6]
+      else
+        perform portal[active].alignrel[rtor,disable,0]
+        endif
+
+      ~if there are no activated abilities, change the info button to a disabled look
+      if (hero.tagis[Activated.?] = 0) then
+        perform portal[active].setstyle[actInfoOff]
+        endif
+
+      ~determine the gap to use between the mouse-info buttons
+      var btngap as number
+      btngap = 3
+
+      ~position the mouse-info portals along the axis of the activated abilities portal
+      portal[basics].top = portal[active].top
+      perform portal[basics].alignrel[rtol,active,-btngap]
+      portal[combat].top = portal[active].top
+      perform portal[combat].alignrel[rtol,basics,-btngap]
+      portal[rolls].top = portal[active].top
+      perform portal[rolls].alignrel[rtol,combat,-btngap]
+      portal[special].top = portal[active].top
+      perform portal[special].alignrel[rtol,rolls,-btngap]
+
+      ~position the reroll initiative button right-aligned with the activated abilities
+      perform portal[reroll].alignrel[rtor,active,0]
+
+      perform portal[init].alignrel[rtol,reroll,-5]
+
+      perform portal[totalinit].alignrel[rtol,init,-3]
+      perform portal[totalinit].alignedge[bottom,-margin - 4]
+
+      ~vertically center the reroll button on our initiative incrementer
+      perform portal[reroll].centeron[vert,totalinit]
+
+      ~position the initiative label to the left of the incrementer
+      perform portal[lblinit].alignrel[rtol,totalinit,-3]
+
+      ~vertically align the initiative labels based on the incrementer
+      perform portal[init].centeron[vert,totalinit]
+      perform portal[lblinit].centeron[vert,totalinit]
+
+      ~all initiative details are only visible within combat
+      show = state.iscombat
+      portal[init].visible = show
+      portal[totalinit].visible = show
+      portal[lblinit].visible = show
+      portal[reroll].visible = show
+
+      ~we can only reroll initiative if it's allowed for this hero
+      if (hero.tagis[Hero.RerollInit] = 0) then
+        portal[reroll].visible = 0
+        endif
+
+      ~adjust our right edge leftward past the initiative handling
+      rightedge = portal[lblinit].left - 6
+
+      ~position the column of reminder traits
+      portal[traits].top = margin + 1
+      portal[traits].left = leftedge
+      portal[traits].lineheight = 3
+
+      ~position the summary details at the bottom with different characteristics
+      ~between combat and non-combat modes
+      if (state.iscombat <> 0) then
+        portal[summary].lineheight = 1
+        perform portal[summary].alignedge[bottom,-margin]
+        portal[summary].left = portal[traits].left
+        portal[summary].width = rightedge - portal[summary].left
+      else
+        portal[summary].lineheight = 2
+        perform portal[summary].alignedge[bottom,-margin]
+        portal[summary].left = portal[special].left
+        portal[summary].width = portal[active].right - portal[summary].left
+        endif
+      perform portal[summary].sizetofit[28]
+
+      ~position the weapons list appropriately with maximum display of 3 items
+      portal[weapon].top = portal[traits].top
+      portal[weapon].left = portal[traits].right + 10
+      portal[weapon].lineheight = 3
+      portal[weapon].width = rightedge - portal[weapon].left
+
+      ~position the details list for non-combat in the same space as weapons, except
+      ~that it can extend the full height (i.e. an extra row)
+      portal[peace].top = portal[weapon].top
+      portal[peace].left = portal[weapon].left
+      portal[peace].width = portal[weapon].width
+      portal[peace].lineheight = 4
+
+      ~show weapons or peacetime portal based on whether we're in combat
+      if (state.iscombat <> 0) then
+        portal[peace].visible = 0
+      else
+        portal[weapon].visible = 0
+        endif
+
+      ~if we need to resort the list of actors, disable the controls to move
+      ~things around, since they won't behave consistently
+      if (state.initchange <> 0) then
+        portal[movetop].enable = 0
+        portal[moveup].enable = 0
+        portal[movedown].enable = 0
+        portal[movebottom].enable = 0
+        endif
+      ]]></position>
+
+    </template>
+
+
+  <!-- tacHeader template
+        This template displays the header at the top of the Tactical Console. The
+        header consists of a few buttons to control whether in or out of combat,
+        as well as the combat turn during combat and resorting the list after
+        adjusting initiative order.
+
+        Each of the action portals (aka buttons) trigger built-in processing within
+        Hero Lab to orchestrate the appropriate changes.
+
+        In general, you should not need to modify this template when adapting the
+        data files for your game system.
+  -->
+  <template
+    id="tacHeader"
+    name="Tactical Console Header"
+    compset="Actor"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="newcombat"
+      style="actBig"
+      tiptext="Press this button to start a new combat and re-roll initiative for all characters.">
+      <action
+        action="combatstart"
+        buttontext="New Combat">
+        </action>
+      </portal>
+
+    <portal
+      id="endcombat"
+      style="actBig"
+      tiptext="Press this button to finish the current combat.">
+      <action
+        action="combatend"
+        buttontext="End Combat">
+        </action>
+      </portal>
+
+    <portal
+      id="newturn"
+      style="actBig"
+      tiptext="Press this button to start a new turn for all characters.">
+      <action
+        action="newturn"
+        buttontext="Next Turn">
+        </action>
+      </portal>
+
+    <portal
+      id="newpass"
+      style="actBig"
+      tiptext="Press this button to start a new pass for all characters.">
+      <action
+        action="newpass"
+        buttontext="Next Pass">
+        </action>
+      </portal>
+
+    <portal
+      id="turnnumber"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          ~if we're not in combat, report that fact
+          if (state.iscombat = 0) then
+            @text = "{text clrdisable}Not in combat."
+            done
+            endif
+
+          ~synthesize the turn and pass information appropriately
+          var turn as number
+          var pass as number
+          var info as string
+          turn = state.combatturn
+          pass = state.combatpass
+          if (pass = 0) then
+            info = turn
+          else
+            info = turn & "(" & pass & ")"
+            endif
+
+          ~report the current turn/pass and indicate whether the turn is completed
+          if (state.isendturn <> 0) then
+            @text = "End of turn " & info & "."
+          else
+            @text = "Turn " & info & "."
+            endif
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <portal
+      id="resort"
+      style="actBig"
+      tiptext="Press this button to resort the list of characters into initiative order.">
+      <action
+        action="initchange"
+        buttontext="Re-sort">
+        </action>
+      </portal>
+
+    <portal
+      id="status"
+      style="lblNormal">
+      <label>
+        <labeltext><![CDATA[
+          ~if we're not in combat, there's no status to report
+          @text = ""
+          doneif (state.iscombat = 0)
+
+          ~if all combatants have acted, report that fact
+          if (state.isendturn <> 0) then
+            @text = "{text clrdisable}Everyone has acted."
+            done
+            endif
+
+          ~identify the first ready actor and establish it as the focus for use below
+          perform state.clearfocus
+          foreach actor in portfolio where "combat.ready"
+            if (state.isfocus = 0) then
+              perform eachpick.setfocus
+              endif
+            nexteach
+
+          ~if we found no ready actors, only deferred actors remain
+          if (state.isfocus = 0) then
+            @text = "{text clrdisable}Only characters with deferred actions remain."
+            done
+            endif
+
+          ~get the ally/enemy status of the next ready actor
+          var status as string
+          status = focus.herofield[allegUser].chosen.field[shortname].text
+
+          ~report the character that is slated to act next
+          var name as string
+          name = focus.hero.livename
+          if (empty(name) <> 0) then
+            name = "Unnamed Character"
+            endif
+          @text = status & " '{text f0f088}" & name & "{text clrreset}' acts next."
+          ]]></labeltext>
+        </label>
+      </portal>
+
+    <position>
+      <![CDATA[
+      ~set up our height based on our tallest portal; our width is pre-initialized
+      height = portal[newturn].height
+
+      ~position the various button portals starting on the left
+      portal[newcombat].left = 0
+      perform portal[endcombat].alignrel[ltor,newcombat,8]
+      perform portal[newturn].alignrel[ltor,endcombat,20]
+      perform portal[newpass].alignrel[ltor,newturn,8]
+
+      ~if we're not in combat, disable the "endcombat" and "newturn" portals
+      if (state.iscombat = 0) then
+        portal[endcombat].enable = 0
+        portal[newturn].enable = 0
+        portal[newpass].enable = 0
+        endif
+
+      ~position the turn information to the right of the buttons; use a fixed width
+      ~for consistent spacing and so the contents auto-center themselves appropriately
+      perform portal[turnnumber].centeron[vert,newcombat]
+      if (state.combatpass = 0) then
+        perform portal[turnnumber].alignrel[ltor,newturn,10]
+      else
+        perform portal[turnnumber].alignrel[ltor,newpass,10]
+        endif
+      portal[turnnumber].width = 130
+
+      ~position the re-sort button to the right of the turn information; only show
+      ~the button if the initiative value has been changed for one or more actors
+      perform portal[resort].alignrel[ltor,turnnumber,10]
+      if (state.initchange = 0) then
+        portal[resort].visible = 0
+        endif
+
+      ~position the status information to the right of the re-sort/turn info; only
+      ~show the status if we're in combat
+      perform portal[status].centeron[vert,newcombat]
+      if (portal[resort].visible <> 0) then
+        perform portal[status].alignrel[ltor,resort,10]
+      else
+        perform portal[status].alignrel[ltor,turnnumber,10]
+        endif
+      if (state.iscombat = 0) then
+        portal[status].visible = 0
+        endif
+
+      ~if we need to re-sort due to initiative changes, disable the dependent portals
+      if (state.initchange <> 0) then
+        portal[newturn].enable = 0
+        portal[newpass].enable = 0
+        endif
+      ]]>
+      </position>
+
+    </template>
+
+
+  <!-- tacPendHdr template
+        This template displays a button to integrate pending actors into the current
+        combat within the Tactical Console. This template is only visible when there
+        are pending actors that require attention.
+
+        In general, you should not need to modify this template when adapting the
+        data files for your game system.
+  -->
+  <template
+    id="tacPendHdr"
+    name="Pending Actors Header"
+    compset="Actor"
+    marginhorz="3"
+    marginvert="3">
+
+    <portal
+      id="integrate"
+      style="actBig"
+      tiptext="Press this button to integrate all pending characters into the current combat.">
+      <action
+        action="integrate"
+        buttontext="Integrate">
+        </action>
+      </portal>
+
+    <portal
+      id="notice"
+      style="lblBright">
+      <label
+        text="The characters below have not yet entered combat. Click &quot;Integrate&quot; to add them to the list above.">
+        </label>
+      </portal>
+
+    <position>
+      <![CDATA[
+      ~set up our height; our width is pre-initialized
+      height = portal[integrate].height
+
+      ~position the button portal on the left
+      portal[integrate].left = 0
+
+      ~position the notice to the right of the button portal
+      perform portal[notice].alignrel[ltor,integrate,10]
+      perform portal[notice].centeron[vert,integrate]
+      ]]>
+      </position>
+
+    </template>
+
+
+  <!-- tactical layout
+        This layout consists of all the visual elements that make up the Tactical
+        Console. When necessary, the pending actors table is shown, and the current
+        actors table is shrunk to show as many of the pending actors as possible,
+        down to a minimum height of two actors.
+
+        In general, you should not need to modify this layout when adapting the
+        data files for your game system.
+  -->
+  <layout
+    id="tactical">
+    <portalref portal="tacActive" taborder="20"/>
+    <portalref portal="tacPending" taborder="40"/>
+    <templateref template="tacHeader" thing="actor" taborder="10"/>
+    <templateref template="tacPendHdr" thing="actor" taborder="30"/>
+
+    <position><![CDATA[
+      ~all visual elements should span the full width of the layout
+      portal[tacActive].width = width
+      portal[tacPending].width = width
+      template[tacHeader].width = width
+      template[tacPendHdr].width = width
+
+      ~render our header templates to establish appropriate heights for them
+      perform template[tacHeader].render
+      perform template[tacPendHdr].render
+
+      ~put the tactical header at the top and the tactical table beneath it
+      template[tacHeader].top = 0
+      portal[tacActive].top = template[tacHeader].bottom + 1
+
+      ~the tactical table should start out spanning the entire height
+      portal[tacActive].height = height - portal[tacActive].top
+
+      ~if we don't have anything in the pending table or we're not in combat, hide
+      ~the table and the header, after which there's nothing more to do (i.e. the
+      ~tactical table spans everything)
+      if (state.iscombat = 0) then
+        portal[tacPending].visible = 0
+      elseif (portal[tacPending].itemcount = 0) then
+        portal[tacPending].visible = 0
+        endif
+      if (portal[tacPending].visible = 0) then
+        template[tacPendHdr].visible = 0
+        done
+        endif
+
+      ~shrink the tactical table to only show a maximum of 2 actors so that we
+      ~maximize the space for the pending actors to be manipulated
+      portal[tacActive].maxrows = 2
+
+      ~position the pending header beneath the tactical table
+      template[tacPendHdr].top = portal[tacActive].bottom + 7
+
+      ~put the pending actor table beneath the header and give it as much space as
+      ~remains available
+      portal[tacPending].top = template[tacPendHdr].bottom + 1
+      portal[tacPending].height = height - portal[tacPending].top
+
+      ~if not all pending items are visible, there is no empty space, so we're done
+      doneif (portal[tacPending].itemsleft <> 0)
+
+      ~there is empty space, so we need to allow the tactical table to expand into
+      ~that space; move the pending table and header to the bottom of the form
+      var space as number
+      space = height - portal[tacPending].bottom
+      portal[tacPending].top += space
+      template[tacPendHdr].top += space
+
+      ~expand the tactical table to fill the available space above the pending list
+      portal[tacActive].height = template[tacPendHdr].top - portal[tacActive].top - 7
+
+      ~shift the pending table and header upwards so there is no empty gap in middle
+      space = template[tacPendHdr].top - portal[tacActive].bottom - 7
+      if (space > 0) then
+        portal[tacPending].top -= space
+        template[tacPendHdr].top -= space
+        endif
+      ]]></position>
+
+    </layout>
+
+
+  <!-- tactical form
+        This is the "tactical" form shown as the Tactical Console within Hero Lab.
+
+        NOTE! The unique id of this form is specially recognized by Hero Lab as
+        the form to be used for the Tactical Console. A form with this id is
+        required within your data files.
+  -->
+  <form
+    id="tactical"
+    name="Tactical Console"
+    marginhorz="5"
+    marginvert="1">
+    <layoutref layout="tactical"/>
+    <position><![CDATA[
+      ]]></position>
+    </form>
+
+
+  </document>
