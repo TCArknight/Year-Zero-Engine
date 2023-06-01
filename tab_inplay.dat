@@ -1007,6 +1007,11 @@
 	    template[ipHealth].visible = 0
         portal[ipAttrib].top = 0
 		healthBot = portal[ipAttrib].bottom
+	  elseif (hero.tagis[SettingFlag.DamageSteps3] <> 0) then
+	    ~position the attribute damage at the top
+	    template[ipHealth].visible = 0
+        portal[ipAttrib].top = 0
+		healthBot = portal[ipAttrib].bottom
 		endif
 		
       ~position the tracker table beneath the health template

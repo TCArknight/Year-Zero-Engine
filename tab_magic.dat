@@ -118,6 +118,7 @@
       ]]></position>
 
     </template>	
+	
   <layout
     id="magic">
     <portalref portal="maSpells" taborder="10"/>
@@ -129,6 +130,7 @@
       ]]></position>
 
     </layout>
+	
   <!-- Magic panel -->
   <panel
     id="Magic"
@@ -136,6 +138,7 @@
     order="150"
     marginhorz="5"
     marginvert="5">
+	<live>SettingFlag.UseMagic</live>
     <layoutref layout="magic"/>
     <position><![CDATA[
       ]]></position>

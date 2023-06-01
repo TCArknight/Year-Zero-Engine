@@ -549,6 +549,26 @@
       </inputthing>
 	  
 	<inputthing
+	  name="Minimum/Maximum Values">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Skill Minimum?"
+      helptext="Specify minimum value for a Skill.">
+      <it_tagpick group="SettingFlag" tag="SkillMin?"/>
+      </inputthing>
+    <inputthing
+      name="Skill Maximum?"
+      helptext="Specify maximum value for a normal Skill.">
+      <it_tagpick group="SettingFlag" tag="SkillMax?"/>
+      </inputthing>
+    <inputthing
+      name="Key Skill Maximum?"
+      helptext="Specify maximum value for a Key Skill.">
+      <it_tagpick group="SettingFlag" tag="KeySkillMax?"/>
+      </inputthing>
+	  
+	<inputthing
 	  name="Damage Method">
       <it_separator/>
       </inputthing>
@@ -576,6 +596,26 @@
       name="Use Attribute Damage"
       helptext="Specify whether this setting uses an attribute damage method.">
       <it_tagcheck group="SettingFlag" tag="AttributeDamage"/>
+      </inputthing>
+    <inputthing
+      name="Use Damage Steps" 
+      helptext="Specify whether this setting uses a 3 damage step damage method.">
+      <it_tagcheck group="SettingFlag" tag="DamageSteps3"/>
+      </inputthing>
+	  
+	<inputthing
+	  name="Starting Attribute/Skill Points">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Attribute Points"
+      helptext="The number of Attribute points for a character to begin with (Default = 0).">
+      <it_field field="setStartAttrib"/>
+      </inputthing>
+    <inputthing
+      name="Skill Points"
+      helptext="The number of Skill points for a character to begin with (Default = 0).">
+      <it_field field="setStartSkill"/>
       </inputthing>
 	  
 	<inputthing
@@ -675,6 +715,16 @@
       <it_separator/>
       </inputthing>
     <inputthing
+      name="Use Issues?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseIssues"/>
+      </inputthing>
+    <inputthing
+      name="Use Drive?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseDrive"/>
+      </inputthing>
+    <inputthing
       name="Use Pride?"
       helptext="Specify ...">
       <it_tagcheck group="SettingFlag" tag="UsePride"/>
@@ -700,6 +750,11 @@
       <it_tagcheck group="SettingFlag" tag="UseRelationship"/>
       </inputthing>
     <inputthing
+      name="Use Anchor?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseAnchor"/>
+      </inputthing>
+    <inputthing
       name="Use Buddy?"
       helptext="Specify ...">
       <it_tagcheck group="SettingFlag" tag="UseBuddy"/>
@@ -718,6 +773,15 @@
       name="Use Personal Agenda?"
       helptext="Specify ...">
       <it_tagcheck group="SettingFlag" tag="UseAgenda"/>
+      </inputthing>
+	<inputthing
+	  name="Magic">
+      <it_separator/>
+      </inputthing>
+    <inputthing
+      name="Use Magic?"
+      helptext="Specify ...">
+      <it_tagcheck group="SettingFlag" tag="UseMagic"/>
       </inputthing>
 	<inputthing
 	  name="Encumbrance">

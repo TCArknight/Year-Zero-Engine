@@ -44,7 +44,9 @@
       <after name="Calc trtFinal"/><![CDATA[
 	  var myVal as number
 	  
-	  if (hero.tagis[SettingFlag.UseHealthStrOnly] <> 0) then
+	  if (hero.tagis[SettingFlag.DamageSteps3] <> 0) then
+	    myVal += 3
+	  elseif (hero.tagis[SettingFlag.UseHealthStrOnly] <> 0) then
 	    myVal += #trait[attrStr]
 	  else
 	    myVal = (#trait[attrStr] + #trait[attrAgi]) / 2
@@ -59,13 +61,13 @@
       ]]></eval>
 	  
 	<eval value="2" phase="Setup" priority="1000"><![CDATA[
-	  doneif (hero.tagis[SettingFlag.UseHealth?] <> 0)
+	  doneif (hero.tagis[SettingFlag.UseHealth?] + hero.tagis[SettingFlag.DamageSteps3] <> 0)
 	  
 	  perform assign[Hide.Trait]
       ]]></eval>
     </thing>
 	
-  <!-- Health Trait -->
+  <!-- Resolve Trait -->
   <thing
     id="trResolve"
     name="Resolve"

@@ -196,5 +196,25 @@
       ]]></evalrule>
 
     </thing>
-	
+
+  <!-- Shield thing for validation reporting -->
+  <thing
+    id="valAnchors"
+    name="Anchors"
+    compset="Simple">
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- Make sure that we don't have multiple shields equipped -->
+    <evalrule index="1" phase="Validate" priority="8000" message="2 Anchors required."><![CDATA[
+	  ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagis[SettingFlag.UseAnchor] = 0)
+	  
+      ~if we have no more than one set of armor equipped, we're good
+      validif (hero.tagcount[Shield.?] <= 1)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[personalities] = 0
+      ]]></evalrule>
+
+    </thing>	
     </document>

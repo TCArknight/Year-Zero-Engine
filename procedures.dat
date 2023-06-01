@@ -335,38 +335,15 @@
     else
       descript &= splicedesc
       endif
-
+    
+	~if this is a Specialty, append our item-specific info to the synthesized details text
     if (tagis[component.Specialty] <> 0) then
-	  if (tagis[SpecRank.Ranked] = 0) then
-	    done
-	  else
-        ~if this is a thing, append the rank info else the summary
-        if (ispick = 0) then
-	      descript &= "{br}{br}"
-	      for x = 1 to field[spcMaxRank].value
-	        ~build the rank summary
-	        if (x = 1) then
-              descript &= "{b}Rank 1: {/b}" & field[spcDescRank1].text & "{br}"
-	          endif
-	        if (x = 2) then
-              descript &= "{b}Rank 2: {/b}" & field[spcDescRank2].text & "{br}"
-	          endif
-	        if (x = 3) then
-              descript &= "{b}Rank 3: {/b}" & field[spcDescRank3].text & "{br}"
-	          endif
-	        if (x = 4) then
-              descript &= "{b}Rank 4: {/b}" & field[spcDescRank4].text & "{br}"
-	          endif
-	        if (x = 5) then
-              descript &= "{b}Rank 5: {/b}" & field[spcDescRank5].text & "{br}"
-	          endif
-		    next
-	    else
-	      descript &= "{br}{br}" & field[spcRankSummary].text
-		  endif
-		endif
-	  endif
+	  call InfoSpecialty
 	  
+	  ~append our item-specific info to the synthesized details text
+      descript &= iteminfo 
+	  endif
+
     ~if this is gear, output any container/containee details
     if (isgear <> 0) then
 
@@ -388,6 +365,51 @@
     ]]></procedure>
 
 
+  <!-- Procedure InfoSpecialty
+        Generate details specific to all weapons. The text is placed into the
+        "iteminfo" variable for subsequent use by our caller.
+
+        Outbound parameter: iteminfo
+  -->
+  <procedure id="InfoSpecialty" context="info"><![CDATA[
+    ~declare variables that are used to communicate with our caller
+    var iteminfo as string
+	var x as number
+
+    ~report the weapon bonus gear dice (omitting if there is none)
+    iteminfo = ""
+	
+	if (tagis[SpecRank.Ranked] <> 0) then
+	  ~if this is a thing, append the rank info else the summary
+      if (ispick = 0) then
+	    iteminfo &= "{br}{br}"
+	    for x = 1 to field[spcMaxRank].value
+	      ~build the rank summary
+	      if (x = 1) then
+            iteminfo &= "{b}Rank 1: {/b}" & field[spcDescRank1].text & "{br}"
+	        endif
+	      if (x = 2) then
+            iteminfo &= "{b}Rank 2: {/b}" & field[spcDescRank2].text & "{br}"
+	        endif
+	      if (x = 3) then
+            iteminfo &= "{b}Rank 3: {/b}" & field[spcDescRank3].text & "{br}"
+	        endif
+	      if (x = 4) then
+            iteminfo &= "{b}Rank 4: {/b}" & field[spcDescRank4].text & "{br}"
+	        endif
+	      if (x = 5) then
+            iteminfo &= "{b}Rank 5: {/b}" & field[spcDescRank5].text & "{br}"
+	        endif
+		  next
+	  else
+	    iteminfo &= "{br}{br}" & field[spcRankSummary].text
+		endif
+	else
+	  done
+	  endif
+	
+    ]]></procedure>
+	
   <!-- Procedure InfoWeapon
         Generate details specific to all weapons. The text is placed into the
         "iteminfo" variable for subsequent use by our caller.

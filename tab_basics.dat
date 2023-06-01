@@ -88,7 +88,8 @@
       choosetemplate="SimpleItem"
       choosesortset="SpecCategory"
       showfixedlast="yes"
-      addpick="resSpecialties">
+      addpick="resSpecialties"
+	  columns="2">
       <candidate>!Hide.Specialty</candidate>
       <titlebar><![CDATA[
         @text = "Add a " & herofield[acSpecialtyTerm].text & " - " & hero.child[resSpecialties].field[resSummary].text

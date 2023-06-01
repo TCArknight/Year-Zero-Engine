@@ -140,9 +140,21 @@
         if (field[acHPPenal].value < 0) then
           @text &= " {text clrwarning}(" & field[acHPPenal].value & "){text clrreset}"
           endif
+		  
+		if (hero.tagis[SettingFlag.DamageSteps3] <> 0) then
+		  @text &= " - {text clrbright}" & field[acHPStepSumm].text & "{text clrreset}"
+		  endif
         ]]></finalize>
       </field>
+	  
+    <!-- Health summary for display -->
+    <field
+      id="acHPStepSumm"
+      name="Health Step Summary"
+      type="derived"
+      maxlength="20">
 
+      </field>
     <!-- Power point summary for display -->
     <field
       id="acPPSumm"
@@ -197,7 +209,7 @@
     <field
       id="acStartAttrib"
       name="Starting Attribute Points"
-      type="user"
+      type="derived"
       defvalue="0">
       </field>
 
@@ -271,7 +283,7 @@
     <field
       id="acStartSkillPts"
       name="Starting Skill Points"
-      type="user"
+      type="derived"
       defvalue="0">
       </field>
 
@@ -489,6 +501,19 @@
       type="derived"
       maxlength="1000">
       </field>
+    <field
+      id="acOptDrive"
+      name="Drive"
+      type="derived"
+      maxlength="1000">
+      </field>
+    <field
+      id="acOptIssue"
+      name="Issue"
+      type="derived"
+      maxlength="1000">
+      </field>
+	  
    <!-- Encumbrance-related fields -->
     <field
       id="acCarryCombat"
@@ -703,9 +728,12 @@
 	  var total as number
 	  total = field[acStartAttrib].value
 	  total += field[acBonusAttrib].value
-      	  
+      
+	  
 	  if (hero.tagis[SettingFlag.DicePool] = 1) then
-		total += 14
+		if (field[acStartAttrib].value = 0) then
+		  total += 14
+		  endif
 		
 		~ if aging is used, adjust for aging
         if (hero.tagis[SettingFlag.AgeAdjust] = 1) then
@@ -719,7 +747,9 @@
 	      endif		
 
 	  elseif (hero.tagis[SettingFlag.StepDice] = 1) then
-		total += 20
+	    if (field[acStartAttrib].value = 0) then
+		  total += 20
+		  endif
 		endif
 	  
       field[acTotalAttrib].value = total 
@@ -733,7 +763,9 @@
 	  total += field[acBonusSkillPts].value
 	  
 	  if (hero.tagis[SettingFlag.DicePool] = 1) then
-		total += 10
+	    if (field[acStartSkillPts].value = 0) then
+		  total += 10
+		  endif
 		
 		~ if aging is used, adjust for aging
         if (hero.tagis[SettingFlag.AgeAdjust] = 1) then
@@ -747,7 +779,9 @@
 	      endif		
 
 	  elseif (hero.tagis[SettingFlag.StepDice] = 1) then
-		total += 34
+	    if (field[acStartSkillPts].value = 0) then
+		  total += 34
+		  endif
 		endif
 	  		
       field[acTotalSkillPts].value = total 
@@ -870,7 +904,27 @@
 
 	  field[acMagicExp].text &= splExpr
 	  
-      ]]></eval>	  
+      ]]></eval>	
+
+    <eval index="13" phase="Render" priority="900" name="Calc acHPStepSumm">
+        <after name="Calc acHPNow"/><![CDATA[  
+		var myText as string
+		
+		if (hero.tagis[SettingFlag.DamageSteps3] <> 0) then
+		  if (field[acHPNow].value = 3) then
+		    myText &= "Unharmed"
+		  elseif (field[acHPNow].value = 2) then
+		    myText &= "Bruised"
+		  elseif (field[acHPNow].value = 1) then
+		    myText &= "Battered"
+		  elseif (field[acHPNow].value = 0) then
+		    myText &= "Broken"
+		    endif
+		  endif
+	    
+		field[acHPStepSumm].text = myText
+      ]]></eval>	
+	  
     </component>
 
   <!-- Personality Fields component
@@ -923,6 +977,18 @@
       type="user"
       maxlength="1000">
       </field>
+    <field
+      id="optDrive"
+      name="Drive"
+      type="user"
+      maxlength="1000">
+      </field>
+    <field
+      id="optIssue"
+      name="Issue"
+      type="user"
+      maxlength="1000">
+      </field>
 	  
     <!--  -->
     <eval index="1" phase="Render" priority="1000"><![CDATA[
@@ -934,6 +1000,8 @@
       herofield[acOptAgenda].text = field[optAgenda].text
       herofield[acOptMoralCode].text = field[optMoralCode].text
       herofield[acOptHowMet].text = field[optHowMet].text
+      herofield[acOptDrive].text = field[optDrive].text
+      herofield[acOptIssue].text = field[optIssue].text
 
       ]]></eval>
     </component>	

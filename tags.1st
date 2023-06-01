@@ -21,9 +21,12 @@
     <value id="UseResolve" />
     <value id="UseStress" />
     <value id="AttributeDamage" />
+    <value id="DamageSteps3" name="3 Steps Damage"/>
     <value id="Conditions" />
     <value id="AgeAdjust" />
     <value id="DirectSkill" />
+    <value id="UseDrive" />
+    <value id="UseIssues" />
     <value id="UsePride" />
     <value id="UseWeakness" />
     <value id="UseDarkSecret" />
@@ -31,13 +34,32 @@
     <value id="UseRelationship" />
     <value id="UseBuddy" />
     <value id="UseRival" />
+    <value id="UseAnchor" />
     <value id="UseHowMet" />
     <value id="UseAgenda" />
     <value id="UseMoralCode" />
+    <value id="UseMagic" />
     <value id="EncumStandard" />
     <value id="EncumBackpack" />
     <value id="EncumWeapHand" />
     <value id="EncumNone" />
+    <value id="SkillMin0" />
+    <value id="SkillMin1" />
+    <value id="SkillMin2" />
+    <value id="SkillMin3" />
+    <value id="SkillMin4" />
+    <value id="SkillMin5" />
+    <value id="SkillMax1" />
+    <value id="SkillMax2" />
+    <value id="SkillMax3" />
+    <value id="SkillMax4" />
+    <value id="SkillMax5" />
+    <value id="SkillMax6" />
+    <value id="KeySkillMax1" />
+    <value id="KeySkillMax2" />
+    <value id="KeySkillMax3" />
+    <value id="KeySkillMax4" />
+    <value id="KeySkillMax5" />
     <value id="DiceStart2" />
     <value id="StepStart3" />
     <value id="StepStart4" />
@@ -560,11 +582,11 @@
     id="SpecRank">
     <value id="Ranked"/>   <!-- Talent is not a Ranked talent  -->
     <value id="Maximum"/>     <!-- Talent is at maximum rank -->
-    <value id="Rank1" name="Rank 1"/>       <!-- Rank 1 -->
-    <value id="Rank2" name="Rank 2"/>       <!-- Rank 2 -->
-    <value id="Rank3" name="Rank 3"/>       <!-- Rank 3 -->
-    <value id="Rank4" name="Rank 4"/>       <!-- Rank 4 -->
-    <value id="Rank5" name="Rank 5"/>       <!-- Rank 5 -->
+    <value id="RankVal1" name="Rank 1"/>       <!-- Rank 1 -->
+    <value id="RankVal2" name="Rank 2"/>       <!-- Rank 2 -->
+    <value id="RankVal3" name="Rank 3"/>       <!-- Rank 3 -->
+    <value id="RankVal4" name="Rank 4"/>       <!-- Rank 4 -->
+    <value id="RankVal5" name="Rank 5"/>       <!-- Rank 5 -->
     </group>	
 	
   <group
@@ -583,11 +605,11 @@
 	
   <group
     id="MagicRank">
-    <value id="Rank1" name="Rank 1"/>       <!-- Rank 1 -->
-    <value id="Rank2" name="Rank 2"/>       <!-- Rank 2 -->
-    <value id="Rank3" name="Rank 3"/>       <!-- Rank 3 -->
-    <value id="Rank4" name="Rank 4"/>       <!-- Rank 4 -->
-    <value id="Rank5" name="Rank 5"/>       <!-- Rank 5 -->
+    <value id="RankVal1" name="Rank 1"/>       <!-- Rank 1 -->
+    <value id="RankVal2" name="Rank 2"/>       <!-- Rank 2 -->
+    <value id="RankVal3" name="Rank 3"/>       <!-- Rank 3 -->
+    <value id="RankVal4" name="Rank 4"/>       <!-- Rank 4 -->
+    <value id="RankVal5" name="Rank 5"/>       <!-- Rank 5 -->
     </group>
 	
   <group
@@ -619,5 +641,7 @@
     <value id="Normal" />	<!-- Normal items are a full item -->
     <value id="Heavy" />	<!-- Heavy items count as two items -->
     </group>
+
+
 	
   </document>

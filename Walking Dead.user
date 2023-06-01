@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document signature="Hero Lab Data">
+  <thing id="setTWDUniverse" name="The Walking Dead Universe" description="Settings to create a hero for the Walking Dead game." compset="Setting">
+    <fieldval field="setSpecialtyTerm" value="Talent"/>
+    <fieldval field="setSpecialtyTermP" value="Talents"/>
+    <fieldval field="setStartAttrib" value="13"/>
+    <fieldval field="setStartSkill" value="12"/>
+    <usesource source="srcTWDU" parent="Settings" name="The Walking Dead Universe"/>
+    <tag group="SettingFlag" tag="UseKeySkills" name="UseKeySkills" abbrev="UseKeySkills"/>
+    <tag group="ArchetypeNamePri" tag="Archetype"/>
+    <tag group="SettingFlag" tag="ArchtypePriReq" name="ArchtypePriReq" abbrev="ArchtypePriReq"/>
+    <tag group="SettingFlag" tag="DamageSteps3"/>
+    <tag group="SettingFlag" tag="UseKeyAttributes" name="UseKeyAttributes" abbrev="UseKeyAttributes"/>
+    <tag group="SettingSkill" tag="skCloseCombatTWD"/>
+    <tag group="SettingSkill" tag="skEndureTWD"/>
+    <tag group="SettingSkill" tag="skForceTWD"/>
+    <tag group="SettingSkill" tag="skMobilityTWD"/>
+    <tag group="SettingSkill" tag="skRangedCbtTWD"/>
+    <tag group="SettingSkill" tag="skStealthTWD"/>
+    <tag group="SettingSkill" tag="skLeadershipTWD"/>
+    <tag group="SettingSkill" tag="skManipulationTWD"/>
+    <tag group="SettingSkill" tag="skMedicineTWD"/>
+    <tag group="SettingSkill" tag="skScoutTWD"/>
+    <tag group="SettingSkill" tag="skSurvivalTWD"/>
+    <tag group="SettingSkill" tag="skTechTWD"/>
+    <tag group="SettingFlag" tag="UseStress"/>
+    <tag group="SettingFlag" tag="DicePool" name="DicePool" abbrev="DicePool"/>
+    <tag group="SettingFlag" tag="UseArchetypePri" name="UseArchetypePri" abbrev="UseArchetypePri"/>
+    <tag group="SettingFlag" tag="UseIssues"/>
+    <tag group="SettingFlag" tag="UseDrive"/>
+    <tag group="SettingFlag" tag="UseRelationship"/>
+    <tag group="SettingFlag" tag="UseAnchor"/>
+    <tag group="SettingFlag" tag="SkillMin0"/>
+    <tag group="SettingFlag" tag="SkillMax2"/>
+    <tag group="SettingFlag" tag="KeySkillMax3"/>
+    </thing>
+  <thing id="skCloseCombatTWD" name="Close Combat" description="When fighting unarmed or with a melee weapon, you use Close Combat. How much damage is inflicted by a successful attack is specified for each weapon. By rolling more successes than required, you may increase the damage by one for each extra success." compset="Skill" summary="When fighting unarmed or with a melee weapon, you use Close Combat." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="CCbt"/>
+    <usesource source="srcTWDU"/>
+    <tag group="Helper" tag="MeleeWpnSkill" name="MeleeWpnSkill" abbrev="MeleeWpnSkill"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skEndureTWD" name="Endure" description="Endure is your ability to withstand hunger and cold, as well as being able to march for long periods without rest. It lets you withstand poison and disease. In some situations, you may transfer any extra successes to other PCs or NPCs in the same situation" compset="Skill" summary="Endure is your ability to withstand hunger and cold, as well as being able to march for long periods without rest. It lets you withstand poison and disease." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="End"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skStamina" name="Stamina" abbrev="Stamina"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skForceTWD" name="Force" description="Force is your ability to lift heavy items, smash open blocked doors, or achieve things that require brute strength and determination" compset="Skill" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skForce"/>
+    <link linkage="attribute" thing="attrStr"/>
+    </thing>
+  <thing id="skMobilityTWD" name="Mobility" description="Mobility is the ability to run fast, climb high, and leap out of danger. You make a Mobility test when you flee from or chase after someone. Driving a car in difficult situations is also handled by Mobility. In combat, you can use your Mobility to take cover or flee.\n\nIf other PCs or NPCs are climbing, running or in other ways using Mobility along with you, you may give them any extra successes to help them." compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Mob"/>
+    <usesource source="srcTWDU"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skRangedCbtTWD" name="Ranged Combat" description="When attacking with ranged weapons or explosives, use a Ranged Combat skill test. How much damage is inflicted by a successful attack is specified for each weapon. By rolling more successes than required, you may increase damage by one for each extra success.\n\nIf you are in close proximity to an enemy, you roll for Close Combat instead, even if you’re using a ranged weapon" compset="Skill" summary="When attacking with ranged weapons or explosives, use a Ranged Combat skill test." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="RCbt"/>
+    <usesource source="srcTWDU"/>
+    <tag group="Helper" tag="RangedWpnSkill" name="RangedWpnSkill" abbrev="RangedWpnSkill"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skStealthTWD" name="Stealth" description="When attempting to sneak, hide, pick locks, tail someone, or perform tricks that require sleight of hand, make a Stealth test. You may transfer extra successes to people who are attempting the same as you. Failing a Stealth roll means that you get noticed or exposed" compset="Skill" summary="When attempting to sneak, hide, pick locks, tail someone, or perform tricks that require sleight of hand, make a Stealth test." uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Ste"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skStealth" name="Stealth" abbrev="Stealth"/>
+    <link linkage="attribute" thing="attrAgi"/>
+    </thing>
+  <thing id="skScoutTWD" name="Scouting" description="You mainly use Scout in two types of situations. The first is when you are moving somewhere on the area map. Scout lets you determine if the sector you are about to enter is safe, and lets you find a good place to stay for the night. You lead the party in a way that minimizes risks. \n\nYou can’t be helped with extra successes from others when you use the Scout skill this way, because only one person can lead the group" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sco"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skObservation" name="Observation" abbrev="Observation"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skSurvivalTWD" name="Survival" description="Everything you need to know about surviving outside the haven is handled with Survival. It lets you know how to set up a camp safely, how to find water, and how to know if that water is potable. Survival lets you set up traps to catch animals, fish and hunt, and it  represents your knowledge of handling wild animals" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Sur"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skSurvival" name="Survival" abbrev="Survival"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skTechTWD" name="Tech" description="Tech is used to repair or build gear or weapons. When you engage in projects to enhance your haven, varying levels of Tech will be required to successfully complete them, depending on the project. Tech also gives you knowledge about how various types of mechanical and/or electrical devices work" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Tec"/>
+    <usesource source="srcTWDU"/>
+    <link linkage="attribute" thing="attrWit"/>
+    </thing>
+  <thing id="skMedicineTWD" name="Medicine" description="Medicine lets you use your expertise to help someone who is hurt. The skill can also provide knowledge about anatomy, diseases, and injuries. It can be used to determine healing time for a wound, and what medicine or treatment is required" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Heal"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skHealing" name="Healing" abbrev="Healing"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skManipulationTWD" name="Manipulation" description="When you want to make another person do or think something by lying, bribing, threatening, or coercing them, use Manipulation. Play out what you say and do, and state what you want to achieve, then roll the dice. On a success, you get what you want. In difficult situations, you might need more than one success. Failure could mean that the other person disagrees with you, or even starts disliking you. If you talk to a group of people, use Leadership instead of Manipulation.\n\nWhen you try to make another PC think or do something, roleplay the situation and let the other player decide how their PC reacts. They can ask you to roll for Manipulation anyway, to help them decide what the PC thinks of what you are saying" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Man"/>
+    <usesource source="srcTWDU"/>
+    <tag group="CountsAsSkill" tag="skPersuasion" name="Persuasion" abbrev="Persuasion"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="skLeadershipTWD" name="Leadership" description="When you want to sway a crowd or inspire another person, roll for Leadership. Swaying a crowd works similarly to Manipulation, but you address a group of people. When you roll for Leadership, you cannot get help from others. There can only be one leader at a time.\n\nWhen inspiring someone with Leadership, each success rolled gives the subject +1 on a skill roll in one situation within a reasonable amount of time. They can wait to decide which skill roll gets affected until they make use of the inspiration effect. A failed attempt to inspire someone means you take one point of stress" compset="Skill" uniqueness="unique">
+    <fieldval field="trtAbbrev" value="Lead"/>
+    <usesource source="srcTWDU"/>
+    <link linkage="attribute" thing="attrEmp"/>
+    </thing>
+  <thing id="abTWDThreatPost" name="Threatening Posture" description="{i}You ruined someone’s life.{/i}\n\nYou can use Force instead of Manipulation when you threaten someone." compset="Specialty" summary="You can use Force instead of Manipulation when you threaten someone.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDCriminal"/>
+    </thing>
+  <thing id="abTWDFixer" name="Fixer" description="{i}You scored big on a negotiation{/i}\n\nYou gain +2 to Manipulation when you haggle for a deal." compset="Specialty" summary="You gain +2 to Manipulation when you haggle for a deal.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDCriminal"/>
+    </thing>
+  <thing id="abTWDFightsDirty" name="Fights Dirty" description="{i}You killed someone with your bare hands.{/i}\n\nWhen you fight unarmed, you do +1 damage." compset="Specialty" summary="When you fight unarmed, you do +1 damage.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDCriminal"/>
+    </thing>
+  <thing id="abTWDEmerMedicine" name="Emergency Medicine" description="{i}You used to work in an Emergency Room.{/i}\n\nGain +2 to Medicine when you stabilize a critical injury that needs basic medical equipment." compset="Specialty" summary="Gain +2 to Medicine when you stabilize a critical injury that needs basic medical equipment.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDDoctor"/>
+    </thing>
+  <thing id="arcTWDCriminal" name="Criminal" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDDoctor" name="Doctor" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDFarmer" name="Farmer" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDHomemaker" name="Homemaker" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDKid" name="Kid" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDLawEnforcer" name="Law Enforcer" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDNobody" name="Nobody" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDOutcast" name="Outcast" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDPolitician" name="Politician" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDPreacher" name="Preacher" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDScientist" name="Scientist" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="arcTWDSoldier" name="Soldier" compset="Archetype" uniqueness="unique">
+    <usesource source="srcTWDU"/>
+    <tag group="ArchetypeCat" tag="Primary"/>
+    </thing>
+  <thing id="abTWDDocPatHier" name="Doctor/Patient Hierarchy" description="{i}You somehow used one of your patients for your own benefit.{/i}\n\nWhen you use Manipulation against someone who is injured, you get a bonus equal to the number of Health Points they have taken in damage." compset="Specialty" summary="When you use Manipulation against someone who is injured, you get a bonus equal to the number of Health Points they have taken in damage.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDDoctor"/>
+    </thing>
+  <thing id="abTWDSeenItAll" name="Seen It All" description="{i}You had to push yourself beyond your own limits.{/i}\n\nGain +2 to Endure when you starve or work hard." compset="Specialty" summary="Gain +2 to Endure when you starve or work hard.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDFarmer"/>
+    </thing>
+  <thing id="abTWDLivingLand" name="Living Off The Land" description="{i}You made a living off the land.{/i}\n\nGain +2 to Tech when you work on projects that increase Capacity for your haven." compset="Specialty" summary="Gain +2 to Tech when you work on projects that increase Capacity for your haven.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDFarmer"/>
+    </thing>
+  <thing id="abTWDInnocentFace" name="Innocent Face" description="{i}You made someone believe you were weak.{/i}\n\nYou get +2 on Manipulation when you act innocent in front of a stranger." compset="Specialty" summary="You get +2 on Manipulation when you act innocent in front of a stranger.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDHomemaker"/>
+    </thing>
+  <thing id="abTWDBackAgainstW" name="Back Against The Wall" description="{i}You fought back.{/i}\n\nWhen you fight against all odds and the enemies seem to be winning, you do +1 damage on all attacks." compset="Specialty" summary="When you fight against all odds and the enemies seem to be winning, you do +1 damage on all attacks.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDHomemaker"/>
+    </thing>
+  <thing id="abTWDRatherDie" name="Rather Die Than Break" description="{i}You sacrificed yourself for a higher purpose.{/i}\n\nOnce per session you can chose to lose one point of Health to get one success on a skill roll. You need to be able to explain, in the game, how you are damaged in the situation." compset="Specialty" summary="Once per session you can chose to lose one point of Health to get one success on a skill roll. You need to be able to explain, in the game, how you are damaged in the situation.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
+    <pickreq thing="arcTWDHomemaker"/>
+    </thing>
+  <thing id="abTWDAnimalComp" name="Animal Companion" description="{i}You won the trust of an animal.{/i}\n\nYou have a pet that you can rely on once per session to get +1 on a dice roll where it is evident that your pet is of use." compset="Specialty" summary="You have a pet that you can rely on once per session to get +1 on a dice roll where it is evident that your pet is of use.">
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="General"/>
+    </thing>
+  </document>

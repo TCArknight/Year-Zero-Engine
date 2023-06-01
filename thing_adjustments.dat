@@ -139,6 +139,23 @@
       ]]></eval>
     </thing>
 
+  <!-- Talents Slot Adjustment -->
+  <thing
+    id="adjTalent"
+    name="Talent Slots"
+    compset="Adjustment"
+    description="Select this adjustment to apply a bonus/penalty to your total Talent slots.">
+    <tag group="AdjustShow" tag="Increment"/>
+    <tag group="Helper" tag="UserAdjust"/>
+    <tag group="InPlay" tag="PermOK"/>
+    <eval phase="Setup" priority="8000">
+      <before name="Calc wpNetAtk"/><![CDATA[
+      if (tagis[Helper.Activated] <> 0) then
+        hero.child[resSpecialties].field[resMax].value += field[adjUser].value
+        endif
+      ]]></eval>
+    </thing>
+	
   <!-- Power Points Adjustment -->
   <thing
     id="adjPower"

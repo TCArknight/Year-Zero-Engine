@@ -421,7 +421,23 @@
   <component
     id="Setting"
     name="Setting">
-
+	
+    <!-- Starting Attribute points for the character -->
+    <field
+      id="setStartAttrib"
+      name="Starting Attribute Points"
+      type="user"
+      defvalue="0">
+      </field>
+	
+    <!-- Starting Skill points for the character -->
+    <field
+      id="setStartSkill"
+      name="Starting Skill Points"
+      type="user"
+      defvalue="0">
+      </field>
+	  
     <field
       id="setNumSpecialties"
       name="Number of Beg. Specialties"
@@ -455,6 +471,9 @@
       perform forward[SettingFlag.?]
       perform forward[ArchetypeNamePri.?]
       perform forward[ArchetypeNameSec.?]
+	  
+	  herofield[acStartAttrib].value = field[setStartAttrib].value
+	  herofield[acStartSkillPts].value = field[setStartSkill].value
 	  
 	  herofield[acStartSpec].value = field[setNumSpecialties].value
 	  herofield[acSpecialtyTerm].text = field[setSpecialtyTerm].text
@@ -542,6 +561,15 @@
       minvalue="0"
       maxvalue="1">
       </field>
+
+    <!-- Is relationship a Buddy? -->
+    <field
+      id="relIsAnchor"
+      name="Is an Anchor"
+      type="user"
+      minvalue="0"
+      maxvalue="1">
+      </field>	  
 	  
     <!-- Is relationship a Buddy? -->
     <field

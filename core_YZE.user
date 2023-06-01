@@ -9,9 +9,9 @@
     <fieldval field="setNumSpecialties" value="2"/>
     <fieldval field="setSpecialtyTerm" value="Talent"/>
     <fieldval field="setSpecialtyTermP" value="Talents"/>
+    <fieldval field="setStartAttrib" value="14"/>
+    <fieldval field="setStartSkill" value="10"/>
     <usesource source="srcForbidden" parent="Settings" name="Forbidden Lands"/>
-    <tag group="SettingFlag" tag="UseArchetypeSec"/>
-    <tag group="SettingFlag" tag="ArchtypeSecReq"/>
     <tag group="ArchetypeNameSec" tag="Profession"/>
     <tag group="SettingFlag" tag="UseKeyAttributes"/>
     <tag group="SettingFlag" tag="UseKeySkills"/>
@@ -40,6 +40,12 @@
     <tag group="SettingSkill" tag="skSurvivalFL"/>
     <tag group="SettingFlag" tag="DicePool"/>
     <tag group="SettingFlag" tag="AttributeDamage"/>
+    <tag group="SettingFlag" tag="UseMagic"/>
+    <tag group="SettingFlag" tag="SkillMin0"/>
+    <tag group="SettingFlag" tag="SkillMax1"/>
+    <tag group="SettingFlag" tag="KeySkillMax3"/>
+    <tag group="SettingFlag" tag="ArchtypeSecReq"/>
+    <tag group="SettingFlag" tag="UseArchetypeSec"/>
     <eval phase="Initialize" priority="500">perform hero.childfound[wpUnarmed].setfocus
 
 perform focus.delete[WeaponFeature.?]
@@ -49,11 +55,6 @@ perform focus.assign[WeaponFeature.Blunt]</eval>
     <usesource source="srcForbidden"/>
     <tag group="ArchetypeCat" tag="Primary"/>
     <tag group="KeyAttribute" tag="attrEmp"/>
-    <tag group="KeySkill" tag="skAnimalHandFL"/>
-    <tag group="KeySkill" tag="skEnduranceFL"/>
-    <tag group="KeySkill" tag="skHealingFL"/>
-    <tag group="KeySkill" tag="skInsightFL"/>
-    <tag group="KeySkill" tag="skSurvivalFL"/>
     <bootstrap thing="abFLAdaptive"></bootstrap>
     </thing>
   <thing id="arcKinElf" name="Elf" description="At the dawn of time, you fell like a rain of glimmering rubies, scattered across the land by the Red Wanderer of the Heavens. Your task was to cover the barren land in life, for the Wanderer wished to lay his eyes on beauty. You clothed yourself in flesh and coaxed plants from the ground so that soon you could walk singing through the lush forests of Ravenland, to the joy of the Wanderer. The god Clay drew animals from the mud, fish and toads from the mires, and birds from the clouds. The Great Craftsman gave you the task of shepherding them, with the dwarves preparing the ground for your art.\n\nThen, the humans arrived. Their Raven God bought half the land for them and gave you the orcs in exchange. But the humans’ intentions were false and they soon attacked you, with demons in tow. Since you were few in number, you sent the orcs into battle, but those craven creatures failed you. Your elders claim that everything will return to the way things were if you only wait, that humankind will wither and eventually die, just as time eats away at all the stoneless kin. But the younger among you do not want to wait. While some desire to coexist with the humans peacefully, a growing number say the upstarts must be driven out." compset="Archetype" uniqueness="unique">
@@ -202,6 +203,7 @@ perform focus.assign[WeaponFeature.Blunt]</eval>
   <thing id="abHdrGeneral" name="-- General --" compset="Specialty" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <usesource source="srcAliens"/>
+    <usesource source="srcTWDU"/>
     <tag group="SpecCat" tag="General"/>
     </thing>
   <thing id="abHdrProf" name="-- Profession --" compset="Specialty" isshowonly="yes">
@@ -307,6 +309,9 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="SettingFlag" tag="UseArchetypePri"/>
     <tag group="ArchetypeNamePri" tag="Archetype"/>
     <tag group="SettingFlag" tag="DicePool"/>
+    <tag group="SettingFlag" tag="SkillMin0"/>
+    <tag group="SettingFlag" tag="SkillMax1"/>
+    <tag group="SettingFlag" tag="KeySkillMax3"/>
     </thing>
   <thing id="setOGLStepped" name="OGL - Stepped Dice" description="OGL Skills/Specialties with Dice Pool method" compset="Setting">
     <usesource source="OGL_Step" parent="Settings" name="OGL With Stepped Dice"/>
@@ -326,6 +331,8 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="SettingFlag" tag="StepDice"/>
     <tag group="SettingSkill" tag="skCrafting"/>
     <tag group="SettingFlag" tag="DirectSkill"/>
+    <tag group="SettingFlag" tag="SkillMin2"/>
+    <tag group="SettingFlag" tag="SkillMax6"/>
     </thing>
   <thing id="arcKinGoblin" name="Goblin" description="The elders say you are the dark brothers of the halflings. Like you give a shit! All you know is that you live while the lardbags don’t even try. What do halflings know about howling with wolves, licking blood off drippertrees under a full moon or making love among nettles? If you didn’t keep nightwatch over their pretty villages, trolls and wolfkin would have torn them apart a long time ago. You say enough and be gone with that! The world’s out there, swollen with smells and flavor and silver and thrills. You’ll be taking off into the dark, fingers dug deep into your wolf ’s fur, froth washing your face. The night’s alive and you’re the ones living it!" compset="Archetype" uniqueness="unique">
     <fieldval field="arcAgeAdult" value="60"/>
@@ -389,7 +396,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="Magic" tag="magFLGeneral"/>
     <tag group="MagicRange" tag="ArmLength"/>
     <tag group="MagicDuration" tag="QuarterDay"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="splFLSenseMagic" name="Sense Magic" description="As a sorcerer or druid, you automatically sense whenever someone uses magic within SHORT range or if an item you hold is charged with magical power. If you want to know more about what kind of magic is involved, you must cast the SENSE MAGIC spell. Using this spell is also required to detect OBSCURED magic (see below) – your Power Level must then be equal to or higher than the Power Level of the OBSCURE MAGIC spell." compset="Spell" uniqueness="useronce">
     <fieldval field="splIngredients" value="Divining Rod"/>
@@ -397,7 +404,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="Magic" tag="magFLGeneral"/>
     <tag group="MagicRange" tag="Short"/>
     <tag group="MagicDuration" tag="Immediate"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="splFLDispelMagic" name="Dispel Magic" description="You can interfere with the spells cast by other magic users. This spell is reactive and breaks the initiative order of combat in the round (see page 83). You decrease the Power Level of your opponent’s spell with the Power Level of your DISPEL. If the result is zero or less, your opponent’s spell has no effect at all. You must both roll for overcharge and mishaps, as with any other spell. You must decide how many WP you spend on your DISPEL before you both roll." compset="Spell" uniqueness="useronce">
     <fieldval field="splIngredients" value="Iron Filings"/>
@@ -405,7 +412,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="Magic" tag="magFLGeneral"/>
     <tag group="MagicRange" tag="Short"/>
     <tag group="MagicDuration" tag="Immediate"/>
-    <tag group="MagicRank" tag="Rank2"/>
+    <tag group="MagicRank" tag="RankVal2"/>
     </thing>
   <thing id="splFLHealingHands" name="Healing Hands" description="You can heal damage to Strength or Agility by laying your hands on the wounded. You immediately heal a number of points equal to the Power Level. This spell does not affect critical injuries. You cannot heal yourself." compset="Spell" uniqueness="useronce">
     <fieldval field="splIngredients" value="Clay"/>
@@ -413,7 +420,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="Magic" tag="magFLHealing"/>
     <tag group="MagicRange" tag="ArmLength"/>
     <tag group="MagicDuration" tag="Immediate"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="magFLGeneral" name="General" compset="Magic" uniqueness="unique">
     <usesource source="srcForbidden"/>
@@ -424,7 +431,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="MagicRange" tag="Near"/>
     <tag group="MagicDuration" tag="Turn15"/>
     <tag group="Magic" tag="magFLShapeshift"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="magFLShapeshift" name="Shapeshifting" compset="Magic" uniqueness="unique">
     <usesource source="srcForbidden"/>
@@ -450,7 +457,7 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="MagicRange" tag="ArmLength"/>
     <tag group="MagicDuration" tag="Immediate"/>
     <tag group="Magic" tag="magFLShapeshift"/>
-    <tag group="MagicRank" tag="Rank2"/>
+    <tag group="MagicRank" tag="RankVal2"/>
     </thing>
   <thing id="splFLCleanseSpi" name="Cleanse Spirit" description="You can focus the forces of nature to enlighten dark souls. You immediately heal a number of Wits or Empathy points equal to the Power Level of your spell. You cannot heal yourself." compset="Spell" uniqueness="useronce">
     <fieldval field="splIngredients" value="Burning Candle"/>
@@ -458,47 +465,47 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="Magic" tag="magFLHealing"/>
     <tag group="MagicRange" tag="ArmLength"/>
     <tag group="MagicDuration" tag="Immediate"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLGeneral" name="-- General --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLGeneral"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLHealing" name="-- Healing --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLHealing"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLAwareness" name="-- Awareness --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLAwareness"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLBloodMagic" name="-- Blood Magic --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLBloodMagic"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLDeathMagic" name="-- Death Magic --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLDeathMagic"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLShapeshif" name="-- Shapeshifting --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLShapeshift"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLStoneSong" name="-- Stone Song --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLStoneSong"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="hdrFLSymbolism" name="-- Symbolism --" compset="Spell" isshowonly="yes">
     <usesource source="srcForbidden"/>
     <tag group="Magic" tag="magFLSymbolism"/>
-    <tag group="MagicRank" tag="Rank1"/>
+    <tag group="MagicRank" tag="RankVal1"/>
     </thing>
   <thing id="wpFLKnife" name="Knife" compset="Melee">
     <fieldval field="wpDamage" value="1"/>
@@ -617,6 +624,9 @@ field[spcRankSummary].text = summ]]></eval>
     <tag group="SettingFlag" tag="UseKeySkills"/>
     <tag group="SettingFlag" tag="UseStress"/>
     <tag group="SettingFlag" tag="UseHealthStrOnly"/>
+    <tag group="SettingFlag" tag="SkillMin0"/>
+    <tag group="SettingFlag" tag="SkillMax1"/>
+    <tag group="SettingFlag" tag="KeySkillMax3"/>
     <eval phase="Initialize" priority="500">perform hero.childfound[wpUnarmed].setfocus
 
 perform focus.delete[WeaponFeature.?]
@@ -769,5 +779,79 @@ perform focus.assign[WeaponFeature.DoubleArmor]</eval>
     <bootstrap thing="wpALIU1GrenLau">
       <autotag group="Equipment" tag="NoHands"/>
       </bootstrap>
+    </thing>
+  <thing id="arcProfRogue" name="Rogue" description="No one will ever give you what you wish for. To get what you want, you will have to take it for yourself. This is a lesson that you learned at a young age, and already as a child you became very skilled at liberating others from belongings that you needed more. Before, people used to spit at you and kick you. Now, as an adventurer with the Forbidden Lands at your feet, your expertise in the arts of moving silently in the shadows has become highly sought after. You are a Rogue" compset="Archetype" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    <tag group="ArchetypeCat" tag="Secondary"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="KeySkill" tag="skManipulationFL"/>
+    <tag group="KeySkill" tag="skMeleeFL"/>
+    <tag group="KeySkill" tag="skMoveFL"/>
+    <tag group="KeySkill" tag="skSleightHandFL"/>
+    <tag group="KeySkill" tag="skStealthFL"/>
+    </thing>
+  <thing id="abFLPathKiller" name="Path of the Killer" description="Battles are not always fought in the open and with steel clashing against steel. Another, less heroic type of fight takes place in the shadows, with hidden weapons and unsuspecting victims" compset="Specialty">
+    <fieldval field="spcDescRank1" value="When you succeed with a SNEAK ATTACK, you can spend Willpower Points to increase damage. Every WP you spend increases damage by 1."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank2" value="By spending a WP, you can slither your way out of any restraints or push yourself through the smallest of openings, down to a few inches wide"/>
+    <fieldval field="spcDescRank3" value="You can make others do your bidding using hypnosis. By spending a WP, you can force your victim to perform a specific action at a time of your choosing. You must speak to your opponent for a few minutes to use this talent. You cannot force your victim to hurt themselves"/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <pickreq thing="arcProfRogue"/>
+    </thing>
+  <thing id="arcProfHunter" name="Hunter" description="The wild lands are your home. In the forests and the mountains, on the open plains and by the winding rivers – that’s where you find inner peace. People say that the wilds are dangerous, that they are evil. Granted, you have seen the\nmonsters that roam the lands. But you know how to move unseen and unheard, and to kill effectively if you need to. And when you bring home your prey to the camp and it’s time to eat, no one is complaining. You are a Hunter" compset="Archetype" uniqueness="unique">
+    <usesource source="srcForbidden"/>
+    <tag group="ArchetypeCat" tag="Secondary"/>
+    <tag group="KeyAttribute" tag="attrAgi"/>
+    <tag group="KeySkill" tag="skMoveFL"/>
+    <tag group="KeySkill" tag="skStealthFL"/>
+    <tag group="KeySkill" tag="skMarksmanFL"/>
+    <tag group="KeySkill" tag="skScoutFL"/>
+    <tag group="KeySkill" tag="skSurvivalFL"/>
+    </thing>
+  <thing id="abFLPathArrow" name="Path of the Arrow" description="You are a master archer and fire arrows as if they were controlled by your own will." compset="Specialty">
+    <fieldval field="spcDescRank1" value="When you hit with a ranged weapon attack, you can spend a Willpower Point to find a weakness in your opponent’s armor or natural armor. The armor offers no protection against your attack."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank2" value="Once you have used up all your actions during the round, you can spend a WP to immediately attack again using a ranged weapon. However, said weapon must have been PREPARED earlier, and you can only do this once per round."/>
+    <fieldval field="spcDescRank3" value="When you hit with a ranged weapon attack, you can increase the damage. Every WP spent increases damage by one. You must state how many WP you use before your opponent rolls for any armor."/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <pickreq thing="arcProfHunter"/>
+    </thing>
+  <thing id="abFLPathForest" name="Path of the Forest" description="You are a master at surviving in the wilderness." compset="Specialty">
+    <fieldval field="spcDescRank1" value="When you FORAGE, HUNT, or LEAD THE WAY, you succeed automatically if you spend a Willpower Point. You can roll first and spend the point if you fail."/>
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank2" value="When rolling to endure cold, you automatically succeed if you spend a WP. You can roll first and spend the point if you fail."/>
+    <fieldval field="spcDescRank3" value="By spending a WP, you don’t need to eat or drink during one full day."/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    <tag group="SpecCat" tag="Profession"/>
+    <pickreq thing="arcProfHunter"/>
+    </thing>
+  <thing id="abFLSharpshooter" name="Sharpshooter" description="You are a master archer and your arrow almost always hits its target." compset="Specialty">
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank1" value="Your attack rolls are modified by +1 when you SHOOT a bow or a crossbow."/>
+    <fieldval field="spcDescRank2" value="You can SHOOT a bow or a crossbow at SHORT and LONG range without any penalties."/>
+    <fieldval field="spcDescRank3" value="You can add a D8 Artifact Die to any attack with a bow or a crossbow"/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="General"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    </thing>
+  <thing id="abFLKnifeFighter" name="Knife Fighter" description="You are lethal with a knife in hand." compset="Specialty">
+    <fieldval field="spcMaxRank" value="3"/>
+    <fieldval field="spcDescRank1" value="Your attack rolls are modified by +1 when you fight with a knife or a dagger"/>
+    <fieldval field="spcDescRank2" value="You can STAB as a fast action using a knife or a dagger."/>
+    <fieldval field="spcDescRank3" value="You can add a D8 Artifact Die to all attacks with a knife or a dagger."/>
+    <usesource source="srcForbidden"/>
+    <tag group="SpecCat" tag="General"/>
+    <tag group="SpecRank" tag="Ranked"/>
+    </thing>
+  <thing id="abHdrArchetype" name="-- Archetype --" compset="Specialty" isshowonly="yes">
+    <usesource source="srcForbidden"/>
+    <usesource source="srcAliens"/>
+    <usesource source="srcTWDU"/>
+    <tag group="SpecCat" tag="Archetype"/>
     </thing>
   </document>

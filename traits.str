@@ -450,21 +450,30 @@
 	  
     <!-- Skills have a minimum trait value of 0 and a maximum of 4 unless they are key -->
     <eval index="3" phase="Initialize" priority="2000"><![CDATA[
-	  field[sklIsKey].value = tagis[Helper.KeySkill]
+	  var MinVal as number
+	  var MaxVal as number
+	  var KeyMaxVal as number
+	  var MinValStr as string
+	  var MaxValStr as string
 	  
-	  if (hero.tagis[SettingFlag.StepDice] <> 0) then	    
-	    perform assign[TraitValue.MinimumValue2]
-	    perform assign[TraitValue.MaximumValue6]
-
-	  elseif (hero.tagis[SettingFlag.DicePool] <> 0) then    
-	    perform assign[TraitValue.MinimumValue0]
-
-        if (field[sklIsKey].value = 1) then
-		  perform assign[TraitValue.MaximumValue3]
-		else
-		  perform assign[TraitValue.MaximumValue1]
-		  endif
-	    endif
+	  MinVal = hero.tagvalue[SettingFlag.SkillMin?]
+	  MaxVal = hero.tagvalue[SettingFlag.SkillMax?]
+	  KeyMaxVal = hero.tagvalue[SettingFlag.SkillMax?]
+	  
+	  field[sklIsKey].value = tagis[Helper.KeySkill]
+		
+	  MinValStr = "TraitValue.MinimumValue" & MinVal
+	  MaxValStr = "TraitValue.MaximumValue" 
+	  
+	  if (field[sklIsKey].value = 1) then
+	    MaxValStr &= KeyMaxVal
+	  else
+		MaxValStr &= MaxVal
+		endif
+		
+      perform assignstr[MinValStr]
+	  perform assignstr[MaxValStr]
+		
       ]]></eval>  
 	  
     <!-- -->
@@ -807,7 +816,7 @@
       id="spcDescRank1"
       name="Rank 1 Summary"
       type="derived"
-	  maxlength="200">
+	  maxlength="300">
       </field>
 
     <!-- -->
@@ -815,7 +824,7 @@
       id="spcDescRank2"
       name="Rank 2 Summary"
       type="derived"
-	  maxlength="200">
+	  maxlength="300">
       </field>
 
     <!-- -->
@@ -823,7 +832,7 @@
       id="spcDescRank3"
       name="Rank 3 Summary"
       type="derived"
-	  maxlength="200">
+	  maxlength="300">
       </field>
 
     <!-- -->
@@ -831,7 +840,7 @@
       id="spcDescRank4"
       name="Rank 4 Summary"
       type="derived"
-	  maxlength="200">
+	  maxlength="300">
       </field>
 
     <!-- -->
@@ -847,7 +856,7 @@
       id="spcRankSummary"
       name="Rank Summary"
       type="derived"
-	  maxlength="1000">
+	  maxlength="1500">
       </field>	  
 	  
 	  
@@ -918,7 +927,7 @@
         field[spcValue1].value += 1
 		
 		if (field[spcRanked].value <> 0) then 
-		  field[spcName].text = field[name].text & " (" & tagnames[SpecRank.Rank?,","] & ")"
+		  field[spcName].text = field[name].text & " (" & tagnames[SpecRank.RankVal?,","] & ")"
 		  endif
 		
       ~otherwise, redirect hero.child[] to the FirstCopy, and make us an upgrade
@@ -930,14 +939,14 @@
         ~add +1 to the focus's value
         focus.field[spcValue1].value += 1
 				
-		~ because we're ranked, apply the SpecRank.Rank? tag to the FirstCopy
-	    tagval = focus.tagvalue[SpecRank.Rank?]
-		tagstr = "SpecRank.Rank" & focus.field[spcValue1].value
-	    perform focus.delete[SpecRank.Rank?]
+		~ because we're ranked, apply the SpecRank.RankVal? tag to the FirstCopy
+	    tagval = focus.tagvalue[SpecRank.RankVal?]
+		tagstr = "SpecRank.RankVal" & focus.field[spcValue1].value
+	    perform focus.delete[SpecRank.RankVal?]
 	    perform focus.assignstr[tagstr]
 		
 		if (field[spcRanked].value <> 0) then 
-		  focus.field[spcName].text = focus.field[name].text & " (" & focus.tagnames[SpecRank.Rank?,","] & ")"
+		  focus.field[spcName].text = focus.field[name].text & " (" & focus.tagnames[SpecRank.RankVal?,","] & ")"
 		else
 		  focus.field[spcName].text = focus.field[name].text
 		  endif
@@ -954,7 +963,7 @@
 	var tagval as number
 	var summ as string
 	
-	tagval = tagvalue[SpecRank.Rank?]
+	tagval = tagvalue[SpecRank.RankVal?]
 	
     ~build the rank summary
 	if (tagval = 1) then

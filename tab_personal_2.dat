@@ -70,6 +70,27 @@
       </portal>
 
     <portal
+      id="lblAnchor"
+      style="lblLeft"
+      showinvalid="yes">
+      <label>
+	    <labeltext><![CDATA[
+          @text = "Is Anchor?"
+		  ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="anchor"
+      style="chkNormal"
+      showinvalid="yes"
+      tiptext="Click to indicate this relationship is your anchor.">
+      <checkbox
+        field="relIsAnchor">
+        </checkbox>
+      </portal>
+
+    <portal
       id="lblBuddy"
       style="lblLeft"
       showinvalid="yes">
@@ -138,6 +159,8 @@
       perform portal[lblRival].centervert
       perform portal[buddy].centervert
       perform portal[rival].centervert
+      perform portal[lblAnchor].centervert
+      perform portal[anchor].centervert
 
       ~position the delete portal on the far right
       perform portal[delete].alignedge[right,0]
@@ -158,11 +181,19 @@
 	  portal[buddy].top = 0
 	  portal[lblBuddy].visible = hero.tagis[SettingFlag.UseBuddy]
 	  portal[buddy].visible = portal[lblBuddy].visible
+
+      ~position the rival label and checkbox next to the delete portal
+	  perform portal[anchor].alignrel[rtol,lblBuddy,-10]
+	  perform portal[lblAnchor].alignrel[rtol,anchor,-5]
+	  portal[lblAnchor].top = 0
+	  portal[anchor].top = 0
+	  portal[lblAnchor].visible = hero.tagis[SettingFlag.UseAnchor]
+	  portal[anchor].visible = portal[lblAnchor].visible
 	  
       ~position the name on the left and let it use all available space
       portal[name].left = 0
 	  portal[name].top = 0
-      portal[name].width = minimum(200,portal[delete].left - 5)
+      portal[name].width = minimum(150,portal[delete].left - 5)
 
       ~position the name on the left and let it use all available space
       portal[details].left = 0
@@ -304,6 +335,40 @@
         field="optHowMet"
         ismultiline="yes">
         </edit>
+      </portal>	 
+	  
+    <portal
+      id="lbldrive"
+      style="lblNormal">
+      <label
+        text="Drive:">
+        </label>
+      </portal>
+
+    <portal
+      id="drive"
+      style="editNormal">
+      <edit
+        field="optDrive"
+        ismultiline="yes">
+        </edit>
+      </portal>	 
+	  
+    <portal
+      id="lblissue"
+      style="lblNormal">
+      <label
+        text="Issues:">
+        </label>
+      </portal>
+
+    <portal
+      id="issue"
+      style="editNormal">
+      <edit
+        field="optIssue"
+        ismultiline="yes">
+        </edit>
       </portal>	
 	  
     <position><![CDATA[
@@ -326,6 +391,10 @@
       portal[moral].visible = portal[lblmoral].visible
       portal[lblmet].visible = hero.tagis[SettingFlag.UseHowMet]
       portal[met].visible = portal[lblmet].visible
+      portal[lbldrive].visible = hero.tagis[SettingFlag.UseDrive]
+      portal[drive].visible = portal[lbldrive].visible
+      portal[lblissue].visible = hero.tagis[SettingFlag.UseIssues]
+      portal[issue].visible = portal[lbldrive].visible
 	  
 	  lblwidth = portal[lblagenda].width
 	  portal[lblpride].width = lblwidth
@@ -334,11 +403,37 @@
 	  portal[lblsecret].width = lblwidth
 	  portal[lblmoral].width = lblwidth
 	  portal[lblmet].width = lblwidth
+	  portal[lbldrive].width = lblwidth
+	  portal[lblissue].width = lblwidth
 	  
 	  editleft = lblwidth + 5
 	  
 	  nexttop = 0
 
+      ~position drive
+	  if (portal[drive].visible <> 0) then 
+        portal[lbldrive].left = 0
+        portal[lbldrive].top = nexttop
+        portal[drive].left = editleft
+        portal[drive].top = nexttop
+        portal[drive].width = width - editleft
+        portal[drive].height = 50
+	  
+	    nexttop = portal[drive].bottom + 5
+	    endif
+
+      ~position issues
+	  if (portal[issue].visible <> 0) then 
+        portal[lblissue].left = 0
+        portal[lblissue].top = nexttop
+        portal[issue].left = editleft
+        portal[issue].top = nexttop
+        portal[issue].width = width - editleft
+        portal[issue].height = 50
+	  
+	    nexttop = portal[issue].bottom + 5
+	    endif
+		
       ~position the pride
 	  if (portal[pride].visible <> 0) then 
         portal[lblpride].left = 0
@@ -471,7 +566,7 @@
         please refer to the Basics panel for more details.
   -->
   <panel
-    id="Personalities"
+    id="personalities"
     name="Personality Traits"
     marginhorz="5"
     marginvert="5"
