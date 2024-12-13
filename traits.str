@@ -458,7 +458,7 @@
 	  
 	  MinVal = hero.tagvalue[SettingFlag.SkillMin?]
 	  MaxVal = hero.tagvalue[SettingFlag.SkillMax?]
-	  KeyMaxVal = hero.tagvalue[SettingFlag.SkillMax?]
+	  KeyMaxVal = hero.tagvalue[SettingFlag.KeySkillMax?]
 	  
 	  field[sklIsKey].value = tagis[Helper.KeySkill]
 		

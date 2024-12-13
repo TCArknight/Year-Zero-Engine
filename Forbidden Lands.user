@@ -1,2 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document signature="Hero Lab Data"></document>
+<document signature="Hero Lab Data">
+  <thing id="wpFLDagger" name="Dagger" compset="Melee">
+    <fieldval field="grBonus" value="1"/>
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="grCost" value="4"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponRange" tag="ArmLength"/>
+    <tag group="WeaponFeature" tag="Edged"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="WeaponFeature" tag="Pointed"/>
+    <tag group="WeaponGrip" tag="OneHand"/>
+    </thing>
+  <thing id="wpFLLongbow" name="Longbow" compset="Ranged">
+    <fieldval field="grBonus" value="2"/>
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="grCost" value="12"/>
+    <tag group="WeaponGrip" tag="TwoHand"/>
+    <tag group="WeaponRange" tag="Long"/>
+    </thing>
+  <thing id="wpFLShortBow" name="Short Bow" compset="Ranged">
+    <fieldval field="grBonus" value="2"/>
+    <fieldval field="wpDamage" value="1"/>
+    <fieldval field="grCost" value="6"/>
+    <usesource source="srcForbidden"/>
+    <tag group="WeaponFeature" tag="Light"/>
+    <tag group="WeaponGrip" tag="TwoHand"/>
+    <tag group="WeaponRange" tag="Short"/>
+    </thing>
+  </document>
